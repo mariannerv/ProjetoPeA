@@ -17,6 +17,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/users' ,[OwnerController::class ,'store'])->name('users.store');
+Route::get('/users' ,[OwnerController::class ,'index'])->name('users.store');
 
 
