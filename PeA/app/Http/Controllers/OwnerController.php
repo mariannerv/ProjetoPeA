@@ -7,6 +7,16 @@ use App\Models\Owner; // Import the Owner model
 
 class OwnerController extends Controller
 {
+     public readonly Owner $user;
+    public function __construct()
+    {
+        $this->user = new Owner();
+    }
+    public function index() {
+        $users = $this->user->all();
+        return view('users' , ['users' => $users]);
+    }
+    
     public function store(Request $request)
     {
         // Validate the incoming request data
