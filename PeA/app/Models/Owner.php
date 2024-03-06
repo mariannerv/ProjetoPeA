@@ -14,6 +14,7 @@ class Owner extends Model
 
     // equivalent to mySQL table    
     protected $collection = 'Owner';
-
+    protected $primaryKey = '_id'; 
+    protected $fillable = ['name', 'gender', 'birthdate', 'addressId', 'civilId', 'taxId', 'contactNumber', 'email'];
 
 } 

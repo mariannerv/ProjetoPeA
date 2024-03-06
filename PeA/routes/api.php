@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OwnerController;
+use App\Models\Owner;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -38,5 +39,7 @@ Route::get('/test_mongodb/', function (Illuminate\Http\Request $request) {
     return ['uri' => $uri, 'dbName' => $dbName];
 });
 
-
+//OWNER
 Route::post('/Owner', [OwnerController::class, 'store']);
+
+Route::get('/Owner/{civilId}', [OwnerController::class, 'getUserByCivilId']);

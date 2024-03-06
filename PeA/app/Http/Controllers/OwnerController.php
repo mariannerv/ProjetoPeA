@@ -38,4 +38,18 @@ class OwnerController extends Controller
         // Return a success response
         return response()->json(["result" => "ok"], 201);
     }
+
+    public function getUserByCivilId($civilId)
+    {
+        // Query the MongoDB to find the owner by civilId
+        $owner = Owner::where('civilId', $civilId)->first();
+
+        if (!$owner) {
+            return response()->json(['error' => 'Owner not found'], 404);
+        }
+
+        return response()->json($owner);
+    }
+
+
 }
