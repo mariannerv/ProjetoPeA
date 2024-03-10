@@ -34,6 +34,8 @@ Route::group([
 ], function(){
     Route::get("profile", [ApiController::class, "profile"]);
     Route::get("logout", [ApiController::class, "logout"]);
+    Route::delete('delete', [ApiController::class, "delete"]);
+    Route::put('update', [ApiController::class, 'update']);
 });
 
 Route::post('deactivate', [ApiController::class, "deactivate"]);

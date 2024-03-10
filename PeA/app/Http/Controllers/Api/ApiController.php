@@ -37,6 +37,7 @@ class ApiController extends Controller
             "contactNumber" => $request->contactNumber,
             "email" => $request->email,
             "password" => Hash::make($request->password),
+            "account_status" => 'active',
         ]);
 
         return response()->json([
@@ -98,6 +99,7 @@ public function login(Request $request)
     {
         $request->validate([
             "email" => "required|email",
+            "password" => "required",
         ]);
 
         $user = User::where("email", $request->email)->first();
@@ -125,6 +127,7 @@ public function login(Request $request)
     {
         $request->validate([
             "email" => "required|email",
+            "password" => "required",
         ]);
 
         $user = User::where("email", $request->email)->first();
@@ -147,9 +150,6 @@ public function login(Request $request)
         }
     }
 
-
-
-
     // Profile API (GET)
 
     public function profile(){
@@ -170,5 +170,59 @@ public function login(Request $request)
             "status" => true,
             "message" => "User logged out",
         ]);
+    }
+
+    public function update(Request $request)
+{
+    $user = auth()->user();
+
+    if ($user) {
+        $request->validate([
+            'name' => 'string',
+            'gender' => 'string',
+            'birthdate' => 'date',
+            'address' => 'string',
+            'civilId' => 'string',
+            'taxId' => 'string',
+            'contactNumber' => 'string',
+            'email' => 'email|unique:users',
+            'password' => 'confirmed',
+        ]);
+
+        // Update the user's information based on the request data
+        $user->update($request->all());
+
+        return response()->json([
+            "status" => true,
+            "code" => 200,
+            "message" => "User profile updated successfully",
+        ]);
+    } else {
+        return response()->json([
+            "status" => false,
+            "code" => 404,
+            "message" => "User not found",
+        ], 404);
+    }
+}
+    
+    //delete account
+    public function delete(){
+            $user = auth()->user();
+                if ($user) {
+            $user->delete();
+
+            return response()->json([
+                "status" => true,
+                "code" => 200,
+                "message" => "User deleted successfully",
+            ]);
+        } else {
+            return response()->json([
+                "status" => false,
+                "code" => 404,
+                "message" => "User not found",
+            ], 404);
+        }
     }
 }
