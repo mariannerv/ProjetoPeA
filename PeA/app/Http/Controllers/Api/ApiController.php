@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\Auth;
 
 class ApiController extends Controller
 {
@@ -60,12 +60,15 @@ public function login(Request $request)
 
     if (!empty($user)) {
         if (Hash::check($request->password, $user->password)) {
-            $token = $user->createToken("userToken")->plainTextToken;
+            $token = $user->createToken('token-name', ['*'], now()->addHours(24))->plainTextToken;
+            $expirationTime = now()->addHours(24)->format('Y-m-d H:i:s');
 
             return response()->json([
                 "status" => true,
+                "code" => 200,
                 "message" => "Login successful!",
-                "token" => $token, 
+                "token" => $token,
+                "expiration_time" => $expirationTime,
             ]);
         }
     }
@@ -81,12 +84,22 @@ public function login(Request $request)
     // Profile API (GET)
 
     public function profile(){
+        $data = auth()->user(); 
 
+        return response()->json([
+            "status" => true,
+            "message" => "Profile data",
+            "user" => $data,
+        ]);
     }
 
     // Logout API (GET)
 
     public function logout(){
-
+        auth()->user()->tokens()->delete();
+        return response()->json([
+            "status" => true,
+            "message" => "User logged out",
+        ]);
     }
 }
