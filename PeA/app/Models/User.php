@@ -31,6 +31,7 @@ class User extends Model
         'contactNumber',
         'email',
         'password',
+        'account_status'
     ];
 
     /**

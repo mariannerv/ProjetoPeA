@@ -23,7 +23,7 @@ use App\Http\Controllers\Api\ApiController;
 // });
 
 
-//APIs
+//APIs User
 
 Route::post("register", [ApiController::class, "register"]);
 Route::post("login", [ApiController::class, "login"]);
@@ -36,7 +36,8 @@ Route::group([
     Route::get("logout", [ApiController::class, "logout"]);
 });
 
-
+Route::post('deactivate', [ApiController::class, "deactivate"]);
+Route::post('activate', [ApiController::class, "activate"]);
 
 
 

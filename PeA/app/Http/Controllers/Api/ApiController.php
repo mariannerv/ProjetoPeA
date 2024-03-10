@@ -59,26 +59,95 @@ public function login(Request $request)
     $user = User::where("email", $request->email)->first();
 
     if (!empty($user)) {
-        if (Hash::check($request->password, $user->password)) {
-            $token = $user->createToken('token-name', ['*'], now()->addHours(24))->plainTextToken;
-            $expirationTime = now()->addHours(24)->format('Y-m-d H:i:s');
+        if ($user->account_status == 'active') { // ver se a conta está ativa
+            if (Hash::check($request->password, $user->password)) {
+                $token = $user->createToken('token-name', ['*'], now()->addHours(24))->plainTextToken;
+                $expirationTime = now()->addHours(24)->format('Y-m-d H:i:s');
+
+                return response()->json([
+                    "status" => true,
+                    "code" => 200,
+                    "message" => "Login successful!",
+                    "token" => $token,
+                    "expiration_time" => $expirationTime,
+                ]);
+            } else {
+                return response()->json([
+                    "status" => false,
+                    "code" => 401,
+                    "message" => "Invalid credentials",
+                ], 401);
+            }
+        } else {
+            return response()->json([
+                "status" => false,
+                "code" => 403,
+                "message" => "Account is not active",
+            ], 403);
+        }
+    } else {
+        return response()->json([
+            "status" => false,
+            "code" => 404,
+            "message" => "User not found",
+        ], 404);
+    }
+}
+    //Deactivate account 
+    public function deactivate(Request $request)
+    {
+        $request->validate([
+            "email" => "required|email",
+        ]);
+
+        $user = User::where("email", $request->email)->first();
+
+        if ($user) {
+            $user->account_status = 'deactivated';
+            $user->save();
 
             return response()->json([
                 "status" => true,
                 "code" => 200,
-                "message" => "Login successful!",
-                "token" => $token,
-                "expiration_time" => $expirationTime,
+                "message" => "User deactivated successfully",
             ]);
+        } else {
+            return response()->json([
+                "status" => false,
+                "code" => 404,
+                "message" => "User not found",
+            ], 404);
         }
     }
 
-    return response()->json([
-        "status" => false,
-        "message" => "Invalid login details",
-        "code" => 404,
-    ]);
-}
+        //Deactivate account 
+    public function activate(Request $request)
+    {
+        $request->validate([
+            "email" => "required|email",
+        ]);
+
+        $user = User::where("email", $request->email)->first();
+
+        if ($user) {
+            $user->account_status = 'active';
+            $user->save();
+
+            return response()->json([
+                "status" => true,
+                "code" => 200,
+                "message" => "User reactivated successfully",
+            ]);
+        } else {
+            return response()->json([
+                "status" => false,
+                "code" => 404,
+                "message" => "User not found",
+            ], 404);
+        }
+    }
+
+
 
 
     // Profile API (GET)
