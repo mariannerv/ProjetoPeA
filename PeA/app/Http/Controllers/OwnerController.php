@@ -28,8 +28,9 @@ class OwnerController extends Controller
             'civilId' => 'required|string',
             'taxId' => 'required|string',
             'contactNumber' => 'required|string',
-            'email' => 'required|string|email',
-        ]);
+            'email' => 'required|email|unique:users',
+            'password' => 'required|confirmed',
+        ]); 
 
         // Create a new Owner instance with the validated data
         $owner = new Owner();
@@ -41,7 +42,7 @@ class OwnerController extends Controller
         $owner->taxId = $validatedData['taxId'];
         $owner->contactNumber = $validatedData['contactNumber'];
         $owner->email = $validatedData['email'];
-
+        $owner->password = bcrypt($validatedData['password']);
         // Save the new owner to the database
         $owner->save();
 

@@ -4,6 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OwnerController;
 use App\Models\Owner;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Api\ApiController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -15,9 +18,26 @@ use App\Models\Owner;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+
+//APIs
+
+Route::post("register", [ApiController::class, "register"]);
+Route::post("login", [ApiController::class, "login"]);
+
+
+Route::group([
+    "middleware" => ["auth:sanctum"]
+], function(){
+    Route::get("profile", [ApiController::class, "profile"]);
+    Route::get("logout", [ApiController::class, "logout"]);
 });
+
+
+
 
 
 //Para testar se a conexão ao mongo está a funcionar
@@ -39,7 +59,11 @@ Route::get('/test_mongodb/', function (Illuminate\Http\Request $request) {
     return ['uri' => $uri, 'dbName' => $dbName];
 });
 
+
 //OWNER
 Route::post('/Owner', [OwnerController::class, 'store']);
 
 Route::get('/Owner/{civilId}', [OwnerController::class, 'getUserByCivilId']);
+
+//Route::post('login', [AuthController::class, 'login']);
+

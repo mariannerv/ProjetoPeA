@@ -7,28 +7,67 @@ namespace Composer\Autoload;
 class ComposerStaticInit08d0d5741e49747fab6b5bd01e79aabf
 {
     public static $files = array (
-        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '72579e7bd17821bb1321b87411366eae' => __DIR__ . '/..' . '/illuminate/support/helpers.php',
+        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
+        '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
+        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
+        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
+        'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
+        '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
+        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
+        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
+        'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
+        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '3a37ebac017bc098e9a86b35401e7a68' => __DIR__ . '/..' . '/mongodb/mongodb/src/functions.php',
+        'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
     );
 
     public static $prefixLengthsPsr4 = array (
+        'p' => 
+        array (
+            'phpseclib\\' => 10,
+        ),
+        'Z' => 
+        array (
+            'Zend\\Diactoros\\' => 15,
+        ),
         'S' => 
         array (
             'Symfony\\Polyfill\\Php80\\' => 23,
+            'Symfony\\Polyfill\\Php72\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
-            'Symfony\\Contracts\\Translation\\' => 30,
+            'Symfony\\Polyfill\\Intl\\Normalizer\\' => 33,
+            'Symfony\\Polyfill\\Intl\\Idn\\' => 26,
+            'Symfony\\Polyfill\\Ctype\\' => 23,
+            'Symfony\\Contracts\\EventDispatcher\\' => 34,
             'Symfony\\Component\\Translation\\' => 30,
+            'Symfony\\Component\\Process\\' => 26,
+            'Symfony\\Component\\HttpKernel\\' => 29,
+            'Symfony\\Component\\HttpFoundation\\' => 33,
+            'Symfony\\Component\\Finder\\' => 25,
+            'Symfony\\Component\\EventDispatcher\\' => 34,
+            'Symfony\\Component\\Debug\\' => 24,
+            'Symfony\\Component\\Console\\' => 26,
+            'Symfony\\Bridge\\PsrHttpMessage\\' => 30,
         ),
         'P' => 
         array (
             'Psr\\SimpleCache\\' => 16,
+            'Psr\\Log\\' => 8,
+            'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
         ),
         'M' => 
         array (
             'MongoDB\\' => 8,
+        ),
+        'L' => 
+        array (
+            'League\\OAuth2\\Server\\' => 21,
+            'League\\Event\\' => 13,
+            'Lcobucci\\JWT\\' => 13,
+            'Laravel\\Passport\\' => 17,
         ),
         'J' => 
         array (
@@ -37,38 +76,120 @@ class ComposerStaticInit08d0d5741e49747fab6b5bd01e79aabf
         'I' => 
         array (
             'Illuminate\\Support\\' => 19,
+            'Illuminate\\Session\\' => 19,
+            'Illuminate\\Queue\\' => 17,
+            'Illuminate\\Http\\' => 16,
+            'Illuminate\\Filesystem\\' => 22,
             'Illuminate\\Events\\' => 18,
+            'Illuminate\\Encryption\\' => 22,
             'Illuminate\\Database\\' => 20,
             'Illuminate\\Contracts\\' => 21,
             'Illuminate\\Container\\' => 21,
+            'Illuminate\\Console\\' => 19,
+            'Illuminate\\Auth\\' => 16,
+        ),
+        'G' => 
+        array (
+            'GuzzleHttp\\Psr7\\' => 16,
+            'GuzzleHttp\\Promise\\' => 19,
+            'GuzzleHttp\\' => 11,
+        ),
+        'F' => 
+        array (
+            'Firebase\\JWT\\' => 13,
         ),
         'D' => 
         array (
             'Doctrine\\Inflector\\' => 19,
             'Doctrine\\Common\\Inflector\\' => 26,
+            'Defuse\\Crypto\\' => 14,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
+        'phpseclib\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib',
+        ),
+        'Zend\\Diactoros\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-diactoros/src',
+        ),
         'Symfony\\Polyfill\\Php80\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
+        ),
+        'Symfony\\Polyfill\\Php72\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-php72',
         ),
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Symfony\\Contracts\\Translation\\' => 
+        'Symfony\\Polyfill\\Intl\\Normalizer\\' => 
         array (
-            0 => __DIR__ . '/..' . '/symfony/translation-contracts',
+            0 => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer',
+        ),
+        'Symfony\\Polyfill\\Intl\\Idn\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-intl-idn',
+        ),
+        'Symfony\\Polyfill\\Ctype\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
+        ),
+        'Symfony\\Contracts\\EventDispatcher\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/event-dispatcher-contracts',
         ),
         'Symfony\\Component\\Translation\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/translation',
         ),
+        'Symfony\\Component\\Process\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/process',
+        ),
+        'Symfony\\Component\\HttpKernel\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/http-kernel',
+        ),
+        'Symfony\\Component\\HttpFoundation\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/http-foundation',
+        ),
+        'Symfony\\Component\\Finder\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/finder',
+        ),
+        'Symfony\\Component\\EventDispatcher\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/event-dispatcher',
+        ),
+        'Symfony\\Component\\Debug\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/debug',
+        ),
+        'Symfony\\Component\\Console\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/console',
+        ),
+        'Symfony\\Bridge\\PsrHttpMessage\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/psr-http-message-bridge',
+        ),
         'Psr\\SimpleCache\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/simple-cache/src',
+        ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+        ),
+        'Psr\\Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Container\\' => 
         array (
@@ -78,6 +199,22 @@ class ComposerStaticInit08d0d5741e49747fab6b5bd01e79aabf
         array (
             0 => __DIR__ . '/..' . '/mongodb/mongodb/src',
         ),
+        'League\\OAuth2\\Server\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/league/oauth2-server/src',
+        ),
+        'League\\Event\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/league/event/src',
+        ),
+        'Lcobucci\\JWT\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/lcobucci/jwt/src',
+        ),
+        'Laravel\\Passport\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/laravel/passport/src',
+        ),
         'Jean85\\' => 
         array (
             0 => __DIR__ . '/..' . '/jean85/pretty-package-versions/src',
@@ -86,9 +223,29 @@ class ComposerStaticInit08d0d5741e49747fab6b5bd01e79aabf
         array (
             0 => __DIR__ . '/..' . '/illuminate/support',
         ),
+        'Illuminate\\Session\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/illuminate/session',
+        ),
+        'Illuminate\\Queue\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/illuminate/queue',
+        ),
+        'Illuminate\\Http\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/illuminate/http',
+        ),
+        'Illuminate\\Filesystem\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/illuminate/filesystem',
+        ),
         'Illuminate\\Events\\' => 
         array (
             0 => __DIR__ . '/..' . '/illuminate/events',
+        ),
+        'Illuminate\\Encryption\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/illuminate/encryption',
         ),
         'Illuminate\\Database\\' => 
         array (
@@ -102,6 +259,30 @@ class ComposerStaticInit08d0d5741e49747fab6b5bd01e79aabf
         array (
             0 => __DIR__ . '/..' . '/illuminate/container',
         ),
+        'Illuminate\\Console\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/illuminate/console',
+        ),
+        'Illuminate\\Auth\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/illuminate/auth',
+        ),
+        'GuzzleHttp\\Psr7\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
+        ),
+        'GuzzleHttp\\Promise\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
+        ),
+        'GuzzleHttp\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+        ),
+        'Firebase\\JWT\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
+        ),
         'Doctrine\\Inflector\\' => 
         array (
             0 => __DIR__ . '/..' . '/doctrine/inflector/lib/Doctrine/Inflector',
@@ -109,6 +290,10 @@ class ComposerStaticInit08d0d5741e49747fab6b5bd01e79aabf
         'Doctrine\\Common\\Inflector\\' => 
         array (
             0 => __DIR__ . '/..' . '/doctrine/inflector/lib/Doctrine/Common/Inflector',
+        ),
+        'Defuse\\Crypto\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/defuse/php-encryption/src',
         ),
     );
 
@@ -136,6 +321,7 @@ class ComposerStaticInit08d0d5741e49747fab6b5bd01e79aabf
     public static $classMap = array (
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
         'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
         'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
         'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
