@@ -10,21 +10,19 @@ use Illuminate\Support\Facades\Auth;
 
 class ApiController extends Controller
 {
-    //Register API (POST, formdata)
-    public function register(Request $request){
+public function register(Request $request){
 
+    try {
         $request->validate([
             'name' => 'required|string',
             'gender' => 'required|string',
             'birthdate' => 'required|date',
             'address' => 'required|string',
             'civilId' => 'required|string',
-            'taxId' => 'required|string',
+            'taxId' => 'required|string|unique:users',
             'contactNumber' => 'required|string',
             'email' => 'required|email|unique:users',
             'password' => 'required|confirmed',
-            
-            
         ]);
 
         User::create([
@@ -45,8 +43,27 @@ class ApiController extends Controller
             "message" => "User registered successfully",
             "code" => "200",
         ]);
+    } catch (ValidationException $e) {
+        // Caso o número de contribuinte já esteja a ser usado
+        if ($e->errors()['taxId'] && $e->errors()['taxId'][0] === 'Número de contribuinte já associado a outra conta.') {
+            return response()->json([
+                "status" => false,
+                "message" => "Número de contribuinte já associado a outra conta.",
+                "code" => "400",
+            ], 400);
+        }
+        // Caso o email já esteja a ser usado
+        if ($e->errors()['email'] && $e->errors()['email'][0] === 'Email já associado a outra conta.') {
+            return response()->json([
+                "status" => false,
+                "message" => "Email já associado a outra conta.",
+                "code" => "400",
+            ], 400);
+        }
+       
+        throw $e;
     }
-
+}
 
     //Login API (POST, formdata)
 
@@ -62,7 +79,7 @@ public function login(Request $request)
     if (!empty($user)) {
         if ($user->account_status == 'active') { // ver se a conta está ativa
             if (Hash::check($request->password, $user->password)) {
-                $token = $user->createToken('user_token', ['*'], now()->addHours(24))->plainTextToken;
+                $token = $user->createToken('login_token', ['*'], now()->addHours(24))->plainTextToken;
                 $expirationTime = now()->addHours(24)->format('Y-m-d H:i:s');
 
                 return response()->json([
@@ -76,21 +93,21 @@ public function login(Request $request)
                 return response()->json([
                     "status" => false,
                     "code" => 401,
-                    "message" => "Invalid credentials",
+                    "message" => "Credenciais inválidas",
                 ], 401);
             }
         } else {
             return response()->json([
                 "status" => false,
                 "code" => 403,
-                "message" => "Account is not active",
+                "message" => "Esta conta está desativada.",
             ], 403);
         }
     } else {
         return response()->json([
             "status" => false,
             "code" => 404,
-            "message" => "User not found",
+            "message" => "Utilizador não encontrado",
         ], 404);
     }
 }
@@ -195,13 +212,13 @@ public function login(Request $request)
         return response()->json([
             "status" => true,
             "code" => 200,
-            "message" => "User profile updated successfully",
+            "message" => "Perfil atualizado com sucesso.",
         ]);
     } else {
         return response()->json([
             "status" => false,
             "code" => 404,
-            "message" => "User not found",
+            "message" => "Utilizador não encontrado.",
         ], 404);
     }
 }
@@ -215,13 +232,13 @@ public function login(Request $request)
             return response()->json([
                 "status" => true,
                 "code" => 200,
-                "message" => "User deleted successfully",
+                "message" => "Utilizador apagado com sucesso.",
             ]);
         } else {
             return response()->json([
                 "status" => false,
                 "code" => 404,
-                "message" => "User not found",
+                "message" => "Utilizador não encontrado.",
             ], 404);
         }
     }
