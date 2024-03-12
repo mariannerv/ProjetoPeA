@@ -62,7 +62,7 @@ public function login(Request $request)
     if (!empty($user)) {
         if ($user->account_status == 'active') { // ver se a conta está ativa
             if (Hash::check($request->password, $user->password)) {
-                $token = $user->createToken('token-name', ['*'], now()->addHours(24))->plainTextToken;
+                $token = $user->createToken('user_token', ['*'], now()->addHours(24))->plainTextToken;
                 $expirationTime = now()->addHours(24)->format('Y-m-d H:i:s');
 
                 return response()->json([
