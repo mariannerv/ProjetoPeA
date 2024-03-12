@@ -22,7 +22,7 @@ public function register(Request $request){
             'taxId' => 'required|string|unique:users',
             'contactNumber' => 'required|string',
             'email' => 'required|email|unique:users',
-            'password' => 'required|confirmed',
+            'password' => 'required|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/|confirmed',
         ]);
 
         User::create([
@@ -44,7 +44,6 @@ public function register(Request $request){
             "code" => "200",
         ]);
     } catch (ValidationException $e) {
-        // Caso o número de contribuinte já esteja a ser usado
         if ($e->errors()['taxId'] && $e->errors()['taxId'][0] === 'Número de contribuinte já associado a outra conta.') {
             return response()->json([
                 "status" => false,
@@ -52,7 +51,6 @@ public function register(Request $request){
                 "code" => "400",
             ], 400);
         }
-        // Caso o email já esteja a ser usado
         if ($e->errors()['email'] && $e->errors()['email'][0] === 'Email já associado a outra conta.') {
             return response()->json([
                 "status" => false,
@@ -60,7 +58,15 @@ public function register(Request $request){
                 "code" => "400",
             ], 400);
         }
-       
+        // If the validation error is related to the password, return an appropriate response
+        if ($e->errors()['password']) {
+            return response()->json([
+                "status" => false,
+                "message" => "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.",
+                "code" => "400",
+            ], 400);
+        }
+        
         throw $e;
     }
 }
