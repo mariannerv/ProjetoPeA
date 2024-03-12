@@ -4,12 +4,11 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use MongoDB\Laravel\Eloquent\Model;
 
-class User extends Model
+class PoliceStation extends Model
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -20,21 +19,16 @@ class User extends Model
      */
 
     protected $connection = 'mongodb';
-    protected $collection = 'users';
+    protected $collection = 'police_station';
     protected $fillable = [
-        'name',
-        'gender',
-        'birthdate',
-        'address',
+        'morada',
         'codigo_postal',
         'localidade',
-        'civilId',
-        'taxId',
-        'contactNumber',
+        'unidade',
+        'sigla',
+        'telefone',
+        'fax',
         'email',
-        'password',
-        'account_status',
-        'token',
     ];
 
     /**
@@ -44,7 +38,6 @@ class User extends Model
      */
     protected $hidden = [
         'password',
-        'token',
     ];
 
     /**
@@ -53,7 +46,7 @@ class User extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        
         'password' => 'hashed',
     ];
 }

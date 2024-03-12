@@ -11,21 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('police_station', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('gender');
-            $table->string('address');
+            $table->string('morada');
             $table->string('codigo_postal');
             $table->string('localidade');
-            $table->string('civilId');
-            $table->string('taxId');
-            $table->string('contactNumber');
+            $table->string('unidade');
+            $table->string('telefone');
+            $table->string('fax');
             $table->string('email');
-            $table->string('password');
-            $table->string('account_status');
-            $table->string('token');
             $table->timestamps();
+
         });
     }
 
@@ -34,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-  
+       
     }
 };

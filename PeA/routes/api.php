@@ -6,6 +6,7 @@ use App\Http\Controllers\OwnerController;
 use App\Models\Owner;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\Api\PoliceStationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +44,18 @@ Route::post('activate', [ApiController::class, "activate"]);
 
 
 
+//APIs PoliceStation
+Route::post("registerPost", [PoliceStationController::class, "registerPost"]);
+
+Route::put('updatePost', [PoliceStationController::class, 'updatePost']);
+
+Route::delete('deletePost', [PoliceStationController::class, "deletePost"]);
+
+
+
+
+
+
 //Para testar se a conexão ao mongo está a funcionar
 
 Route::get('/test_mongodb/', function (Illuminate\Http\Request $request) {
@@ -61,6 +74,25 @@ Route::get('/test_mongodb/', function (Illuminate\Http\Request $request) {
     }
     return ['uri' => $uri, 'dbName' => $dbName];
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //OWNER

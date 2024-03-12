@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Str;
+use App\Models\PoliceStation;
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -18,17 +19,14 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
-        $data['name'] = 'nevergonnagiveyouup';
-        $data['gender'] = 'male';
-        $data['birthdate'] = '1999-10-21';
-        $data['addressId'] = 'never gonna let u down';
-        $data['civilId'] = '54321';
-        $data['taxId'] = '211296431';
-        $data['contactNumber'] = '938053888';
-        $data['email'] = 'nvrturnaround@gmail.com';
-        $data['remember_token'] = Str::random(50);
-        $data['password'] = bcrypt(123456);
+        $data['morada'] = 'Largo da Penha de França, nº 1';
+        $data['codigo_postal'] = '1199-010';
+        $data['localidade'] = 'Lisboa';
+        $data['unidade'] = '938053888';
+        $data['telefone'] = '218111000';
+        $data['fax'] = '219020019';
+        $data['email'] = 'contacto@psp.pt';
         
-        \App\Models\Owner::create($data);
+        \App\Models\PoliceStation::create($data);
     }
 }
