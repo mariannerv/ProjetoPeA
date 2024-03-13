@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\Events\Registered;
 
 class ApiController extends Controller
 {
@@ -27,7 +28,7 @@ public function register(Request $request){
             'password' => 'required|min:8|confirmed',
         ]);
 
-        User::create([
+        $user = User::create([
             "name" => $request->name,
             "gender" => $request->gender,
             "birthdate" => $request->birthdate,
@@ -40,12 +41,14 @@ public function register(Request $request){
             "email" => $request->email,
             "password" => Hash::make($request->password),
             "account_status" => 'active',
-            "token" => ''
+            "token" => '',
+            "email_verified_at" => '',
         ]);
+        event(new Registered($user));
 
         return response()->json([
             "status" => true,
-            "message" => "User registered successfully",
+            "message" => "Utilizador registado com sucesso",
             "code" => "200",
         ]);
     } catch (ValidationException $e) {
@@ -63,7 +66,7 @@ public function register(Request $request){
                 "code" => "400",
             ], 400);
         }
-        // If the validation error is related to the password, return an appropriate response
+   
         if ($e->errors()['password']) {
             return response()->json([
                 "status" => false,
@@ -90,7 +93,7 @@ public function login(Request $request)
     if (!empty($user)) {
         if ($user->account_status == 'active') {
             if (Hash::check($request->password, $user->password)) {
-                // Create a new token
+                
                 $token = $user->createToken('login_token')->plainTextToken;
 
                 // Extrair o token que é preciso para o Bearer Authentication
@@ -149,13 +152,13 @@ public function login(Request $request)
             return response()->json([
                 "status" => true,
                 "code" => 200,
-                "message" => "User deactivated successfully",
+                "message" => "Conta desativada com sucesso",
             ]);
         } else {
             return response()->json([
                 "status" => false,
                 "code" => 404,
-                "message" => "User not found",
+                "message" => "Conta inválida.",
             ], 404);
         }
     }
@@ -177,13 +180,13 @@ public function login(Request $request)
             return response()->json([
                 "status" => true,
                 "code" => 200,
-                "message" => "User reactivated successfully",
+                "message" => "Conta reativada com sucesso.",
             ]);
         } else {
             return response()->json([
                 "status" => false,
                 "code" => 404,
-                "message" => "User not found",
+                "message" => "Conta inválida.",
             ], 404);
         }
     }

@@ -41,7 +41,7 @@ class PoliceStationController extends Controller
         "code" => "200",
     ]);
 } catch (ValidationException $e) {
-    if ($e->errors()['unidade'] && $e->errors()['unidade'][0] === 'The unidade has already been taken.') {
+    if ($e->errors()['unidade'] && $e->errors()['unidade'][0] === 'Unidade já registada.') {
         return response()->json([
             "status" => false,
             "message" => "Posto já está registado.",
