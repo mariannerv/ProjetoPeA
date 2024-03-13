@@ -133,8 +133,8 @@ public function viewFoundObject(Request $request){
 
 public function deleteFoundObject(Request $request){
         try {
-        $objectId = $request->objectId;
-        $object = foundObject::where('objectId', $objectId)->first();
+            $objectId = $request->objectId;
+            $object = foundObject::where('objectId', $objectId)->first();
 
         if ($object) {
             $object->delete();

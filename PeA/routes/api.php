@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\PoliceStationController;
 use App\Http\Controllers\Api\PoliceController;
+use App\Http\Controllers\Api\AuctionController;
 use App\Http\Controllers\Api\foundObjectController;
 use App\Http\Controllers\Api\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -83,6 +84,13 @@ Route::delete('deletePost', [PoliceStationController::class, "deletePost"]);
 Route::get('viewPost', [PoliceStationController::class, "viewPost"]);
 
 
+
+//API do Auction
+
+Route::post("createAuction", [AuctionController::class, "createAuction"]);
+Route::get("viewAuction", [AuctionController::class, "viewAuction"]);
+Route::put("editAuction", [AuctionController::class, "editAuction"]);
+Route::delete("deleteAuction", [AuctionController::class, "deleteAuction"]);
 
 
 
