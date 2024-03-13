@@ -12,4 +12,18 @@ use MongoDB\Laravel\Eloquent\Model;
 class Police extends Model
 {
     use HasApiTokens, HasFactory, Notifiable;
+
+    protected $connection = 'mongodb';
+    protected $collection = 'police_user';
+
+        protected $fillable = [
+        'name',
+        'internalId',
+        'policeStationId',
+        'password',
+        'account_status',
+        'token',
+        'email_verified_at',
+    ];
+
 }

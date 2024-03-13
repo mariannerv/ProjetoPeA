@@ -7,6 +7,7 @@ use App\Models\Owner;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\PoliceStationController;
+use App\Http\Controllers\Api\PoliceController;
 use App\Http\Controllers\Api\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
@@ -43,6 +44,29 @@ Route::group([
 
 Route::post('deactivate', [ApiController::class, "deactivate"]);
 Route::post('activate', [ApiController::class, "activate"]);
+
+
+//APIs Policia
+
+Route::post("registerPolice", [PoliceController::class, "registerPolice"]);
+Route::post("loginPolice", [PoliceController::class, "loginPolice"]);
+
+Route::group([
+    "middleware" => ["auth:sanctum"]
+], function(){
+    Route::get("profilePolice", [PoliceController::class, "profilePolice"]);
+    Route::get("logoutPolice", [PoliceController::class, "logoutPolice"]);
+    Route::delete('deletePolice', [PoliceController::class, "deletePolice"]);
+    Route::put('updatePolice', [PoliceController::class, 'updatePolice']);
+});
+
+Route::post('deactivatePolice', [PoliceController::class, "deactivatePolice"]);
+Route::post('activatePolice', [PoliceController::class, "activatePolice"]);
+
+
+
+
+
 
 
 
