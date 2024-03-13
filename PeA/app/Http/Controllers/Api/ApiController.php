@@ -219,7 +219,7 @@ public function login(Request $request)
     public function update(Request $request)
     {
     $user = auth()->user();
-
+    
     if ($user) {
         $request->validate([
             'name' => 'string',

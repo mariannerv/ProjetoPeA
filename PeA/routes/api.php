@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\PoliceStationController;
 use App\Http\Controllers\Api\PoliceController;
+use App\Http\Controllers\Api\foundObjectController;
 use App\Http\Controllers\Api\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
@@ -65,10 +66,12 @@ Route::post('activatePolice', [PoliceController::class, "activatePolice"]);
 
 
 
+//API foundObject
 
-
-
-
+Route::post("registerFoundObject", [foundObjectController::class, "registerFoundObject"]);
+Route::get("viewFoundObject", [foundObjectController::class, "viewFoundObject"]);
+Route::put("updateFoundObject", [foundObjectController::class, "updateFoundObject"]);
+Route::delete('deleteFoundObject', [foundObjectController::class, "deleteFoundObject"]);
 
 //APIs PoliceStation
 Route::post("registerPost", [PoliceStationController::class, "registerPost"]);
@@ -77,6 +80,7 @@ Route::put('updatePost', [PoliceStationController::class, 'updatePost']);
 
 Route::delete('deletePost', [PoliceStationController::class, "deletePost"]);
 
+Route::get('viewPost', [PoliceStationController::class, "viewPost"]);
 
 
 
