@@ -23,6 +23,7 @@ class User extends Model implements MustVerifyEmail
     protected $connection = 'mongodb';
     protected $collection = 'users';
     protected $fillable = [
+        'account_id',
         'name',
         'gender',
         'birthdate',
@@ -37,6 +38,8 @@ class User extends Model implements MustVerifyEmail
         'account_status',
         'token',
         'email_verified_at',
+        'bid_history',
+        'lost_objects',
     ];
 
     /**

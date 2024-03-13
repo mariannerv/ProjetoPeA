@@ -60,6 +60,7 @@ class AuctionController extends Controller
                 'end_date' => $endAuctionTime,
                 'objectId' =>$request->objectId,
                 'status' => 'active',
+                'bids_list' => []
             ]);
 
             return response()->json([
@@ -109,30 +110,45 @@ class AuctionController extends Controller
     }
 
 
-    public function editAuction(Request $request){
-
+public function editAuction(Request $request){
+    try {
         $auction = Auction::where('auctionId', $request->auctionId)->first();
-        if ($auction) {
-            $request->validate([
-                'end_date' => 'date',
-                'object_id' => 'string',
+        
+        if (!$auction) {
+            throw ValidationException::withMessages([
+                'auctionId' => ['Leilão não encontrado.'],
+            ]);
+        }
+
+        
+        if ($auction->status !== 'active') {
+            throw ValidationException::withMessages([
+                'status' => ['Não é possível editar um leilão finalizado.'],
+            ]);
+        }
+
+        $request->validate([
+            'end_date' => 'date',
+            'object_id' => 'string',
         ]);
 
-        $object->update($request->all());
+      
+        $auction->update($request->all());
 
         return response()->json([
             "status" => true,
             "code" => 200,
             "message" => "Leilão atualizado com sucesso.",
         ]);
-    } else {
+    } catch (ValidationException $e) {
         return response()->json([
             "status" => false,
             "code" => 404,
-            "message" => "Leilão não encontrado.",
+            "message" => "Algo correu mal ao atualizar o leilão.",
+            "errors" => $e->errors(), 
         ], 404);
     }
-    }
+}
 
      public function deleteAuction(Request $request){
         try {
@@ -161,5 +177,31 @@ class AuctionController extends Controller
         ], 500);
     }
     }
+
+  public function bidHistory(Request $request)
+{
+  
+    $request->validate([
+        'auctionId' => 'required|string',
+    ]);
+
+    
+    $auction = Auction::where('auctionId', $request->auctionId)->first();
+
+    if ($auction) {
+       
+        $bids = Bid::where('auctionId', $auction->auctionId)->get();
+
+        return response()->json([
+            "status" => true,
+            "bids" => $bids,
+        ]);
+    } else {
+        return response()->json([
+            "status" => false,
+            "message" => "Leilão não encontrado.",
+        ], 404);
+    }
+}
  }
 

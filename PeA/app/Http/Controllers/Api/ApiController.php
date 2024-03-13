@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Str;
 
 class ApiController extends Controller
 {
@@ -28,7 +29,11 @@ public function register(Request $request){
             'password' => 'required|min:8|confirmed',
         ]);
 
+
+        $uuid = (string) Str::uuid();
+
         $user = User::create([
+            "account_id" => $uuid,
             "name" => $request->name,
             "gender" => $request->gender,
             "birthdate" => $request->birthdate,
@@ -43,6 +48,8 @@ public function register(Request $request){
             "account_status" => 'active',
             "token" => '',
             "email_verified_at" => '',
+            "bid_history" => [],
+            "lost_objects" => [],
         ]);
      
 

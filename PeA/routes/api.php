@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\PoliceStationController;
 use App\Http\Controllers\Api\PoliceController;
 use App\Http\Controllers\Api\AuctionController;
+use App\Http\Controllers\Api\BidController;
 use App\Http\Controllers\Api\foundObjectController;
 use App\Http\Controllers\Api\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -91,6 +92,13 @@ Route::post("createAuction", [AuctionController::class, "createAuction"]);
 Route::get("viewAuction", [AuctionController::class, "viewAuction"]);
 Route::put("editAuction", [AuctionController::class, "editAuction"]);
 Route::delete("deleteAuction", [AuctionController::class, "deleteAuction"]);
+
+
+//API das Bids
+
+Route::post("placeBid", [BidController::class, "placeBid"]);
+
+
 
 
 
