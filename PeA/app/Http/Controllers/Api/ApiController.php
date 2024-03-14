@@ -143,8 +143,6 @@ public function login(Request $request)
     }
 }
 
-
-
     //Deactivate account 
     public function deactivate(Request $request)
     {

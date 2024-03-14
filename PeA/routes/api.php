@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\PoliceController;
 use App\Http\Controllers\Api\AuctionController;
 use App\Http\Controllers\Api\BidController;
 use App\Http\Controllers\Api\foundObjectController;
+use App\Http\Controllers\Api\LostObjectController;
 use App\Http\Controllers\Api\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
@@ -99,8 +100,12 @@ Route::delete("deleteAuction", [AuctionController::class, "deleteAuction"]);
 Route::post("placeBid", [BidController::class, "placeBid"]);
 
 
+//Api dos LostObjects
 
-
+Route::post("registerLostObject", [LostObjectController::class, "registerLostObject"]);
+Route::put("updateLostObject", [LostObjectController::class, "updateLostObject"]);
+Route::delete("deleteLostObject", [LostObjectController::class, "deleteLostObject"]);
+Route::post("crossCheck", [LostObjectController::class, "crossCheck"]);
 
 //Para testar se a conexão ao mongo está a funcionar
 

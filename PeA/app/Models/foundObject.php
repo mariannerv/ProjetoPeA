@@ -14,10 +14,13 @@ class foundObject extends Model
     protected $connection = 'mongodb';
     protected $collection = 'foundObject';
 
-        protected $fillable = [
+    protected $fillable = [
         'objectId',
         'possible_owner',
         'category',
+        'brand',
+        'color',
+        'size',
         'description',
         'location',
         'location_coords',
@@ -28,7 +31,7 @@ class foundObject extends Model
     ];
 
     protected $casts = [
-        'objectId' => 'string', // Cast the objectId field to a string
+        'objectId' => 'string', 
     ];
 
 }

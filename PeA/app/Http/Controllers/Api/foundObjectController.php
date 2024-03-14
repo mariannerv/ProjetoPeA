@@ -22,6 +22,9 @@ public function registerFoundObject(Request $request)
     try {
         $request->validate([
             'category' => 'required|string',
+            'brand' => 'nullable|string',
+            'color' => 'nullable|string',
+            'size' => 'nullable|string',
             'description' => 'required|string',
             'location' => 'required|string',
             'location_coords' => [
@@ -38,7 +41,10 @@ public function registerFoundObject(Request $request)
 
         foundObject::create([
             "objectId" => $uuid,
-            "possible_owner" => '',
+            "possible_owner" => [],
+            "brand" => $request->brand,
+            "color" => $request->color,
+            "size" => $request->size,
             "category" => $request->category,
             "description" => $request->description,
             "location" => $request->location,
@@ -100,11 +106,14 @@ public function viewFoundObject(Request $request){
     
     if ($object) {
         $request->validate([
-                'possible_owner' => [
+            'possible_owner' => [
                 'string',
                 Rule::exists(User::class, 'email'), //Para ter a certeza que o possible_owner existe na bd
             ],
             'category' => 'string',
+            'brand' => 'string',
+            'color' => 'string',
+            'size' => 'string',
             'description' => 'string',
             'location' => 'string',
             'location_coords' => [
