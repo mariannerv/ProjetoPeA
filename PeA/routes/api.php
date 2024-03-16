@@ -93,7 +93,7 @@ Route::post("createAuction", [AuctionController::class, "createAuction"]);
 Route::get("viewAuction", [AuctionController::class, "viewAuction"]);
 Route::put("editAuction", [AuctionController::class, "editAuction"]);
 Route::delete("deleteAuction", [AuctionController::class, "deleteAuction"]);
-
+Route::get("viewAllAuctions", [AuctionController::class, "viewAllAuctions"]);
 
 //API das Bids
 
