@@ -81,9 +81,13 @@ public function placeBid(Request $request)
         }
 
     if ($bid) {
+        $now = Carbon::now();
+        
+        $bidDate = new UTCDateTime(now()->timestamp * 1000);;
         $auction->highestBid = $request->amount;
         $auction->highestBidderId = $request->bidderId;
         $auction->push('bids_list', $bid->bidId);
+        $auction->recentBidDate = $bidDate;
         $auction->save();
     }
 
