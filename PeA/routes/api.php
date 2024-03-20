@@ -7,6 +7,13 @@ use App\Models\Owner;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\PoliceStationController;
+use App\Http\Controllers\Api\PoliceController;
+use App\Http\Controllers\Api\AuctionController;
+use App\Http\Controllers\Api\BidController;
+use App\Http\Controllers\Api\foundObjectController;
+use App\Http\Controllers\Api\LostObjectController;
+use App\Http\Controllers\Api\VerificationController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +50,31 @@ Route::post('deactivate', [ApiController::class, "deactivate"]);
 Route::post('activate', [ApiController::class, "activate"]);
 
 
+//APIs Policia
+
+Route::post("registerPolice", [PoliceController::class, "registerPolice"]);
+Route::post("loginPolice", [PoliceController::class, "loginPolice"]);
+
+Route::group([
+    "middleware" => ["auth:sanctum"]
+], function(){
+    Route::get("profilePolice", [PoliceController::class, "profilePolice"]);
+    Route::get("logoutPolice", [PoliceController::class, "logoutPolice"]);
+    Route::delete('deletePolice', [PoliceController::class, "deletePolice"]);
+    Route::put('updatePolice', [PoliceController::class, 'updatePolice']);
+});
+
+Route::post('deactivatePolice', [PoliceController::class, "deactivatePolice"]);
+Route::post('activatePolice', [PoliceController::class, "activatePolice"]);
+
+
+
+//API foundObject
+
+Route::post("registerFoundObject", [foundObjectController::class, "registerFoundObject"]);
+Route::get("viewFoundObject", [foundObjectController::class, "viewFoundObject"]);
+Route::put("updateFoundObject", [foundObjectController::class, "updateFoundObject"]);
+Route::delete('deleteFoundObject', [foundObjectController::class, "deleteFoundObject"]);
 
 //APIs PoliceStation
 Route::post("registerPost", [PoliceStationController::class, "registerPost"]);
@@ -51,10 +83,29 @@ Route::put('updatePost', [PoliceStationController::class, 'updatePost']);
 
 Route::delete('deletePost', [PoliceStationController::class, "deletePost"]);
 
+Route::get('viewPost', [PoliceStationController::class, "viewPost"]);
 
 
 
+//API do Auction
 
+Route::post("createAuction", [AuctionController::class, "createAuction"]);
+Route::get("viewAuction", [AuctionController::class, "viewAuction"]);
+Route::put("editAuction", [AuctionController::class, "editAuction"]);
+Route::delete("deleteAuction", [AuctionController::class, "deleteAuction"]);
+
+
+//API das Bids
+
+Route::post("placeBid", [BidController::class, "placeBid"]);
+
+
+//Api dos LostObjects
+
+Route::post("registerLostObject", [LostObjectController::class, "registerLostObject"]);
+Route::put("updateLostObject", [LostObjectController::class, "updateLostObject"]);
+Route::delete("deleteLostObject", [LostObjectController::class, "deleteLostObject"]);
+Route::post("crossCheck", [LostObjectController::class, "crossCheck"]);
 
 //Para testar se a conexão ao mongo está a funcionar
 
@@ -80,8 +131,23 @@ Route::get('/test_mongodb/', function (Illuminate\Http\Request $request) {
 
 
 
+//Teste para mandar email de para confirmar o email, tem de se ver um serviço de emails tipo Mailtrip ou Mailtrap
 
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
 
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+ 
+    return redirect('/home');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+ 
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 
 

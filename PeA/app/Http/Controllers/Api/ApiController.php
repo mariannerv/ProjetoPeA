@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Str;
 
 class ApiController extends Controller
 {
@@ -27,7 +29,11 @@ public function register(Request $request){
             'password' => 'required|min:8|confirmed',
         ]);
 
-        User::create([
+
+        $uuid = (string) Str::uuid();
+
+        $user = User::create([
+            "account_id" => $uuid,
             "name" => $request->name,
             "gender" => $request->gender,
             "birthdate" => $request->birthdate,
@@ -40,12 +46,16 @@ public function register(Request $request){
             "email" => $request->email,
             "password" => Hash::make($request->password),
             "account_status" => 'active',
-            "token" => ''
+            "token" => '',
+            "email_verified_at" => '',
+            "bid_history" => [],
+            "lost_objects" => [],
         ]);
+     
 
         return response()->json([
             "status" => true,
-            "message" => "User registered successfully",
+            "message" => "Utilizador registado com sucesso",
             "code" => "200",
         ]);
     } catch (ValidationException $e) {
@@ -63,7 +73,7 @@ public function register(Request $request){
                 "code" => "400",
             ], 400);
         }
-        // If the validation error is related to the password, return an appropriate response
+   
         if ($e->errors()['password']) {
             return response()->json([
                 "status" => false,
@@ -87,25 +97,27 @@ public function login(Request $request)
 
     $user = User::where("email", $request->email)->first();
 
-    if (!empty($user)) {
+  if (!empty($user)) {
         if ($user->account_status == 'active') {
             if (Hash::check($request->password, $user->password)) {
-                // Create a new token
-                $token = $user->createToken('login_token')->plainTextToken;
+                
+                // Set the desired expiration time (24 hours in this example)
+                $expirationTime = now()->addHours(24);
 
-                // Extrair o token que é preciso para o Bearer Authentication
-                $tokenString = explode('|', $token)[1];
+                // Create the token instance
+                $token = $user->createToken(name: 'personal-token', expiresAt: now()->addMinutes(30))->plainTextToken;
 
-                // Meter na bd do user
-                $user->update(['token' => $tokenString]);
+
+                // Store the plain text token in the user's record (optional)
+                $user->update(['token' => explode('|', $token)[1]]);
 
                 $expirationTime = now()->addHours(24)->format('Y-m-d H:i:s');
-
+                
                 return response()->json([
                     "status" => true,
                     "code" => 200,
                     "message" => "Login successful!",
-                    "token" => $tokenString,
+                    "token" => $token,
                     "expiration_time" => $expirationTime,
                 ]);
             } else {
@@ -131,7 +143,6 @@ public function login(Request $request)
     }
 }
 
-
     //Deactivate account 
     public function deactivate(Request $request)
     {
@@ -149,18 +160,18 @@ public function login(Request $request)
             return response()->json([
                 "status" => true,
                 "code" => 200,
-                "message" => "User deactivated successfully",
+                "message" => "Conta desativada com sucesso",
             ]);
         } else {
             return response()->json([
                 "status" => false,
                 "code" => 404,
-                "message" => "User not found",
+                "message" => "Conta inválida.",
             ], 404);
         }
     }
 
-        //Deactivate account 
+        //activate account 
     public function activate(Request $request)
     {
         $request->validate([
@@ -177,13 +188,13 @@ public function login(Request $request)
             return response()->json([
                 "status" => true,
                 "code" => 200,
-                "message" => "User reactivated successfully",
+                "message" => "Conta reativada com sucesso.",
             ]);
         } else {
             return response()->json([
                 "status" => false,
                 "code" => 404,
-                "message" => "User not found",
+                "message" => "Conta inválida.",
             ], 404);
         }
     }
@@ -211,9 +222,9 @@ public function login(Request $request)
     }
 
     public function update(Request $request)
-{
+    {
     $user = auth()->user();
-
+    
     if ($user) {
         $request->validate([
             'name' => 'string',
@@ -243,56 +254,7 @@ public function login(Request $request)
         ], 404);
     }
 }
-public function updatePost(Request $request) {
-    try {
-        // Validate the request data
-        $request->validate([
-            'sigla' => 'required|string', 
-            'morada' => 'string', 
-            'codigo_postal' => 'string', 
-            'localidade' => 'string', // Remove 'required'
-            'unidade' => 'string|unique:police_station,unidade,', // Remove 'required'
-            'telefone' => 'string', 
-            'fax' => 'string', 
-            'email' => 'email', 
-        ]);
 
-       
-        $post = PoliceStation::where('sigla', $request->sigla)->first();
-
-        if (!$post) {
-            return response()->json([
-                "status" => false,
-                "message" => "Post not found",
-                "code" => "404",
-            ], 404);
-        }
-
-
-        $post->fill($request->only([
-            'morada',
-            'codigo_postal',
-            'localidade',
-            'unidade',
-            'telefone',
-            'fax',
-            'email',
-        ]))->save();
-
-        return response()->json([
-            "status" => true,
-            "message" => "Post updated successfully",
-            "code" => "200",
-        ]);
-    } catch (\Exception $e) {
-     
-        return response()->json([
-            "status" => false,
-            "message" => "An error occurred while updating the post",
-            "code" => "500",
-        ], 500);
-    }
-}
 
     //delete account
     public function delete(){

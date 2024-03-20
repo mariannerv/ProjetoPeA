@@ -41,7 +41,7 @@ class PoliceStationController extends Controller
         "code" => "200",
     ]);
 } catch (ValidationException $e) {
-    if ($e->errors()['unidade'] && $e->errors()['unidade'][0] === 'The unidade has already been taken.') {
+    if ($e->errors()['unidade'] && $e->errors()['unidade'][0] === 'Unidade já registada.') {
         return response()->json([
             "status" => false,
             "message" => "Posto já está registado.",
@@ -110,7 +110,38 @@ class PoliceStationController extends Controller
     }
 }
 
+public function viewPost(Request $request)
+    {
+        try {
+            $request->validate([
+                'sigla' => 'required|string',
+            ]);
 
+            
+            $post = PoliceStation::where('sigla', $request->sigla)->first();
+
+            if ($post) {
+              
+                return response()->json([
+                    "status" => true,
+                    "data" => $post,
+                    "code" => 200,
+                ]);
+            } else {
+                return response()->json([
+                    "status" => false,
+                    "message" => "Posto não encontrado",
+                    "code" => 404,
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "Ocorreu um erro ao recuperar as informações do posto",
+                "code" => 500,
+            ], 500);
+        }
+    }
 
 public function deletePost(Request $request) {
     try {
