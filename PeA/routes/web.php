@@ -19,4 +19,4 @@ Route::get('/', function () {
 
 Route::get('/users' ,[OwnerController::class ,'index'])->name('users.store');
 
-
+Route::view('formPage', 'formPage');
