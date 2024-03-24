@@ -19,4 +19,8 @@ Route::get('/', function () {
 
 Route::get('/users' ,[OwnerController::class ,'index'])->name('users.store');
 
+Route::get('/usersform',function(){
+    return view('usersform');
+});
+
 
