@@ -22,7 +22,7 @@ public function register(Request $request){
             'address' => 'required|string',
             'codigo_postal' => 'required|string',
             'localidade' => 'required|string',
-            'civilId' => 'required|string',
+            'civilId' => 'required|string|unique:users',
             'taxId' => 'required|string|unique:users',
             'contactNumber' => 'required|string',
             'email' => 'required|email|unique:users',
@@ -70,6 +70,14 @@ public function register(Request $request){
             return response()->json([
                 "status" => false,
                 "message" => "Email já associado a outra conta.",
+                "code" => "400",
+            ], 400);
+        }
+
+        if ($e->errors()['civilId'] && $e->errors()['civilId'][0] === 'Cartão de cidadão já associado a outra conta.') {
+            return response()->json([
+                "status" => false,
+                "message" => "Cartão de cidadão já associado a outra conta.",
                 "code" => "400",
             ], 400);
         }
