@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Str;
+use Illuminate\Auth\Events\Verified;
 
 class ApiController extends Controller
 {
@@ -279,59 +280,80 @@ public function login(Request $request)
             ], 404);
         }
     }
-    // Verify email method
-    public function verify(Request $request)
-    {
-        $user = User::findOrFail($request->id);
 
-        if (! hash_equals((string) $request->hash, sha1($user->getEmailForVerification()))) {
-            return response()->json(['message' => 'Email verification failed'], 403);
-        }
+// Verify email method
+public function verify(Request $request)
+{
+    $request->validate([
+        'id' => 'required|exists:users,id',
+        'hash' => 'required|string',
+    ]);
 
-        if ($user->hasVerifiedEmail()) {
-            return response()->json(['message' => 'Email already verified'], 400);
-        }
+    $user = User::findOrFail($request->id);
 
-        $user->markEmailAsVerified();
-
-        event(new Verified($user));
-
-        return response()->json(['message' => 'Email verified successfully'], 200);
+    if (!hash_equals((string)$request->hash, sha1($user->getEmailForVerification()))) {
+        return response()->json(['message' => 'Email verification failed'], 403);
     }
 
-    // Forgot password method
-    public function forgotPassword(Request $request)
-    {
-        $request->validate(['email' => 'required|email']);
-
-        $status = Password::sendResetLink($request->only('email'));
-
-        return $status === Password::RESET_LINK_SENT
-            ? response()->json(['message' => __($status)], 200)
-            : response()->json(['message' => __($status)], 400);
+    if ($user->hasVerifiedEmail()) {
+        return response()->json(['message' => 'Email already verified'], 400);
     }
+
+    $user->markEmailAsVerified();
+
+    event(new Verified($user));
+
+    return response()->json(['message' => 'Email verified successfully'], 200);
+}
+
+// Forgot password method
+public function forgotPassword(Request $request)
+{
+    $request->validate(['email' => 'required|email']);
+
+    $status = Password::sendResetLink($request->only('email'));
+
+    return $status === Password::RESET_LINK_SENT
+        ? response()->json(['message' => 'Password reset link sent'], 200)
+        : response()->json(['message' => 'Unable to send password reset link'], 400);
+}
+
 
     // Reset password method
     public function resetPassword(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'token' => 'required|string',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+{
+    $request->validate([
+        'email' => 'required|email',
+        'token' => 'required|string',
+        'password' => 'required|string|min:8|confirmed',
+    ]);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->forceFill(['password' => Hash::make($password)])->save();
+    $status = Password::reset(
+        $request->only('email', 'password', 'password_confirmation', 'token'),
+        function ($user, $password) {
+            $user->forceFill(['password' => Hash::make($password)])->save();
+            event(new PasswordReset($user));
+        }
+    );
 
-                event(new PasswordReset($user));
-            }
-        );
+    return $status == Password::PASSWORD_RESET
+        ? response()->json(['message' => __($status)], 200)
+        : response()->json(['message' => __($status)], 400);
+}
 
-        return $status == Password::PASSWORD_RESET
-            ? response()->json(['message' => __($status)], 200)
-            : response()->json(['message' => __($status)], 400);
-    }
+
+
+public function sendResetLinkEmail(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+    ]);
+
+    $status = Password::sendResetLink($request->only('email'));
+
+    return $status === Password::RESET_LINK_SENT
+        ? redirect()->back()->with('status', trans($status))
+        : back()->withErrors(['email' => trans($status)]);
+}
 }
 
