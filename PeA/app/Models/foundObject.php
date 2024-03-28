@@ -28,6 +28,7 @@ class foundObject extends Model
         'date_found',
         'date_registered',
         'deadlineForAuction',
+        'estacao_policia',
     ];
 
     protected $casts = [

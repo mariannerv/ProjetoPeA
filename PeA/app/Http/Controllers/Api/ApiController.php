@@ -29,7 +29,7 @@ public function register(Request $request){
             'password' => 'required|min:8|confirmed',
         ]);
 
-
+        
         $uuid = (string) Str::uuid();
 
         $user = User::create([
