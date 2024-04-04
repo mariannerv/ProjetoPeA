@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\foundObjectController;
 use App\Http\Controllers\Api\LostObjectController;
 use App\Http\Controllers\Api\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -109,24 +110,34 @@ Route::post("crossCheck", [LostObjectController::class, "crossCheck"]);
 
 //Para testar se a conexão ao mongo está a funcionar
 
-Route::get('/test_mongodb/', function (Illuminate\Http\Request $request) {
+// Route::get('/test_mongodb/', function (Illuminate\Http\Request $request) {
 
+//     $connection = DB::connection('mongodb');
+//     $msg = 'MongoDB is accessible!';
+//     try {
+//         $connection->command(['ping' => 1]);
+//         $dbName = $connection->getDatabaseName();
+//         $uri = config('database.connections.mongodb.dsn');
+//         $dbName = config('database.connections.mongodb.database');
+//         return [$msg, 'uri' => $uri, 'dbName' => $dbName];
+//     } catch (\Exception $e) {
+//         return $msg = 'MongoDB is not accessible. Error: ' . $e->getMessage();
+//     }
+    
+// });
+
+
+Route::get('/test_mongodb', function (Request $request) {
     $connection = DB::connection('mongodb');
     $msg = 'MongoDB is accessible!';
     try {
         $connection->command(['ping' => 1]);
         $dbName = $connection->getDatabaseName();
-        $uri = config('database.connections.mongodb.dsn');
-        $dbName = config('database.connections.mongodb.database');
-    
-        
+        return ['msg' => $msg, 'dbName' => $dbName];
     } catch (\Exception $e) {
-        $msg = 'MongoDB is not accessible. Error: ' . $e->getMessage();
+        return [$msg = 'MongoDB is not accessible. Error: ' . $e->getMessage()];
     }
-    return ['uri' => $uri, 'dbName' => $dbName];
 });
-
-
 
 
 
