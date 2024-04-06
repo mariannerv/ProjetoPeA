@@ -318,6 +318,46 @@ public function lostObjects(Request $request){
         ], 500);
     }
 }
+
+public function myBids(Request $request){
+    try {
+        $request->validate([
+            'email' => 'required|string',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                "status" => false,
+                "message" => "Utilizador não encontrado.",
+                "code" => 404,
+            ], 404);
+        }
+
+        // Get the array of lost object IDs for the user
+        $bidIds = $user->bid_history;
+
+        // Retrieve the lost objects from the database
+        $bids = Bid::whereIn('bidId', $bidIds)->get();
+
+        $response = [
+            "status" => true,
+            "message" => "Licitações retornadas.",
+            "lost_objects" => $bids,
+        ];
+
+        return response()->json($response, 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            "status" => false,
+            "message" => "Ocorreu um erro ao tentar recuperar a lista de licitações.",
+            "code" => 500,
+        ], 500);
+    }
+}
+
 }
 
 

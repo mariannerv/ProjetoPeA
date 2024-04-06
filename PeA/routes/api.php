@@ -47,6 +47,7 @@ Route::group([
 });
 
 Route::get("lostObjects", [ApiController::class, "lostObjects"]);
+Route::get("myBids", [ApiController::class, "myBids"]);
 Route::post('deactivate', [ApiController::class, "deactivate"]);
 Route::post('activate', [ApiController::class, "activate"]);
 
