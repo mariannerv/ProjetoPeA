@@ -82,91 +82,33 @@
                       <div class="card-body">
                       <form class="row g-3 needs-validation" novalidate>
                         <div class="col-md-4">
-                            <label for="validationCustom01" class="form-label">Full name</label>
+                            <label for="validationCustom01" class="form-label">Name</label>
                             <input type="text" class="form-control" id="validationCustom01" name="name" required>
                             <div class="valid-feedback">
                                 Looks good!
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <label for="validationCustom02" class="form-label">Gender</label>
-                            <select class="form-select" id="validationCustom02" name="gender" required>
-                                <option selected disabled value="">Choose...</option>
-                                <option>Male</option>
-                                <option>Female</option>
-                                <option>Other</option>
-                            </select>
+                        <div class="col-md-4">
+                            <label for="validationCustom02" class="form-label">Internal ID</label>
+                            <input type="text" class="form-control" id="validationCustom02" name="internalID">
                             <div class="invalid-feedback">
-                                Please select a valid gender.
+                                Please provide a valid ID
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <label for="validationCustomDate" class="form-label">Birthdate</label>
-                            <div class="input-group has-validation">
-                                <input type="date" class="form-control" id="validationCustomDate" name="birthdate" required>
-                                <div class="invalid-feedback">
-                                    You need to be over 18 years old.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="validationCustom04" class="form-label">Username</label>
-                            <div class="input-group has-validation">
-                                <input type="text" class="form-control" id="validationCustom04" aria-describedby="inputGroupPrepend" name="username" required>
-                                <div class="invalid-feedback">
-                                    Please choose a username.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="validationCustom03" class="form-label">Address</label>
-                            <input type="text" class="form-control" id="validationCustom03" name="address" required>
+                            <label for="validationCustom03" class="form-label">Police Station ID</label>
+                            <input type="text" class="form-control" id="validationCustom03" name="stationID">
                             <div class="invalid-feedback">
-                                Please provide a valid address.
+                                Please provide a valid station ID
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <label for="validationCustom04" class="form-label">Postal Code</label>
-                            <input type="text" class="form-control" id="validationCustom04" name="postal_code" required>
-                            <div class="invalid-feedback">
-                                Please provide a valid postal code.
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="validationCustom05" class="form-label">City</label>
-                            <input type="text" class="form-control" id="validationCustom05" name="city" required>
-                            <div class="invalid-feedback">
-                                Please provide a valid city.
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="validationCustom06" class="form-label">Civil ID</label>
-                            <input type="text" class="form-control" id="validationCustom06" name="civil_id" required>
-                            <div class="invalid-feedback">
-                                Please provide a valid Civil ID.
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="validationCustom07" class="form-label">Tax ID</label>
-                            <input type="text" class="form-control" id="validationCustom07" name="tax_id" required>
-                            <div class="invalid-feedback">
-                                Please provide a valid Tax ID.
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="validationCustom08" class="form-label">Contact Number</label>
-                            <input type="tel" class="form-control" id="validationCustom08" name="contact_number" required>
-                            <div class="invalid-feedback">
-                                Please provide a valid contact number.
-                            </div>
-                        </div>
-                        <div class="col-md-6">
+                        {{-- <div class="col-md-6">
                             <label for="validationCustom09" class="form-label">Email</label>
                             <input type="email" class="form-control" id="validationCustom09" name="email" required>
                             <div class="invalid-feedback">
                                 Please provide a valid email address.
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="col-md-6">
                             <label for="validationCustom10" class="form-label">Password</label>
                             <input type="password" class="form-control" id="validationCustom10" name="password" required>

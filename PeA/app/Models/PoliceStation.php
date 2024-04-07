@@ -28,7 +28,8 @@ class PoliceStation extends Model
         'sigla',
         'telefone',
         'fax',
-        'email',
+        'email', 
+        // !!!! password para estação !!!!
     ];
 
     /**
