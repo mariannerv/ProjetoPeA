@@ -73,20 +73,36 @@
       </nav>
     </header>
     <main class="my-5">
-      <div class="container">
-        <div class="container mt-5">
-          <div class="row justify-content-center">
-              <div class="col-md-8">
-                  <div class="card">
-                      <div class="card-header">Escolher tipo de conta</div>
-                      <div class="card-body">
-                        <div class="btn-group" role="group" aria-label="Basic example">
-                            <a href="http://localhost:8000/usersform" class="btn btn-primary" role="button">Utilizador/Licitador</a>
-                            <a href="http://localhost:8000/policesform" class="btn btn-primary" role="button">Polícia </a>
-                            <a href="http://localhost:8000/stationsform" class="btn btn-primary" role="button">Estação de Polícia </a>
-                        </div>
-                      
-      </div>
+      <div class="card">
+        <div class="card-header">
+          Escolher tipo de conta
+        </div>
+        <div class="card-body">
+          <div class="container text-center">
+            <div class="container mt-5">
+              <div class="row justify-content-md-center">
+                <div class="col-md-auto">
+                  <a href="http://localhost:8000/usersform" class="btn btn-secondary" role="button">
+                    <img src="images/user.png" class="img-fluid" alt="User icon">
+                    Utilizador/Licitador
+                  </a>
+                </div>
+                <div class="col-md-auto">
+                  <a href="http://localhost:8000/policesform" class="btn btn-secondary" role="button">
+                    <img src="images/pol_officer.png" class="img-fluid" alt="Police officer icon">
+                    Polícia 
+                  </a>
+                </div>
+                <div class="col-md-auto">
+                  <a href="http://localhost:8000/stationsform" class="btn btn-secondary" role="button">
+                    <img src="images/pol_station.png" class="img-fluid" alt="Police station icon">
+                    Estação de Polícia 
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
     <footer class="footer mt-auto py-3 bg-dark">
