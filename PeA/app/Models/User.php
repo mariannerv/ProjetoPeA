@@ -86,4 +86,12 @@ class User extends Model implements MustVerifyEmail
     {
         return $this->email;
     }
+    public function warnIfBidOvertaken($mostRecentBidderName, $mostRecentBidValue, $previousBidValue, $previousBidderName)
+    {
+        if ($previousBidderName !== null && $mostRecentBidderName !== '0') {
+            $this->sendNotification("Your bid has been overtaken by {$mostRecentBidderName}.");
+        } elseif ($mostRecentBidderName !== $previousBidderName && $mostRecentBidValue > $previousBidValue) {
+            $this->sendNotification("Your bid has been overtaken by {$mostRecentBidderName}.");
+        }
+    }
 }
