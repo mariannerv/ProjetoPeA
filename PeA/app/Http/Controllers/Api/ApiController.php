@@ -9,6 +9,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\LostObject;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
@@ -31,14 +32,14 @@ public function register(Request $request){
             'address' => 'required|string',
             'codigo_postal' => 'required|string',
             'localidade' => 'required|string',
-            'civilId' => 'required|string',
+            'civilId' => 'required|string|unique:users',
             'taxId' => 'required|string|unique:users',
             'contactNumber' => 'required|string',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:8|confirmed',
         ]);
 
-
+        
         $uuid = (string) Str::uuid();
 
         $user = User::create([
@@ -82,6 +83,14 @@ public function register(Request $request){
                 "code" => "400",
             ], 400);
         }
+
+        if ($e->errors()['civilId'] && $e->errors()['civilId'][0] === 'Cartão de cidadão já associado a outra conta.') {
+            return response()->json([
+                "status" => false,
+                "message" => "Cartão de cidadão já associado a outra conta.",
+                "code" => "400",
+            ], 400);
+        }
    
         if ($e->errors()['password']) {
             return response()->json([
@@ -110,14 +119,10 @@ public function login(Request $request)
         if ($user->account_status == 'active') {
             if (Hash::check($request->password, $user->password)) {
                 
-                // Set the desired expiration time (24 hours in this example)
                 $expirationTime = now()->addHours(24);
 
-                // Create the token instance
                 $token = $user->createToken(name: 'personal-token', expiresAt: now()->addMinutes(30))->plainTextToken;
 
-
-                // Store the plain text token in the user's record (optional)
                 $user->update(['token' => explode('|', $token)[1]]);
 
                 $expirationTime = now()->addHours(24)->format('Y-m-d H:i:s');
@@ -247,7 +252,6 @@ public function login(Request $request)
             'password' => 'confirmed',
         ]);
 
-        // Update the user's information based on the request data
         $user->update($request->all());
 
         return response()->json([
@@ -285,6 +289,49 @@ public function login(Request $request)
         }
     }
 
+
+public function lostObjects(Request $request){
+    try {
+        $request->validate([
+            'email' => 'required|string',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                "status" => false,
+                "message" => "User not found.",
+                "code" => 404,
+            ], 404);
+        }
+
+        // Get the array of lost object IDs for the user
+        $lostObjectIds = $user->lost_objects;
+
+        // Retrieve the lost objects from the database
+        $lostObjects = LostObject::whereIn('lostObjectId', $lostObjectIds)->get();
+
+        $response = [
+            "status" => true,
+            "message" => "Lost objects retrieved successfully.",
+            "lost_objects" => $lostObjects,
+        ];
+
+        return response()->json($response, 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            "status" => false,
+            "message" => "An error occurred while retrieving lost objects.",
+            "code" => 500,
+        ], 500);
+    }
+}
+}
+
+
+=======
 // Verify email method
 public function verify(Request $request)
 {
