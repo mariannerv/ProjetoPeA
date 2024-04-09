@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
+use PeA\database\factories\UserFactory;
 
 
 class ApiController extends Controller

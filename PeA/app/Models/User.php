@@ -79,7 +79,7 @@ class User extends Model implements MustVerifyEmail
             'verification.verify', now()->addMinutes(60), ['id' => $this->getKey()]
         );
 
-        Mail::to($this->email)->send(new VerifyEmail($verifyUrl));
+        Mail::to($this->email)->send(new VerifyEmailNotification($verifyUrl));
     }
 
     public function getEmailForVerification()
