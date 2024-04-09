@@ -82,6 +82,36 @@ class LostObjectController extends Controller
 
     }
 
+    public function getLostObject(Request $request){
+        try {
+            $request->validate([
+                'lostObjectId' => 'required|string',
+            ]);
+
+            $object = LostObject::where('lostObjectId', $request->lostObjectId)->first();
+
+            if ($object) {
+              
+                return response()->json([
+                    "status" => true,
+                    "data" => $object,
+                    "code" => 200,
+                ]);
+            } else {
+                return response()->json([
+                    "status" => false,
+                    "message" => "Objeto não encontrado.",
+                    "code" => 404,
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "Ocorreu um erro ao recuperar as informações do objeto.",
+                "code" => 500,
+            ], 500);
+        }
+    }
 
 
     public function updateLostObject(Request $request){
@@ -118,24 +148,41 @@ class LostObjectController extends Controller
 
 
     public function deleteLostObject(Request $request){
-        try {
-            $lostObjectId = $request->lostObjectId;
-            $object = LostObject::where('lostObjectId', $lostObjectId)->first();
+    try {
+        $lostObjectId = $request->lostObjectId;
 
-        if ($object) {
-            $object->delete();
-            return response()->json([
-                "status" => true,
-                "message" => "Objeto apagado com sucesso.",
-                "code" => "200",
-            ]);
-        } else {
+        $lostObject = LostObject::where('lostObjectId', $lostObjectId)->first();
+
+        if (!$lostObject) {
             return response()->json([
                 "status" => false,
                 "message" => "Objeto não encontrado.",
                 "code" => "404",
             ], 404);
         }
+
+        $user = User::where('email', $lostObject->ownerEmail)->first();
+
+        if (!$user) {
+            return response()->json([
+                "status" => false,
+                "message" => "Dono do objeto não encontrado.",
+                "code" => "404",
+            ], 404);
+        }
+
+        $user->lost_objects = array_diff($user->lost_objects, [$lostObjectId]);
+        $user->save();
+
+        // Delete the lost object
+        $lostObject->delete();
+
+        return response()->json([
+            "status" => true,
+            "message" => "Objeto apagado com sucesso.",
+            "code" => "200",
+        ]);
+
     } catch (\Exception $e) {
         return response()->json([
             "status" => false,
@@ -143,7 +190,7 @@ class LostObjectController extends Controller
             "code" => "500",
         ], 500);
     }
-    }
+}
 
 public function crossCheck(Request $request)
 {

@@ -47,6 +47,7 @@ Route::group([
     Route::put('update', [ApiController::class, 'update']);
 });
 
+Route::get("lostObjects", [ApiController::class, "lostObjects"]);
 Route::post('deactivate', [ApiController::class, "deactivate"]);
 Route::post('activate', [ApiController::class, "activate"]);
 
@@ -64,6 +65,7 @@ Route::group([
     Route::delete('deletePolice', [PoliceController::class, "deletePolice"]);
     Route::put('updatePolice', [PoliceController::class, 'updatePolice']);
 });
+
 
 Route::post('deactivatePolice', [PoliceController::class, "deactivatePolice"]);
 Route::post('activatePolice', [PoliceController::class, "activatePolice"]);
@@ -94,7 +96,7 @@ Route::post("createAuction", [AuctionController::class, "createAuction"]);
 Route::get("viewAuction", [AuctionController::class, "viewAuction"]);
 Route::put("editAuction", [AuctionController::class, "editAuction"]);
 Route::delete("deleteAuction", [AuctionController::class, "deleteAuction"]);
-
+Route::get("viewAllAuctions", [AuctionController::class, "viewAllAuctions"]);
 
 //API das Bids
 
@@ -107,8 +109,9 @@ Route::post("registerLostObject", [LostObjectController::class, "registerLostObj
 Route::put("updateLostObject", [LostObjectController::class, "updateLostObject"]);
 Route::delete("deleteLostObject", [LostObjectController::class, "deleteLostObject"]);
 Route::post("crossCheck", [LostObjectController::class, "crossCheck"]);
+Route::get("getLostObject", [LostObjectController::class, "getLostObject"]);
 
-//Para testar se a conexão ao mongo está a funcionar
+
 
 // Route::get('/test_mongodb/', function (Illuminate\Http\Request $request) {
 
@@ -126,17 +129,24 @@ Route::post("crossCheck", [LostObjectController::class, "crossCheck"]);
     
 // });
 
+//Para testar se a conexão ao mongo está a funcionar
 
 Route::get('/test_mongodb', function (Request $request) {
     $connection = DB::connection('mongodb');
     $msg = 'MongoDB is accessible!';
+    $dbName = '';
     try {
         $connection->command(['ping' => 1]);
         $dbName = $connection->getDatabaseName();
+
         return ['msg' => $msg, 'dbName' => $dbName];
+
     } catch (\Exception $e) {
         return [$msg = 'MongoDB is not accessible. Error: ' . $e->getMessage()];
     }
+
+    return ['msg' => $msg, 'dbName' => $dbName];
+
 });
 
 
