@@ -14,65 +14,55 @@
   </head>
   <body>
     <header>
-      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-          <a class="navbar-brand" href="#">Navbar</a>
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
+      <nav class="navbar navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">PeA</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
-              </li>
-              <li class="nav-item dropdown">
-                <a
-                  class="nav-link dropdown-toggle"
-                  href="#"
-                  id="navbarDropdown"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Dropdown
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li><a class="dropdown-item" href="#">Action</a></li>
-                  <li><a class="dropdown-item" href="#">Another action</a></li>
-                  <li><hr class="dropdown-divider" /></li>
-                  <li>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-            <form class="d-flex">
-              <input
-                class="form-control me-2"
-                type="search"
-                placeholder="Search"
-                aria-label="Search"
-              />
-              <button class="btn btn-outline-success" type="submit">
-                Search
-              </button>
-            </form>
+          <div class="offcanvas offcanvas-end text-white bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+            <div class="offcanvas-header">
+              <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Perdidos e Achados</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+              <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Dropdown
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-dark">
+                    <li><a class="dropdown-item" href="#">Action</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li>
+                      <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                  </ul>
+                </li>
+              </ul>
+              <form class="d-flex mt-3" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-success" type="submit">Search</button>
+              </form>
+            </div>
           </div>
         </div>
       </nav>
     </header>
+    <?php 
+$image  = public_path() . '/images/user.png';
+    ?>
     <main class="my-5">
+      <div class="container text-center">
+        <div class="container mt-5">
+          <div class="row justify-content-md-center">
       <div class="card">
         <div class="card-header">
           Escolher tipo de conta
@@ -81,26 +71,29 @@
           <div class="container text-center">
             <div class="container mt-5">
               <div class="row justify-content-md-center">
-                <div class="col-md-auto">
+                <div class="col-md-3">
                   <a href="http://localhost:8000/usersform" class="btn btn-secondary" role="button">
-                    <img src="images/user.png" class="img-fluid" alt="User icon">
+                    <img src="images/Sample_User_Icon.png" class="img-fluid"  alt="User icon">
                     Utilizador/Licitador
                   </a>
                 </div>
-                <div class="col-md-auto">
+                <div class="col-md-3">
                   <a href="http://localhost:8000/policesform" class="btn btn-secondary" role="button">
-                    <img src="images/pol_officer.png" class="img-fluid" alt="Police officer icon">
+                    <img src="images/pngtree-police-silhouette-character-icon-design-png-image_6224403.png" class="img-fluid"  alt="Police officer icon">
                     Polícia 
                   </a>
                 </div>
-                <div class="col-md-auto">
+                <div class="col-md-3">
                   <a href="http://localhost:8000/stationsform" class="btn btn-secondary" role="button">
-                    <img src="images/pol_station.png" class="img-fluid" alt="Police station icon">
+                    <img src="/images/89046.png" class="img-fluid"  alt="Police station icon">
                     Estação de Polícia 
                   </a>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>  
           </div>
         </div>
       </div>
