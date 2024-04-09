@@ -12,6 +12,7 @@
         "laravel/passport": "^11.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
+        "mongodb/laravel-mongodb": "^4.0",
         "mongodb/mongodb": "1.15"
     },
     "require-dev": {
