@@ -15,7 +15,7 @@ class User extends Model implements MustVerifyEmail
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
+     * 
      *
      * @var array<int, string>
      */
@@ -43,7 +43,7 @@ class User extends Model implements MustVerifyEmail
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * 
      *
      * @var array<int, string>
      */
@@ -53,7 +53,7 @@ class User extends Model implements MustVerifyEmail
     ];
 
     /**
-     * The attributes that should be cast.
+     * 
      *
      * @var array<string, string>
      */
@@ -73,17 +73,25 @@ class User extends Model implements MustVerifyEmail
         $this->save();
     }
 
+    public function getEmailForVerification()
+    {
+        return $this->email;
+    }
     public function sendEmailVerificationNotification()
     {
         $verifyUrl = URL::temporarySignedRoute(
             'verification.verify', now()->addMinutes(60), ['id' => $this->getKey()]
         );
 
-        Mail::to($this->email)->send(new VerifyEmail($verifyUrl));
+        $this->notify(new EmailVerificationNotification($verifyUrl));
     }
 
-    public function getEmailForVerification()
+    public function warnIfBidOvertaken($mostRecentBidderName, $mostRecentBidValue, $previousBidValue, $previousBidderName)
     {
-        return $this->email;
+        if ($previousBidderName !== null && $mostRecentBidderName !== '0') {
+            $this->notify(new BidOvertakenNotification($mostRecentBidderName));
+        } elseif ($mostRecentBidderName !== $previousBidderName && $mostRecentBidValue > $previousBidValue) {
+            $this->notify(new BidOvertakenNotification($mostRecentBidderName));
+        }
     }
 }

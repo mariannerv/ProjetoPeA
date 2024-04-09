@@ -108,22 +108,17 @@ Route::delete("deleteLostObject", [LostObjectController::class, "deleteLostObjec
 Route::post("crossCheck", [LostObjectController::class, "crossCheck"]);
 
 //Para testar se a conexão ao mongo está a funcionar
-
-Route::get('/test_mongodb/', function (Illuminate\Http\Request $request) {
-
+Route::get('/test_mongodb', function (Request $request) {
     $connection = DB::connection('mongodb');
     $msg = 'MongoDB is accessible!';
+    $dbName = '';
     try {
         $connection->command(['ping' => 1]);
         $dbName = $connection->getDatabaseName();
-        $uri = config('database.connections.mongodb.dsn');
-        $dbName = config('database.connections.mongodb.database');
-    
-        
     } catch (\Exception $e) {
         $msg = 'MongoDB is not accessible. Error: ' . $e->getMessage();
     }
-    return ['uri' => $uri, 'dbName' => $dbName];
+    return ['msg' => $msg, 'dbName' => $dbName];
 });
 
 
