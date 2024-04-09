@@ -94,4 +94,11 @@ class User extends Model implements MustVerifyEmail
             $this->notify(new BidOvertakenNotification($mostRecentBidderName));
         }
     }
+    public function createNotificationToken()
+    {
+        $token = new NotificationToken();
+        $token->user_id = $this->id;
+        $token->token = \Illuminate\Support\Str::random(60); 
+        $token->save();
+    }
 }
