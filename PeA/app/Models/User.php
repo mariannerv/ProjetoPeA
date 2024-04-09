@@ -73,25 +73,25 @@ class User extends Model implements MustVerifyEmail
         $this->save();
     }
 
+    public function getEmailForVerification()
+    {
+        return $this->email;
+    }
     public function sendEmailVerificationNotification()
     {
         $verifyUrl = URL::temporarySignedRoute(
             'verification.verify', now()->addMinutes(60), ['id' => $this->getKey()]
         );
 
-        Mail::to($this->email)->send(new VerifyEmailNotification($verifyUrl));
+        $this->notify(new EmailVerificationNotification($verifyUrl));
     }
 
-    public function getEmailForVerification()
-    {
-        return $this->email;
-    }
     public function warnIfBidOvertaken($mostRecentBidderName, $mostRecentBidValue, $previousBidValue, $previousBidderName)
     {
         if ($previousBidderName !== null && $mostRecentBidderName !== '0') {
-            $this->sendNotification("Your bid has been overtaken by {$mostRecentBidderName}.");
+            $this->notify(new BidOvertakenNotification($mostRecentBidderName));
         } elseif ($mostRecentBidderName !== $previousBidderName && $mostRecentBidValue > $previousBidValue) {
-            $this->sendNotification("Your bid has been overtaken by {$mostRecentBidderName}.");
+            $this->notify(new BidOvertakenNotification($mostRecentBidderName));
         }
     }
 }
