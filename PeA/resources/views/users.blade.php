@@ -44,12 +44,12 @@
                 <td>{{ $user->contactNumber }}</td>
                 <td>{{ $user->email }}</td>
                 <td class="action-buttons">
-                    <form method="post" action="{{ route('users.delete', $user->id) }}" style="display: inline;">
+                    <form method="post" action="{{ route('user.destroy', $user->id) }}" style="display: inline;">
                         @csrf
                         @method('DELETE')
                         <button type="submit">Eliminar</button>
                     </form>
-                    <a href="{{ route('users.edit', $user->id) }}"><button>Editar</button></a>
+                   
                 </td>
             </tr>
             @endforeach
