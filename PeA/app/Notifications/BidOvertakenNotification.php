@@ -22,7 +22,7 @@ class BidOvertakenNotification extends Notification
     {
         $notifiable->createNotificationToken();
         
-        return ['mail'];
+        return ['bidovertaken'];
     }
 
     /**
@@ -31,9 +31,8 @@ class BidOvertakenNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('Please verify your email address.')
-                    ->action('Verify Email', $this->verificationUrl($notifiable))
-                    ->line('If you did not create an account, no further action is required.');
+                    ->line('bid overtaken')
+                    ;
     }
 
     /**
