@@ -465,12 +465,12 @@ public function edit(User $user) {
 
 
 public function update(Request $request, string $id) {
-
-
     $update = User::where('_id' , $id)->update($request->except(['_token' , '_method']));
-   
+    
     if ($update) {
         return redirect()->route('users.store');
     }
 }
+
+
 }
