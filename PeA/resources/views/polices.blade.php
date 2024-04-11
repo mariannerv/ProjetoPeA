@@ -49,8 +49,14 @@
                         @method('DELETE')
                         <button type="submit">Eliminar</button>
                     </form>
-                   
+                    <form method="get" action="{{ route('police.edit', ['user' => $user->_id]) }}" style="display: inline;">
+                      @csrf
+                      
+                      <button type="submit">Editar</button>
+                  </form>
                 </td>
+
+                
             </tr>
             @endforeach
         </tbody>
