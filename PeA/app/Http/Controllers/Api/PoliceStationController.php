@@ -7,13 +7,22 @@ use Illuminate\Http\Request;
 use App\Models\PoliceStation;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class PoliceStationController extends Controller
 {
+    public function index() {
+
+        $user =  PoliceStation::all();
+        return view('stations' ,['users' => $user]);
+    }
+
+
+
     public function registerPost(Request $request){
 
     try {
-    $request->validate([
+        $val = Validator::make($request->all(),[
         'morada' => 'required|string',
         'codigo_postal' => 'required|string',
         'localidade' => 'required|string',
@@ -24,22 +33,26 @@ class PoliceStationController extends Controller
         'email' => 'required|email',
     ]);
 
+    if ($val->fails()){
+        return redirect()
+        ->back()
+        ->withErrors($val)
+        ->withInput();
+    }
+    
     PoliceStation::create([
-        "morada" => $request->morada,
-        "codigo_postal" => $request->codigo_postal,
-        "localidade" => $request->localidade,
-        "unidade" => $request->unidade,
-        "sigla" => $request->sigla,
-        "telefone" => $request->telefone,
-        "fax" => $request->fax,
-        "email" => $request->email,
+        "morada" => $request->input('morada') ,
+        "codigo_postal" => $request->input('codigo_postal'),
+        "localidade" => $request->input('localidade'),
+        "unidade" => $request->input('unidade'),
+        "sigla" => $request->input('sigla'),
+        "telefone" => $request->input('telefone'),
+        "fax" => $request->input('fax'),
+        "email" => $request->input('email'),
     ]);
 
-    return response()->json([
-        "status" => true,
-        "message" => "Posto registado com sucesso",
-        "code" => "200",
-    ]);
+    return  redirect()->route('stations.store');
+
 } catch (ValidationException $e) {
     if ($e->errors()['unidade'] && $e->errors()['unidade'][0] === 'Unidade já registada.') {
         return response()->json([
@@ -169,6 +182,21 @@ public function deletePost(Request $request) {
             "code" => "500",
         ], 500);
     }
+}
+
+
+public function sigla() {
+
+    $user =  PoliceStation::all();
+    return view('policesform' , ['users' => $user]);
+    
+}
+
+
+
+public function destroy(string $id) {
+    PoliceStation::where('_id' ,$id )->delete();
+    return redirect()->route('stations.store');
 }
 
 
