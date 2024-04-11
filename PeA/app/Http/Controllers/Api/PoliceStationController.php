@@ -192,8 +192,9 @@ public function sigla() {
 
     $user =  PoliceStation::all();
     return view('policesform' , ['users' => $user]);
-    
+
 }
+
 
 
 
