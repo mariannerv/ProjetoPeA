@@ -93,10 +93,11 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
         'mongodb' => [
-        'driver' => 'mongodb',
-        'dsn' => env('MONGODB_URI'),
-        'database' => 'Lost_and_Found_Management_System'
-        ],
+            'driver' => 'mongodb',
+            //'dsn' => env('MONGODB_URI', 'mongodb://127.0.0.1:27017'),
+            'dsn' => env('MONGODB_URI'),
+            'database' => 'Lost_and_Found_Management_System'
+            ],
     ],
 
     /*

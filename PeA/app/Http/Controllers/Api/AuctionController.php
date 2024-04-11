@@ -178,8 +178,7 @@ public function editAuction(Request $request){
     }
     }
 
-  public function bidHistory(Request $request)
-{
+  public function bidHistory(Request $request){
   
     $request->validate([
         'auctionId' => 'required|string',
@@ -201,6 +200,24 @@ public function editAuction(Request $request){
             "status" => false,
             "message" => "Leilão não encontrado.",
         ], 404);
+    }
+}
+
+public function viewAllAuctions(){
+    try {
+        $activeAuctions = Auction::where('status', 'active')->get();
+
+        return response()->json([
+            "status" => true,
+            "data" => $activeAuctions,
+            "code" => 200,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            "status" => false,
+            "message" => "Ocorreu um erro ao recuperar as informações dos leilões ativos.",
+            "code" => 500,
+        ], 500);
     }
 }
  }

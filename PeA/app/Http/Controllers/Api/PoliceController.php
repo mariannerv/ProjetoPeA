@@ -8,36 +8,51 @@ use App\Models\Police;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Api\PoliceStationController;
+use App\Models\PoliceStation;
 
 class PoliceController extends Controller
 {
+    public function index() {
+
+        $user =  Police::all();
+        return view('polices' ,['users' => $user]);
+    }
+
+
     //Register
     public function registerPolice(Request $request){
         try{
-            $request->validate([
+            $val = Validator::make($request->all(),[
                 'name' => 'required|string',
                 'internalId' => 'required|string|unique:police_user',
-                'password' => 'required|min:8|confirmed',
+                'password' => 'required|min:8',
                 'policeStationId' =>  'required|string|exists:police_station,sigla',
-            ]);
+            ]); 
+
+
+            if ($val->fails()){
+                return redirect()
+                ->back()
+                ->withErrors($val)
+                ->withInput();
+            }
+            
+
+
 
             Police::create([
-                "name" => $request->name,
-                "internalId" => $request->internalId,
-                "password" => Hash::make($request->password),
-                "policeStationId" => $request->policeStationId,
+                "name" => $request->input('name'),
+                "internalId" => $request->input('internalId'),
+                "password" => Hash::make($request->input('password')),
+                "policeStationId" => $request->input('policeStationId'),
                 "account_status" => 'active',
                 "token" => '',
                 "email_verified_at" => '',
             ]);
 
-            return response()->json([
-                "status" => true,
-                "message" => "Policia registado com sucesso.",
-                "code" => 200,
-            ]
-
-            );
+            return redirect()->route('polices.store');
 
         } catch (ValidationException $e){
             if ($e->errors()['internalId'] && $e->erros()['internalId'][0] === "Policia com este Id já associado a outra conta.");
@@ -222,5 +237,24 @@ class PoliceController extends Controller
                 "message" => "Policia não encontrado.",
             ], 404);
         }
+    }
+
+    public function destroy(string $id) {
+        Police::where('_id' ,$id )->delete();
+        return redirect()->route('polices.store');
+    }
+
+    public function update(Request $request, string $id) {
+        $update = Police::where('_id' , $id)->update($request->except(['_token' , '_method'])); 
+        if ($update) {
+            return redirect()->route('polices.store');
+        }
+    }
+
+    public function edit(Police $user) {
+
+        $sigla = PoliceStation::all();
+        return view('policeseditform' , ['user' => $user , 'siglas' => $sigla]);
+
     }
 }
