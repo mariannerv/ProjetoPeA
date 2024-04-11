@@ -49,7 +49,11 @@
                         @method('DELETE')
                         <button type="submit">Eliminar</button>
                     </form>
-                   
+                    <form method="get" action="{{ route('user.edit', $user->id) }}" style="display: inline;">
+                        @csrf
+    
+                        <button type="submit">Editar</button>
+                    </form>
                 </td>
             </tr>
             @endforeach
