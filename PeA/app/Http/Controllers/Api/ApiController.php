@@ -18,14 +18,20 @@ use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use PeA\database\factories\UserFactory;
-
+use PHPUnit\Metadata\Uses;
 
 class ApiController extends Controller
 {
+
+public function index() {
+    $user =  User::all();
+    return view('users' ,['users' => $user]);
+}
+
 public function register(Request $request){
 
     try {
-        $request->validate([
+       $val =  $request->validate([
             'name' => 'required|string',
             'gender' => 'required|string',
             'birthdate' => 'required|date',
@@ -36,25 +42,26 @@ public function register(Request $request){
             'taxId' => 'required|string|unique:users',
             'contactNumber' => 'required|string',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:8|confirmed',
+            'password' => 'required|min:8',
         ]);
-
         
+        var_dump($val);
+
         $uuid = (string) Str::uuid();
 
         $user = User::create([
             "account_id" => $uuid,
-            "name" => $request->name,
-            "gender" => $request->gender,
-            "birthdate" => $request->birthdate,
-            "address" => $request->address,
-            "codigo_postal" => $request->codigo_postal,
-            "localidade" => $request->localidade,
-            "civilId" => $request->civilId,
-            "taxId" => $request->taxId,
-            "contactNumber" => $request->contactNumber,
-            "email" => $request->email,
-            "password" => Hash::make($request->password),
+            "name" => $request-> input('name'),
+            "gender" => $request->input('gender'),
+            "birthdate" => $request->input('birthdate'),
+            "address" => $request->input('address'),
+            "codigo_postal" => $request->input('codigo_postal'),
+            "localidade" => $request->input('localidade'),
+            "civilId" => $request->input('civilId'),
+            "taxId" => $request->input('taxId'),
+            "contactNumber" => $request->input('contactNumber'),
+            "email" => $request->input('email') ,
+            "password" => Hash::make($request->input('password')),
             "account_status" => 'active',
             "token" => '',
             "email_verified_at" => '',
@@ -446,5 +453,11 @@ public function sendResetLinkEmail(Request $request)
         ? redirect()->back()->with('status', trans($status))
         : back()->withErrors(['email' => trans($status)]);
 }
+
+public function destroy(string $id) {
+    User::where('_id' ,$id )->delete();
+    return redirect()->route('users.store');
+}
+
 }
 
