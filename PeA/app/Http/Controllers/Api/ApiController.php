@@ -238,7 +238,7 @@ public function login(Request $request)
         ]);
     }
 
-    public function update(Request $request)
+    public function update2(Request $request)
     {
     $user = auth()->user();
     
@@ -373,5 +373,18 @@ public function destroy(string $id) {
     return redirect()->route('users.store');
 }
 
+public function edit(User $user) {
+    return view('usereditform' , ['user' => $user]);
 }
 
+
+public function update(Request $request, string $id) {
+
+
+    $update = User::where('_id' , $id)->update($request->except(['_token' , '_method']));
+   
+    if ($update) {
+        return redirect()->route('users.store');
+    }
+}
+}
