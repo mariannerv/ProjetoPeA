@@ -209,41 +209,41 @@ public function crossCheck(Request $request)
     Log::info('Found object count: ' . json_encode($foundObjectsCount));
     
     foreach ($foundObjects as $foundObject) {
-      
         $matchPercentage = $this->calculateMatchPercentage($foundObject, $lostObject);
 
         Log::info('Match percentage for found object ' . $foundObject->id . ': ' . $matchPercentage);
 
-        
-        if (
-            $foundObject->category == $lostObject->category &&
-            $foundObject->color == $lostObject->color &&
-            $foundObject->brand == $lostObject->brand &&
-            $foundObject->size == $lostObject->size
-        ) {
-            
-            array_push($matches, [
-                'found_object_id' => $foundObject,
-                'match_percentage' => $matchPercentage,
-            ]);
-        }
-        if ($matchPercentage >= 70) {
-          
-            $possibleOwner = $foundObject->possible_owner ?? [];
-            
-            
-            $possibleOwner[] = $lostObject->ownerEmail;
+        // Include found object information along with match percentage
+        $matches[] = [
+            'found_object_id' => $foundObject->id,
+            'found_object' => $foundObject, // Include the found object data
+            'match_percentage' => $matchPercentage,
+        ];
 
+        if ($matchPercentage >= 70) {
+            $possibleOwner = $foundObject->possible_owner ?? [];
+            $possibleOwner[] = $lostObject->ownerEmail;
             $foundObject->possible_owner = $possibleOwner;
             $foundObject->save();
         }
     }
 
-    // Return JSON response outside of the loop
+    // Check if matches array is empty
+    if (empty($matches)) {
+        return response()->json([
+            'message' => 'No matches found.',
+        ]);
+    }
+
+    // Return JSON response with matches
     return response()->json([
         'matches' => $matches,
     ]);
 }
+
+
+
+
 
 
 
@@ -266,29 +266,38 @@ private function descriptionMatch($foundDescription, $lostDescription)
 
 private function calculateMatchPercentage($foundObject, $lostObject)
 {
-    $matchPercentage = 0;
+    // Total number of attributes being compared, including the description
+    $totalAttributes = 6;
 
-    if ($this->descriptionMatch($foundObject->description, $lostObject->description)) {
-        $matchPercentage += 10; 
-    }
+    // Weight for each attribute (excluding the description)
+    $attributeWeight = (100 - 10) / ($totalAttributes - 1);
 
+    // Calculate the match percentage for the description
+    $descriptionMatchPercentage = $this->descriptionMatch($foundObject->description, $lostObject->description) ? 10 : 0;
+
+    // Initialize the total match percentage with the description match percentage
+    $matchPercentage = $descriptionMatchPercentage;
+
+    // Add match percentage for other attributes
     if ($foundObject->location === $lostObject->location) {
-        $matchPercentage += 15; 
+        $matchPercentage += $attributeWeight; 
     }
 
     if ($foundObject->category === $lostObject->category) {
-        $matchPercentage += 15; 
+        $matchPercentage += $attributeWeight; 
     }
     if ($foundObject->color === $lostObject->color) {
-        $matchPercentage += 15; 
+        $matchPercentage += $attributeWeight; 
     }
     if ($foundObject->brand === $lostObject->brand) {
-        $matchPercentage += 15; 
+        $matchPercentage += $attributeWeight; 
     }
     if ($foundObject->size === $lostObject->size) {
-        $matchPercentage += 15; 
+        $matchPercentage += $attributeWeight; 
     }
 
     return $matchPercentage;
 }
+
+
 }

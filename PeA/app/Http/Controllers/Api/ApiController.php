@@ -375,10 +375,8 @@ public function myBids(Request $request){
     }
 }
 
-}
 
 
-=======
 // Verify email method
 public function verify(Request $request)
 {
@@ -458,6 +456,7 @@ public function destroy(string $id) {
     User::where('_id' ,$id )->delete();
     return redirect()->route('users.store');
 }
+
 
 }
 
