@@ -8,9 +8,12 @@ use App\Models\PoliceStation;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Api\PoliceController;
+use App\Models\Police;
 
 class PoliceStationController extends Controller
 {
+    private $sigla;
     public function index() {
 
         $user =  PoliceStation::all();
@@ -199,5 +202,28 @@ public function destroy(string $id) {
     return redirect()->route('stations.store');
 }
 
+
+public function edit(PoliceStation $user) {
+
+    session(['sigla' => $user->sigla]);
+
+    return view('stationeditform' , ['user' => $user]);
+
+    
+
+}
+
+
+public function update(Request $request, string $id) {
+
+    $sigla = session('sigla');
+    
+    $update = PoliceStation::where('_id' , $id)->update($request->except(['_token' , '_method']));
+    Police::where('policeStationId' , $sigla)->update(['policeStationId' => $request->sigla]);
+
+    if ($update) {
+        return redirect()->route('stations.store');
+    }
+}
 
 }
