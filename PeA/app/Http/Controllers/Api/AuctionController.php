@@ -178,8 +178,7 @@ public function editAuction(Request $request){
     }
     }
 
-  public function bidHistory(Request $request)
-{
+  public function bidHistory(Request $request){
   
     $request->validate([
         'auctionId' => 'required|string',
