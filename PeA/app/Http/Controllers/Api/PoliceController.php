@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Api\PoliceStationController;
+use App\Models\PoliceStation;
 
 class PoliceController extends Controller
 {
@@ -242,5 +244,17 @@ class PoliceController extends Controller
         return redirect()->route('polices.store');
     }
 
+    public function update(Request $request, string $id) {
+        $update = Police::where('_id' , $id)->update($request->except(['_token' , '_method'])); 
+        if ($update) {
+            return redirect()->route('polices.store');
+        }
+    }
 
+    public function edit(Police $user) {
+
+        $sigla = PoliceStation::all();
+        return view('policeseditform' , ['user' => $user , 'siglas' => $sigla]);
+
+    }
 }
