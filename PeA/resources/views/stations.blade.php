@@ -24,36 +24,37 @@
     </style>
 </head>
 <body>
-    <h2>Tabela de Utilizadores</h2>
+    <h2>Tabela de Estacoes</h2>
 
     <table>
         <thead>
             <tr>
-                <th>Nome</th>
-                <th>Género</th>
-                <th>Nº Telefone</th>
+                <th>Morada</th>
+                <th>localidade</th>
+                <th>unidade</th>
                 <th>Email</th>
-                <th>Ação</th>
+                <th>Eliminar</th>
+
             </tr>
         </thead>
         <tbody>
             @foreach ($users as $user)
             <tr>
-                <td>{{ $user->name }}</td>
-                <td>{{ $user->gender }}</td>
-                <td>{{ $user->contactNumber }}</td>
+                <td>{{ $user->morada }}</td>
+                <td>{{ $user->localidade }}</td>
+                <td>{{ $user->unidade }}</td>
                 <td>{{ $user->email }}</td>
+                
                 <td class="action-buttons">
-                    <form method="post" action="{{ route('user.destroy', $user->id) }}" style="display: inline;">
+                    <form method="post" action="{{ route('policestation.destroy', $user->id) }}" style="display: inline;">
                         @csrf
                         @method('DELETE')
                         <button type="submit">Eliminar</button>
                     </form>
-                    <form method="get" action="{{ route('user.edit', $user->id) }}" style="display: inline;">
-                        @csrf
-    
-                        <button type="submit">Editar</button>
-                    </form>
+                    <form method="get" action="{{ route('station.edit', ['user' => $user->_id]) }}" style="display: inline;">
+                      @csrf
+                      <button type="submit">Editar</button>
+                  </form>
                 </td>
             </tr>
             @endforeach

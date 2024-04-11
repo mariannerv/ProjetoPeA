@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use PeA\database\factories\UserFactory;
 use PHPUnit\Metadata\Uses;
-
+use Illuminate\Support\Facades\Validator;
 class ApiController extends Controller
 {
 
@@ -31,7 +31,7 @@ public function index() {
 public function register(Request $request){
 
     try {
-       $val =  $request->validate([
+        $val = Validator::make($request->all(),[
             'name' => 'required|string',
             'gender' => 'required|string',
             'birthdate' => 'required|date',
@@ -45,7 +45,12 @@ public function register(Request $request){
             'password' => 'required|min:8',
         ]);
         
-        var_dump($val);
+        if ($val->fails()){
+            return redirect()
+            ->back()
+            ->withErrors($val)
+            ->withInput();
+        }
 
         $uuid = (string) Str::uuid();
 
@@ -70,11 +75,7 @@ public function register(Request $request){
         ]);
      
 
-        return response()->json([
-            "status" => true,
-            "message" => "Utilizador registado com sucesso",
-            "code" => "200",
-        ]);
+        return redirect()->route('users.store');
     } catch (ValidationException $e) {
         if ($e->errors()['taxId'] && $e->errors()['taxId'][0] === 'Número de contribuinte já associado a outra conta.') {
             return response()->json([
@@ -242,7 +243,7 @@ public function login(Request $request)
         ]);
     }
 
-    public function update(Request $request)
+    public function update2(Request $request)
     {
     $user = auth()->user();
     
@@ -458,5 +459,18 @@ public function destroy(string $id) {
 }
 
 
+public function edit(User $user) {
+    return view('usereditform' , ['user' => $user]);
 }
 
+
+public function update(Request $request, string $id) {
+
+
+    $update = User::where('_id' , $id)->update($request->except(['_token' , '_method']));
+   
+    if ($update) {
+        return redirect()->route('users.store');
+    }
+}
+}
