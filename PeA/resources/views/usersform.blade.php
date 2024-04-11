@@ -107,14 +107,14 @@
                         @csrf
                         <div class="col-md-4">  
                             <label for="validationCustom01" class="form-label">Full name</label>
-                            <input type="text" class="form-control" id="validationCustom01" name="name" required>
+                            <input type="text" class="form-control" id="validationCustom01" name="name" value="{{old('name')}}" required>
                             <div class="valid-feedback">
                                 Looks good!
                             </div>
                         </div>
                         <div class="col-md-3">
                             <label for="validationCustom02" class="form-label">Gender</label>
-                            <select class="form-select" id="validationCustom02" name="gender" required>
+                            <select class="form-select" id="validationCustom02" name="gender" value="{{old('gender')}}" required>
                                 <option selected disabled value="">Choose...</option>
                                 <option>Male</option>
                                 <option>Female</option>
@@ -127,7 +127,7 @@
                         <div class="col-md-4">
                             <label for="validationCustomDate" class="form-label">Birthdate</label>
                             <div class="input-group has-validation">
-                                <input type="date" class="form-control" id="validationCustomDate" name="birthdate" required>
+                                <input type="date" class="form-control" id="validationCustomDate" name="birthdate" value="{{old('birthdate')}}" required>
                                 <div class="invalid-feedback">
                                     You need to be over 18 years old.
                                 </div>
@@ -136,49 +136,49 @@
                     
                         <div class="col-md-6">
                             <label for="validationCustom03" class="form-label">Address</label>
-                            <input type="text" class="form-control" id="validationCustom03" name="address" required>
+                            <input type="text" class="form-control" id="validationCustom03" name="address"  value="{{old('address')}}" required>
                             <div class="invalid-feedback">
                                 Please provide a valid address.
                             </div>
                         </div>
                         <div class="col-md-3">
                             <label for="validationCustom04" class="form-label">Postal Code</label>
-                            <input type="text" class="form-control" id="validationCustom04" name="codigo_postal" required>
+                            <input type="text" class="form-control" id="validationCustom04" name="codigo_postal" value="{{old('codigo_postal')}}" required>
                             <div class="invalid-feedback">
                                 Please provide a valid postal code.
                             </div>
                         </div>
                         <div class="col-md-3">
                             <label for="validationCustom05" class="form-label">City</label>
-                            <input type="text" class="form-control" id="validationCustom05" name="localidade" required>
+                            <input type="text" class="form-control" id="validationCustom05" name="localidade" value="{{old('localidade')}}" required>
                             <div class="invalid-feedback">
                                 Please provide a valid city.
                             </div>
                         </div>
                         <div class="col-md-4">
                             <label for="validationCustom06" class="form-label">Civil ID</label>
-                            <input type="text" class="form-control" id="validationCustom06" name="civilId" required>
+                            <input type="text" class="form-control" id="validationCustom06" name="civilId" value="{{old('civilId')}}" required>
                             <div class="invalid-feedback">
                                 Please provide a valid Civil ID.
                             </div>
                         </div>
                         <div class="col-md-4">
                             <label for="validationCustom07" class="form-label">Tax ID</label>
-                            <input type="text" class="form-control" id="validationCustom07" name="taxId" required>
+                            <input type="text" class="form-control" id="validationCustom07" name="taxId" value="{{old('taxId')}}" required>
                             <div class="invalid-feedback">
                                 Please provide a valid Tax ID.
                             </div>
                         </div>
                         <div class="col-md-4">
                             <label for="validationCustom08" class="form-label">Contact Number</label>
-                            <input type="tel" class="form-control" id="validationCustom08" name="contactNumber" required>
+                            <input type="tel" class="form-control" id="validationCustom08" name="contactNumber" value="{{old('contactNumber')}}" required>
                             <div class="invalid-feedback">
                                 Please provide a valid contact number.
                             </div>
                         </div>
                         <div class="col-md-6">
                             <label for="validationCustom09" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="validationCustom09" name="email" required>
+                            <input type="email" class="form-control" id="validationCustom09" name="email" value="{{old('email')}}" required>
                             <div class="invalid-feedback">
                                 Please provide a valid email address.
                             </div>
