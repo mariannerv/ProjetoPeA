@@ -8,7 +8,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-
+use Illuminate\Mail\Mailables\Address;
 class welcome extends Mailable
 {
     use Queueable, SerializesModels;
@@ -32,6 +32,10 @@ class welcome extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
+            from : new Address('projetopea1@gmail.com', 'Perdidos & Achados'),
+            replyTo:[
+                new Address('projetopea1@gmail.com', 'Perdidos & Achados'),
+            ],
             subject: $this->subject,
         );
     }
