@@ -55,7 +55,7 @@ Route::post('activate', [ApiController::class, "activate"]);
 
 //APIs Policia
 
-Route::post("registerPolice", [PoliceController::class, "registerPolice"]);
+Route::post("registerPolice", [PoliceController::class, "registerPolicia"]);
 Route::post("loginPolice", [PoliceController::class, "loginPolice"]);
 
 Route::group([
