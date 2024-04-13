@@ -452,11 +452,38 @@ public function sendResetLinkEmail(Request $request)
         ? redirect()->back()->with('status', trans($status))
         : back()->withErrors(['email' => trans($status)]);
 }
+//___---------------------------------------------------------------
+//___---------------------------------------------------------------
+
+/* old destroy
 
 public function destroy(string $id) {
     User::where('_id' ,$id )->delete();
     return redirect()->route('users.store');
 }
+*/
+//confirm destroy method
+
+
+public function confirmDelete(User $user)
+{
+    return view('confirm_deletion', compact('user'));
+}
+
+
+public function destroy(Request $request, $id)
+{
+    $user = User::findOrFail($id);
+    
+    if (Hash::check($request->password, $user->password)) {
+        $user->delete();
+        return redirect()->route('users.store')->with('success', 'User deleted successfully.');
+    } else {
+        return redirect()->back()->with('error', 'Incorrect password. User not deleted.');
+    }
+}
+//___---------------------------------------------------------------
+//___---------------------------------------------------------------
 
 
 public function edit(User $user) {
