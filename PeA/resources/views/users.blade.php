@@ -44,11 +44,11 @@
                 <td>{{ $user->contactNumber }}</td>
                 <td>{{ $user->email }}</td>
                 <td class="action-buttons">
-                    <form method="post" action="{{ route('user.destroy', $user->id) }}" style="display: inline;">
+                    <form method="post" action="{{ route('user.confirm-delete', $user->id) }}" style="display: inline;">
                         @csrf
-                        @method('DELETE')
                         <button type="submit">Eliminar</button>
                     </form>
+                    
                     <form method="get" action="{{ route('user.edit', $user->id) }}" style="display: inline;">
                         @csrf
     

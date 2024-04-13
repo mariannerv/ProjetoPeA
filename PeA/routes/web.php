@@ -29,6 +29,9 @@
     Route::delete('/users/{user}' , [ApiController::class , 'destroy'])->name("user.destroy");
     Route::get('/user{user}/edit' ,[ApiController::class ,'edit' ] )->name('user.edit');
     Route::put('/user/{user}' ,[ApiController::class ,'update'])->name('user.update');
+    //confirmdelete
+    Route::post('/users/{user}/confirm-delete', [ApiController::class, 'confirmDelete'])->name('user.confirm-delete');
+
 
 
 //Police Routes
