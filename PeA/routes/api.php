@@ -55,7 +55,7 @@ Route::post('activate', [ApiController::class, "activate"]);
 
 //APIs Policia
 
-Route::post("registerPolice", [PoliceController::class, "registerPolice"]);
+Route::post("registerPolice", [PoliceController::class, "registerPolicia"]);
 Route::post("loginPolice", [PoliceController::class, "loginPolice"]);
 
 Route::group([
@@ -189,4 +189,5 @@ Route::post('/Owner', [OwnerController::class, 'store']);
 Route::get('/Owner/{civilId}', [OwnerController::class, 'getUserByCivilId']);
 
 //Route::post('login', [AuthController::class, 'login']);
+
 

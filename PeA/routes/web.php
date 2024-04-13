@@ -1,4 +1,4 @@
-<?php
+    <?php
 
     use Illuminate\Support\Facades\Route;
     use App\Http\Controllers\OwnerController;
@@ -6,7 +6,7 @@
     use App\Http\Controllers\Api\PoliceStationController;
     use App\Http\Controllers\Api\PoliceController;
     use App\Models\PoliceStation;
-
+    use App\Http\Controllers\SendMailController;
     /*
     |--------------------------------------------------------------------------
     | Web Routes
@@ -62,3 +62,25 @@
     Route::get('/',function(){
         return view('chooseaccounttype');
     });
+
+Route::get('/usersform',function(){
+    return view('usersform');
+});
+
+Route::get('/policesform',function(){
+    return view('policesform');
+});
+
+Route::get('/stationsform',function(){
+    return view('stationsform');
+});
+
+Route::get('/chooseaccounttype',function(){
+    return view('chooseaccounttype');
+});
+
+
+
+Route::get('/send-mail', [SendMailController::class, 'sendWelcomeEmail']);
+
+

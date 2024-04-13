@@ -22,7 +22,7 @@ class PoliceController extends Controller
 
 
     //Register
-    public function registerPolice(Request $request){
+    public function registerPolicia(Request $request){
         try{
             $val = Validator::make($request->all(),[
                 'name' => 'required|string',
