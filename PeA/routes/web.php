@@ -29,6 +29,9 @@
     Route::delete('/users/{user}' , [ApiController::class , 'destroy'])->name("user.destroy");
     Route::get('/user{user}/edit' ,[ApiController::class ,'edit' ] )->name('user.edit');
     Route::put('/user/{user}' ,[ApiController::class ,'update'])->name('user.update');
+    //confirmdelete
+    Route::post('/users/{user}/confirm-delete', [ApiController::class, 'confirmDelete'])->name('user.confirm-delete');
+
 
 
 //Police Routes
@@ -62,21 +65,3 @@
     Route::get('/',function(){
         return view('chooseaccounttype');
     });
-
-Route::get('/usersform',function(){
-    return view('usersform');
-});
-
-Route::get('/policesform',function(){
-    return view('policesform');
-});
-
-Route::get('/stationsform',function(){
-    return view('stationsform');
-});
-
-Route::get('/chooseaccounttype',function(){
-    return view('chooseaccounttype');
-});
-
-
