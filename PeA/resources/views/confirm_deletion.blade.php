@@ -14,5 +14,6 @@
         <input type="password" name="password" placeholder="Your Password" required>
         <button type="submit">Confirm Delete</button>
     </form>
+    
 </body>
 </html>

@@ -479,7 +479,7 @@ public function destroy(Request $request, $id)
         $user->delete();
         return redirect()->route('users.store')->with('success', 'User deleted successfully.');
     } else {
-        return redirect()->back()->with('error', 'Incorrect password. User not deleted.');
+        return redirect()->route('users.store')->with('error', 'Incorrect password. User not deleted.');
     }
 }
 //___---------------------------------------------------------------
