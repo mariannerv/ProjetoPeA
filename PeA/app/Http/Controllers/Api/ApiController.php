@@ -83,7 +83,8 @@ public function register(Request $request){
         $sendMailController = new SendMailController();
         $sendMailController->sendWelcomeEmail($request->input('email'));
 
-        return redirect()->route('users.store');
+        return redirect()->route('registerSuccess');
+
     } catch (ValidationException $e) {
         if ($e->errors()['taxId'] && $e->errors()['taxId'][0] === 'Número de contribuinte já associado a outra conta.') {
             return response()->json([

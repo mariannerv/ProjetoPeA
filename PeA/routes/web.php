@@ -89,9 +89,9 @@ Route::get('/send-mail', [SendMailController::class, 'sendWelcomeEmail']);
 
 Route::get('send-mail',[EmailController::class, 'sendWelcomeEmail']);
 
-Route::get('/registerSuccess',function(){
+Route::get('/registerSuccess', function () {
     return view('registerSuccess');
-});
+})->name('registerSuccess');
 
 Route::get('/home',function(){
     return view('home');

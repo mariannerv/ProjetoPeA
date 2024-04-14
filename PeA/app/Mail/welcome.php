@@ -26,6 +26,7 @@ class welcome extends Mailable
         $this->subject = $subject;
         
         
+        
 
     }
 
@@ -49,7 +50,7 @@ class welcome extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.welcomemail',
+            view: 'registerSuccess',
         );
     }
 

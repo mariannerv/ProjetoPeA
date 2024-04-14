@@ -16,7 +16,7 @@ class SendMailController extends Controller
 
         $response =  Mail::to($toEmail)->send(new welcome($message, $subject));
         
-        dd($response);
+        
 
     }
 
