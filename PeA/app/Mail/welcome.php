@@ -50,7 +50,7 @@ class welcome extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'registerSuccess',
+            view: 'emails.welcomemail',
         );
     }
 

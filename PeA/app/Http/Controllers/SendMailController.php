@@ -9,13 +9,9 @@ use App\Mail\welcome;
 
 class SendMailController extends Controller
 {
-    public function sendWelcomeEmail($toEmail){
-        
-        $message = "Bem vindo ao PeA!";
-        $subject = 'Bem vindo!';
+    public function sendWelcomeEmail($toEmail, $message, $subject){
 
         $response =  Mail::to($toEmail)->send(new welcome($message, $subject));
-        
         
 
     }

@@ -79,10 +79,14 @@ public function register(Request $request){
             "lost_objects" => [],
         ]);
      
-
         $sendMailController = new SendMailController();
-        $sendMailController->sendWelcomeEmail($request->input('email'));
-
+        $sendMailController->sendWelcomeEmail(
+            $request->input('email'),
+            "Bem vindo ao PeA!",
+            "Bem vindo!"
+        );
+        
+        
         return redirect()->route('registerSuccess');
 
     } catch (ValidationException $e) {
