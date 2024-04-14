@@ -15,6 +15,7 @@ class welcome extends Mailable
 
     public $mailMessage;
     public $subject;
+    
 
     /**
      * Create a new message instance.
@@ -23,6 +24,8 @@ class welcome extends Mailable
     {
         $this->mailMessage = $message;
         $this->subject = $subject;
+        
+        
 
     }
 

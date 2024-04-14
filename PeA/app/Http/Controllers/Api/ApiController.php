@@ -20,6 +20,11 @@ use Illuminate\Auth\Events\PasswordReset;
 use PeA\database\factories\UserFactory;
 use PHPUnit\Metadata\Uses;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\SendMailController;
+
+
+
+
 class ApiController extends Controller
 {
 
@@ -74,6 +79,9 @@ public function register(Request $request){
             "lost_objects" => [],
         ]);
      
+
+        $sendMailController = new SendMailController();
+        $sendMailController->sendWelcomeEmail($request->input('email'));
 
         return redirect()->route('users.store');
     } catch (ValidationException $e) {

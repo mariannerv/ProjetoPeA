@@ -9,8 +9,8 @@ use App\Mail\welcome;
 
 class SendMailController extends Controller
 {
-    public function sendWelcomeEmail(){
-        $toEmail = "marianavalente457@gmail.com";
+    public function sendWelcomeEmail($toEmail){
+        
         $message = "Bem vindo ao PeA!";
         $subject = 'Bem vindo!';
 
