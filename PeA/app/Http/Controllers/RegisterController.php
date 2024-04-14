@@ -10,6 +10,7 @@ namespace App\Http\Controllers;
         use App\Mail\WelcomeEmail;
         use Illuminate\Support\Facades\Mail;
         use Validator;
+        use App\Http\Controllers\EmailController as EC;
  
         class RegisterController extends BaseController
         {
@@ -44,8 +45,11 @@ namespace App\Http\Controllers;
                 $user = Owner::create($input);
                 $success['token'] =  $user->createToken('Lost_and_Found_Management_System')->accessToken;
                 $success['name'] =  $user->name;
-
-                Mail::to($user->email)->send(new WelcomeEmail());
+                
+                $toEmail = $user->email;
+                $mail = new EC();
+                $mail->sendWelcomeEmail($toEmail);
+                // Mail::to($user->email)->send(new WelcomeEmail());
  
                 return $this->sendResponse($success, 'User register successfully.');
             }
