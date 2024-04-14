@@ -5,6 +5,7 @@
     use App\Http\Controllers\Api\ApiController;
     use App\Http\Controllers\Api\PoliceStationController;
     use App\Http\Controllers\Api\PoliceController;
+    use App\Http\Controllers\EmailController;
     use App\Models\PoliceStation;
     use App\Http\Controllers\SendMailController;
     /*
@@ -86,4 +87,12 @@ Route::get('/chooseaccounttype',function(){
 
 Route::get('/send-mail', [SendMailController::class, 'sendWelcomeEmail']);
 
+Route::get('send-mail',[EmailController::class, 'sendWelcomeEmail']);
 
+Route::get('/registerSuccess',function(){
+    return view('registerSuccess');
+});
+
+Route::get('/home',function(){
+    return view('home');
+});
