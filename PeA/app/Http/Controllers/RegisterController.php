@@ -7,6 +7,8 @@ namespace App\Http\Controllers;
         use App\Http\Controllers\API\BaseController as BaseController;
         use App\Models\Owner;
         use Illuminate\Support\Facades\Auth;
+        use App\Mail\WelcomeEmail;
+        use Illuminate\Support\Facades\Mail;
         use Validator;
  
         class RegisterController extends BaseController
@@ -42,6 +44,8 @@ namespace App\Http\Controllers;
                 $user = Owner::create($input);
                 $success['token'] =  $user->createToken('Lost_and_Found_Management_System')->accessToken;
                 $success['name'] =  $user->name;
+
+                Mail::to($user->email)->send(new WelcomeEmail());
  
                 return $this->sendResponse($success, 'User register successfully.');
             }
