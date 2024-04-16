@@ -54,7 +54,7 @@ class PoliceStationController extends Controller
         "email" => $request->input('email'),
     ]);
 
-    return  redirect()->route('stations.store');
+    return  redirect()->route('registerSuccess');
 
 } catch (ValidationException $e) {
     if ($e->errors()['unidade'] && $e->errors()['unidade'][0] === 'Unidade já registada.') {

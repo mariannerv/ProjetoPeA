@@ -16,17 +16,43 @@
     <header>
         @include('navbar')
     </header>
-
-
-    <script
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+      <div class="row justify-content-center">
+        <div class="col-md-auto">
+          <div class="text-center">
+            <h2>Bem vindo!</h2>
+            <p>Por favor escolhe uma opção:</p>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-md-auto">
+          <div class="text-center">
+            <a role="button" href="http://localhost:8000/chooseaccounttype" class="btn btn-primary btn-lg btn-block mb-3">Criar nova conta de utilizador</a>
+          </div>
+        </div>
+        <div class="col-md-auto">
+          <div class="text-center">
+            <a role="button" href="#" class="btn btn-secondary btn-lg btn-block mb-3">Iniciar sessão como utilizador</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
       integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
       crossorigin="anonymous"
-    ></script>
-    <script
+    </script>
+    <script>
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
       integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
       crossorigin="anonymous"
-    ></script>
+    </script>
+    <script type="text/javascript">
+    function redirect(url)
+    {
+    window.location(url);
+    }
+    </script>
   </body>
 </html>
