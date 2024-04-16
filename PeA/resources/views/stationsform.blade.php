@@ -123,14 +123,7 @@
       </div>
       </div>
     </main>
-    <footer class="footer mt-auto py-3 bg-dark">
-      <div class="container">
-        <span class="text-muted"
-          >Copyrights
-          <a href="https://mdbootstrap.com">MDBootstrap.com</a></span
-        >
-      </div>
-    </footer>
+    @include('footer')
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
       integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
