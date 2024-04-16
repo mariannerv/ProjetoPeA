@@ -63,7 +63,7 @@
         return view('stationsform');
     });
 
-    Route::get('/',function(){
+    Route::get('/chooseaccounttype',function(){
         return view('chooseaccounttype');
     });
 
