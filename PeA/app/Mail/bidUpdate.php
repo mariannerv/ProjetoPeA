@@ -14,13 +14,20 @@ class bidUpdate extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $emailContent;
-    public $subject;
 
-    public function __construct($emailContent, $subject)
+    public $subject;
+    public $valor;
+    public $idLeilao;
+    public $dataFim;
+
+
+    public function __construct($valor, $idLeilao, $dataFim, $subject)
     {
-        $this->emailContent = $emailContent;
+        
         $this->subject = $subject;
+        $this->valor = $valor;
+        $this->idLeilao = $idLeilao;
+        $this->dataFim = $dataFim;
     }
 
     /**

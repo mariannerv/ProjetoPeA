@@ -104,10 +104,9 @@ public function placeBid(Request $request)
         $sendMailController->sendBidEmail(
             $currentHighestBidderEmail,
             "Licitação ultrapassada",
-            "A sua licitação foi ultrapassada:\n" .
-            "Licitação mais alta: " . $request->amount . "\n" .
-            "ID do leilão: " . $auction->auctionId . "\n" .
-            "Data de fim: " . $auction->end_date . "\n",
+            "Novo valor mais alto: " . $request->amount . "€",
+            "ID do leilão: " . $auction->auctionId,
+            "Data de fim: " . $auction->end_date,
         );
     }
 

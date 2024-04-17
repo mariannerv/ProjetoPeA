@@ -10,9 +10,9 @@ use App\Mail\bidUpdate;
 
 class bidMailUpdateController extends Controller
 {
-    public function sendBidEmail($toEmail, $subject, $emailContent){
+    public function sendBidEmail($toEmail, $subject, $valor, $idLeilao, $dataFim){
 
-        $response =  Mail::to($toEmail)->send(new bidUpdate($emailContent, $subject));
+        $response =  Mail::to($toEmail)->send(new bidUpdate($valor, $idLeilao, $dataFim, $subject));
 
     }
 }

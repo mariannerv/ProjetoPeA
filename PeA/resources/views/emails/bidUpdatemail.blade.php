@@ -5,6 +5,10 @@
 </head>
 <body>
     <h4> {{ $subject }} </h4>
-    <p> {{ $emailContent }} </p>
+    <ul>
+        <li>{{ $valor }}</li>
+        <li>{{ $idLeilao }}</li>
+        <li>{{ $dataFim }}</li>
+    </ul>
 </body>
 </html>
