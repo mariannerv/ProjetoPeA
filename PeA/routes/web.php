@@ -1,6 +1,7 @@
-    <?php
+<?php
 
-    use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
     use App\Http\Controllers\OwnerController;
     use App\Http\Controllers\Api\ApiController;
     use App\Http\Controllers\Api\PoliceStationController;
@@ -8,18 +9,18 @@
     use App\Http\Controllers\EmailController;
     use App\Models\PoliceStation;
     use App\Http\Controllers\SendMailController;
-    /*
-    |--------------------------------------------------------------------------
-    | Web Routes
-    |--------------------------------------------------------------------------
-    |
-    | Here is where you can register web routes for your application. These
-    | routes are loaded by the RouteServiceProvider and all of them will
-    | be assigned to the "web" middleware group. Make something great!
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
     |registerPolice
-    */
+*/
 
-    Route::get('/', function () {
+Route::get('/', function () {
         return view('home');
     });
     
