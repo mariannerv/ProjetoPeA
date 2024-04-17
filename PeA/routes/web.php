@@ -84,6 +84,7 @@ Route::get('/chooseaccounttype',function(){
 });
 
 
+Route::get('/bidPassada', [bidMailUpdateController::class, 'sendBidEmail']);
 
 Route::get('/send-mail', [SendMailController::class, 'sendWelcomeEmail']);
 

@@ -9,22 +9,18 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Address;
-class welcome extends Mailable
+
+class bidUpdate extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $mailMessage;
+    public $emailContent;
     public $subject;
-    
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct($message, $subject)
+    public function __construct($emailContent, $subject)
     {
-        $this->mailMessage = $message;
+        $this->emailContent = $emailContent;
         $this->subject = $subject;
-
     }
 
     /**
@@ -33,7 +29,7 @@ class welcome extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from : new Address('projetopea1@gmail.com', 'Perdidos & Achados'),
+            from: new Address('projetopea1@gmail.com', 'Perdidos & Achados'),
             replyTo:[
                 new Address('projetopea1@gmail.com', 'Perdidos & Achados'),
             ],
@@ -47,7 +43,7 @@ class welcome extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.welcomemail',
+            view: 'emails.bidUpdatemail',
         );
     }
 

@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\Auction;
 use App\Models\Bid;
 use Illuminate\Validation\ValidationException;
+use App\Http\Controllers\bidMailUpdateController;
 
 class BidController extends Controller
 {
@@ -23,6 +24,7 @@ public function placeBid(Request $request)
 {
     $auctionId = $request->auctionId;
     $auction = Auction::where('auctionId', $auctionId)->first();
+    $currentHightestBidder = null;
 
     if (!$auction) {
         return response()->json([
@@ -40,6 +42,7 @@ public function placeBid(Request $request)
         ]);
     }
 
+    $currentHighestBidderEmail = $auction->highestBidderId;
     $request->validate([
         'amount' => 'required|numeric',
         'bidderId' => [
@@ -58,6 +61,7 @@ public function placeBid(Request $request)
             "code" => 422, 
         ]);
     }
+
 
     $timestamp = Carbon::now()->timestamp;
     $uuid = (string) Str::uuid();
@@ -89,6 +93,22 @@ public function placeBid(Request $request)
         $auction->push('bids_list', $bid->bidId);
         $auction->recentBidDate = $bidDate;
         $auction->save();
+
+
+        $emailContent = "A sua licitação foi ultrapassada:\n";
+        $emailContent .= "Licitação mais alta: " . $request->amount . "\n";
+        $emailContent .= "ID do leilão: " . $auction->auctionId . "\n";
+        $emailContent .= "Data de fim: " . $auction->end_date . "\n";
+
+        $sendMailController = new bidMailUpdateController();
+        $sendMailController->sendBidEmail(
+            $currentHighestBidderEmail,
+            "Licitação ultrapassada",
+            "A sua licitação foi ultrapassada:\n" .
+            "Licitação mais alta: " . $request->amount . "\n" .
+            "ID do leilão: " . $auction->auctionId . "\n" .
+            "Data de fim: " . $auction->end_date . "\n",
+        );
     }
 
     return response()->json([
