@@ -38,4 +38,9 @@ class AuthController extends Controller
     {
         return response()->json(['user' => Auth::user()]);
     }
+    public function showLoginForm()
+{
+    return view('login');
+}
+
 }

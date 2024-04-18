@@ -57,6 +57,7 @@ Route::get('/', function () {
     return view('chooseaccounttype');
 });
 
+
 // Login routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
