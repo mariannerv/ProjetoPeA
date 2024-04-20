@@ -18,6 +18,7 @@ use App\Models\Bid;
 use App\Models\LostObject;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\crossCheckMailController;
 
 class LostObjectController extends Controller
 {
@@ -213,10 +214,9 @@ public function crossCheck(Request $request)
 
         Log::info('Match percentage for found object ' . $foundObject->id . ': ' . $matchPercentage);
 
-        // Include found object information along with match percentage
         $matches[] = [
             'found_object_id' => $foundObject->id,
-            'found_object' => $foundObject, // Include the found object data
+            'found_object' => $foundObject, 
             'match_percentage' => $matchPercentage,
         ];
 
@@ -225,6 +225,12 @@ public function crossCheck(Request $request)
             $possibleOwner[] = $lostObject->ownerEmail;
             $foundObject->possible_owner = $possibleOwner;
             $foundObject->save();
+
+            app(crossCheckMailController::class)->sendCrossCheckEmail(
+                $possibleOwner, // toEmail
+                "Objeto Perdido possivelmente encontrado",  // subject
+                "Um objeto perdido que registrou teve um match de 70% ou mais com um dos nossos objetos achados, para mais informações siga o link abaixo."
+            );
         }
     }
 
@@ -266,19 +272,14 @@ private function descriptionMatch($foundDescription, $lostDescription)
 
 private function calculateMatchPercentage($foundObject, $lostObject)
 {
-    // Total number of attributes being compared, including the description
     $totalAttributes = 6;
 
-    // Weight for each attribute (excluding the description)
     $attributeWeight = (100 - 10) / ($totalAttributes - 1);
 
-    // Calculate the match percentage for the description
     $descriptionMatchPercentage = $this->descriptionMatch($foundObject->description, $lostObject->description) ? 10 : 0;
 
-    // Initialize the total match percentage with the description match percentage
     $matchPercentage = $descriptionMatchPercentage;
 
-    // Add match percentage for other attributes
     if ($foundObject->location === $lostObject->location) {
         $matchPercentage += $attributeWeight; 
     }
