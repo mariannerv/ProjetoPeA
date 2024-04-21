@@ -41,6 +41,7 @@ use Illuminate\Support\Facades\Route;
     use App\Http\Controllers\Api\PoliceStationController;
     use App\Http\Controllers\Api\PoliceController;
     use App\Http\Controllers\EmailController;
+    use App\Http\Controllers\EmailController;
     use App\Models\PoliceStation;
     use App\Http\Controllers\Emails\SendMailController;
 /*
@@ -68,6 +69,21 @@ Route::get('/', function () {
     //confirmdelete
     Route::post('/users/{user}/confirm-delete', [ApiController::class, 'confirmDelete'])->name('user.confirm-delete');
 
+    //confirmdelete
+    Route::post('/users/{user}/confirm-delete', [ApiController::class, 'confirmDelete'])->name('user.confirm-delete');
+
+    Route::get('/login', function(){
+        return view('login');
+    });
+
+    Route::post('/loginuser' ,[ApiController::class, 'login'])->name('user.login');
+
+    Route::get('/logout' ,[ApiController::class, 'logout'])->name('user.logout');
+
+
+    Route::get('/userhome', function(){
+        return view('userhome');
+    });
 
 
 //Police Routes

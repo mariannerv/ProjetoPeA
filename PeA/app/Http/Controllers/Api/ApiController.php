@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\LostObject;
+use App\Models\LostObject;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
@@ -130,56 +131,57 @@ public function register(Request $request){
 
     //Login API (POST, formdata)
 
-public function login(Request $request)
-{
-    $request->validate([
-        "email" => "required|email",
-        "password" => "required",
-    ]);
+    public function login(Request $request)
+    {
+        $request->validate([
+            "email" => "required|email",
+            "password" => "required",
+        ]);
+        $email = $request->input('email');
+        $user = User::where("email", $email)->first();
+        
+      if (!empty($user)) {  
+            if ($user->account_status == 'active') {
+                if (Hash::check($request->input('password'), $user->password)) {
+                    
+                    $expirationTime = now()->addHours(24);
+    
+                   # $token = $user->createToken(name: 'personal-token', expiresAt: now()->addMinutes(30))->plainTextToken;
+    
+                    #$user->update(['token' => explode('|', $token)[1]]);
+    
+                    $expirationTime = now()->addHours(24)->format('Y-m-d H:i:s');
+                    
+                  
+                    
+                    Auth::loginUsingId($user->_id);
 
-    $user = User::where("email", $request->email)->first();
-
-  if (!empty($user)) {
-        if ($user->account_status == 'active') {
-            if (Hash::check($request->password, $user->password)) {
+                    return view('userhome');
+    
+                   # return redirect()->route('userhome')->with('success' , 'Login');
                 
-                $expirationTime = now()->addHours(24);
-
-                $token = $user->createToken(name: 'personal-token', expiresAt: now()->addMinutes(30))->plainTextToken;
-
-                $user->update(['token' => explode('|', $token)[1]]);
-
-                $expirationTime = now()->addHours(24)->format('Y-m-d H:i:s');
-                
-                return response()->json([
-                    "status" => true,
-                    "code" => 200,
-                    "message" => "Login successful!",
-                    "token" => $token,
-                    "expiration_time" => $expirationTime,
-                ]);
+                } else {
+                    return response()->json([
+                        "status" => false,
+                        "code" => 401,
+                        "message" => "Credenciais inválidas",
+                    ], 401);
+                }
             } else {
                 return response()->json([
                     "status" => false,
-                    "code" => 401,
-                    "message" => "Credenciais inválidas",
-                ], 401);
+                    "code" => 403,
+                    "message" => "Esta conta está desativada.",
+                ], 403);
             }
         } else {
             return response()->json([
                 "status" => false,
-                "code" => 403,
-                "message" => "Esta conta está desativada.",
-            ], 403);
+                "code" => 404,
+                "message" => "Utilizador não encontrado",
+            ], 404);
         }
-    } else {
-        return response()->json([
-            "status" => false,
-            "code" => 404,
-            "message" => "Utilizador não encontrado",
-        ], 404);
     }
-}
 
     //Deactivate account 
     public function deactivate(Request $request)
@@ -252,11 +254,9 @@ public function login(Request $request)
     // Logout API (GET)
 
     public function logout(){
-        auth()->user()->tokens()->delete();
-        return response()->json([
-            "status" => true,
-            "message" => "User logged out",
-        ]);
+        Auth::logout();
+
+        return view('home');
     }
 
     public function update2(Request $request)
@@ -508,7 +508,22 @@ public function edit(User $user) {
 
 
 public function update(Request $request, string $id) {
-    $update = User::where('_id' , $id)->update($request->except(['_token' , '_method']));
+    $update = User::where('_id' , $id)->update(
+        ["name" => $request-> input('name'),
+            "gender" => $request->input('gender'),
+            "birthdate" => $request->input('birthdate'),
+            "address" => $request->input('address'),
+            "codigo_postal" => $request->input('codigo_postal'),
+            "localidade" => $request->input('localidade'),
+            "civilId" => $request->input('civilId'),
+            "taxId" => $request->input('taxId'),
+            "contactNumber" => $request->input('contactNumber'),
+            "email" => $request->input('email') ,
+            "password" => Hash::make($request->input('password')),
+            ]
+
+
+    );
     
     if ($update) {
         return redirect()->route('users.store');
