@@ -18,15 +18,11 @@ class BidOvertakenNotification extends Notification
     {
         //
     }
-
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
-     */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        $notifiable->createNotificationToken();
+        
+        return ['bidovertaken'];
     }
 
     /**
@@ -35,11 +31,24 @@ class BidOvertakenNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+                    ->line('bid overtaken')
+                    ;
     }
 
+    /**
+     * Get the verification URL for the given notifiable.
+     *
+     * @param  mixed  $notifiable
+     * @return string
+     */
+    protected function verificationUrl($notifiable): string
+    {
+        return URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $notifiable->getKey()]
+        );
+    }
     /**
      * Get the array representation of the notification.
      *

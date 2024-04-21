@@ -1,25 +1,27 @@
-    <?php
+<?php
 
-    use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
     use App\Http\Controllers\OwnerController;
     use App\Http\Controllers\Api\ApiController;
     use App\Http\Controllers\Api\PoliceStationController;
     use App\Http\Controllers\Api\PoliceController;
+    use App\Http\Controllers\EmailController;
     use App\Models\PoliceStation;
-
-    /*
-    |--------------------------------------------------------------------------
-    | Web Routes
-    |--------------------------------------------------------------------------
-    |
-    | Here is where you can register web routes for your application. These
-    | routes are loaded by the RouteServiceProvider and all of them will
-    | be assigned to the "web" middleware group. Make something great!
+    use App\Http\Controllers\SendMailController;
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
     |registerPolice
-    */
+*/
 
-    Route::get('/', function () {
-        return view('welcome');
+Route::get('/', function () {
+        return view('home');
     });
     
 //User Routes
@@ -29,6 +31,21 @@
     Route::delete('/users/{user}' , [ApiController::class , 'destroy'])->name("user.destroy");
     Route::get('/user{user}/edit' ,[ApiController::class ,'edit' ] )->name('user.edit');
     Route::put('/user/{user}' ,[ApiController::class ,'update'])->name('user.update');
+    //confirmdelete
+    Route::post('/users/{user}/confirm-delete', [ApiController::class, 'confirmDelete'])->name('user.confirm-delete');
+
+    Route::get('/login', function(){
+        return view('login');
+    });
+
+    Route::post('/loginuser' ,[ApiController::class, 'login'])->name('user.login');
+
+    Route::get('/logout' ,[ApiController::class, 'logout'])->name('user.logout');
+
+
+    Route::get('/userhome', function(){
+        return view('userhome');
+    });
 
 
 //Police Routes
@@ -59,8 +76,32 @@
         return view('stationsform');
     });
 
-    Route::get('/',function(){
+    Route::get('/chooseaccounttype',function(){
         return view('chooseaccounttype');
     });
 
+Route::get('/usersform',function(){
+    return view('usersform');
+});
 
+Route::get('/policesform',function(){
+    return view('policesform');
+});
+
+Route::get('/stationsform',function(){
+    return view('stationsform');
+});
+
+Route::get('/chooseaccounttype',function(){
+    return view('chooseaccounttype');
+});
+
+
+
+Route::get('/send-mail', [SendMailController::class, 'sendWelcomeEmail']);
+
+Route::get('send-mail',[EmailController::class, 'sendWelcomeEmail']);
+
+Route::get('/registerSuccess', function () {
+    return view('registerSuccess');
+})->name('registerSuccess');

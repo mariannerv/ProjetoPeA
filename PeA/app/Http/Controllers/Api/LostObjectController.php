@@ -82,6 +82,36 @@ class LostObjectController extends Controller
 
     }
 
+    public function getLostObject(Request $request){
+        try {
+            $request->validate([
+                'lostObjectId' => 'required|string',
+            ]);
+
+            $object = LostObject::where('lostObjectId', $request->lostObjectId)->first();
+
+            if ($object) {
+              
+                return response()->json([
+                    "status" => true,
+                    "data" => $object,
+                    "code" => 200,
+                ]);
+            } else {
+                return response()->json([
+                    "status" => false,
+                    "message" => "Objeto não encontrado.",
+                    "code" => 404,
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "Ocorreu um erro ao recuperar as informações do objeto.",
+                "code" => 500,
+            ], 500);
+        }
+    }
 
 
     public function updateLostObject(Request $request){
@@ -118,24 +148,41 @@ class LostObjectController extends Controller
 
 
     public function deleteLostObject(Request $request){
-        try {
-            $lostObjectId = $request->lostObjectId;
-            $object = LostObject::where('lostObjectId', $lostObjectId)->first();
+    try {
+        $lostObjectId = $request->lostObjectId;
 
-        if ($object) {
-            $object->delete();
-            return response()->json([
-                "status" => true,
-                "message" => "Objeto apagado com sucesso.",
-                "code" => "200",
-            ]);
-        } else {
+        $lostObject = LostObject::where('lostObjectId', $lostObjectId)->first();
+
+        if (!$lostObject) {
             return response()->json([
                 "status" => false,
                 "message" => "Objeto não encontrado.",
                 "code" => "404",
             ], 404);
         }
+
+        $user = User::where('email', $lostObject->ownerEmail)->first();
+
+        if (!$user) {
+            return response()->json([
+                "status" => false,
+                "message" => "Dono do objeto não encontrado.",
+                "code" => "404",
+            ], 404);
+        }
+
+        $user->lost_objects = array_diff($user->lost_objects, [$lostObjectId]);
+        $user->save();
+
+        // Delete the lost object
+        $lostObject->delete();
+
+        return response()->json([
+            "status" => true,
+            "message" => "Objeto apagado com sucesso.",
+            "code" => "200",
+        ]);
+
     } catch (\Exception $e) {
         return response()->json([
             "status" => false,
@@ -143,7 +190,7 @@ class LostObjectController extends Controller
             "code" => "500",
         ], 500);
     }
-    }
+}
 
 public function crossCheck(Request $request)
 {
@@ -162,41 +209,41 @@ public function crossCheck(Request $request)
     Log::info('Found object count: ' . json_encode($foundObjectsCount));
     
     foreach ($foundObjects as $foundObject) {
-      
         $matchPercentage = $this->calculateMatchPercentage($foundObject, $lostObject);
 
         Log::info('Match percentage for found object ' . $foundObject->id . ': ' . $matchPercentage);
 
-        
-        if (
-            $foundObject->category == $lostObject->category &&
-            $foundObject->color == $lostObject->color &&
-            $foundObject->brand == $lostObject->brand &&
-            $foundObject->size == $lostObject->size
-        ) {
-            
-            array_push($matches, [
-                'found_object_id' => $foundObject,
-                'match_percentage' => $matchPercentage,
-            ]);
-        }
-        if ($matchPercentage >= 70) {
-          
-            $possibleOwner = $foundObject->possible_owner ?? [];
-            
-            
-            $possibleOwner[] = $lostObject->ownerEmail;
+        // Include found object information along with match percentage
+        $matches[] = [
+            'found_object_id' => $foundObject->id,
+            'found_object' => $foundObject, // Include the found object data
+            'match_percentage' => $matchPercentage,
+        ];
 
+        if ($matchPercentage >= 70) {
+            $possibleOwner = $foundObject->possible_owner ?? [];
+            $possibleOwner[] = $lostObject->ownerEmail;
             $foundObject->possible_owner = $possibleOwner;
             $foundObject->save();
         }
     }
 
-    // Return JSON response outside of the loop
+    // Check if matches array is empty
+    if (empty($matches)) {
+        return response()->json([
+            'message' => 'No matches found.',
+        ]);
+    }
+
+    // Return JSON response with matches
     return response()->json([
         'matches' => $matches,
     ]);
 }
+
+
+
+
 
 
 
@@ -219,29 +266,38 @@ private function descriptionMatch($foundDescription, $lostDescription)
 
 private function calculateMatchPercentage($foundObject, $lostObject)
 {
-    $matchPercentage = 0;
+    // Total number of attributes being compared, including the description
+    $totalAttributes = 6;
 
-    if ($this->descriptionMatch($foundObject->description, $lostObject->description)) {
-        $matchPercentage += 10; 
-    }
+    // Weight for each attribute (excluding the description)
+    $attributeWeight = (100 - 10) / ($totalAttributes - 1);
 
+    // Calculate the match percentage for the description
+    $descriptionMatchPercentage = $this->descriptionMatch($foundObject->description, $lostObject->description) ? 10 : 0;
+
+    // Initialize the total match percentage with the description match percentage
+    $matchPercentage = $descriptionMatchPercentage;
+
+    // Add match percentage for other attributes
     if ($foundObject->location === $lostObject->location) {
-        $matchPercentage += 15; 
+        $matchPercentage += $attributeWeight; 
     }
 
     if ($foundObject->category === $lostObject->category) {
-        $matchPercentage += 15; 
+        $matchPercentage += $attributeWeight; 
     }
     if ($foundObject->color === $lostObject->color) {
-        $matchPercentage += 15; 
+        $matchPercentage += $attributeWeight; 
     }
     if ($foundObject->brand === $lostObject->brand) {
-        $matchPercentage += 15; 
+        $matchPercentage += $attributeWeight; 
     }
     if ($foundObject->size === $lostObject->size) {
-        $matchPercentage += 15; 
+        $matchPercentage += $attributeWeight; 
     }
 
     return $matchPercentage;
 }
+
+
 }

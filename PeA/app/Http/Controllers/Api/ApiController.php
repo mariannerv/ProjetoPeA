@@ -9,6 +9,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\LostObject;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
@@ -19,6 +20,11 @@ use Illuminate\Auth\Events\PasswordReset;
 use PeA\database\factories\UserFactory;
 use PHPUnit\Metadata\Uses;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\SendMailController;
+
+
+
+
 class ApiController extends Controller
 {
 
@@ -37,7 +43,7 @@ public function register(Request $request){
             'address' => 'required|string',
             'codigo_postal' => 'required|string',
             'localidade' => 'required|string',
-            'civilId' => 'required|string',
+            'civilId' => 'required|string|unique:users',
             'taxId' => 'required|string|unique:users',
             'contactNumber' => 'required|string',
             'email' => 'required|email|unique:users',
@@ -73,8 +79,16 @@ public function register(Request $request){
             "lost_objects" => [],
         ]);
      
+        $sendMailController = new SendMailController();
+        $sendMailController->sendWelcomeEmail(
+            $request->input('email'),
+            "Bem vindo ao PeA!",
+            "Bem vindo!"
+        );
+        
+        
+        return redirect()->route('registerSuccess');
 
-        return redirect()->route('users.store');
     } catch (ValidationException $e) {
         if ($e->errors()['taxId'] && $e->errors()['taxId'][0] === 'Número de contribuinte já associado a outra conta.') {
             return response()->json([
@@ -87,6 +101,14 @@ public function register(Request $request){
             return response()->json([
                 "status" => false,
                 "message" => "Email já associado a outra conta.",
+                "code" => "400",
+            ], 400);
+        }
+
+        if ($e->errors()['civilId'] && $e->errors()['civilId'][0] === 'Cartão de cidadão já associado a outra conta.') {
+            return response()->json([
+                "status" => false,
+                "message" => "Cartão de cidadão já associado a outra conta.",
                 "code" => "400",
             ], 400);
         }
@@ -105,60 +127,57 @@ public function register(Request $request){
 
     //Login API (POST, formdata)
 
-public function login(Request $request)
-{
-    $request->validate([
-        "email" => "required|email",
-        "password" => "required",
-    ]);
+    public function login(Request $request)
+    {
+        $request->validate([
+            "email" => "required|email",
+            "password" => "required",
+        ]);
+        $email = $request->input('email');
+        $user = User::where("email", $email)->first();
+        
+      if (!empty($user)) {  
+            if ($user->account_status == 'active') {
+                if (Hash::check($request->input('password'), $user->password)) {
+                    
+                    $expirationTime = now()->addHours(24);
+    
+                   # $token = $user->createToken(name: 'personal-token', expiresAt: now()->addMinutes(30))->plainTextToken;
+    
+                    #$user->update(['token' => explode('|', $token)[1]]);
+    
+                    $expirationTime = now()->addHours(24)->format('Y-m-d H:i:s');
+                    
+                  
+                    
+                    Auth::loginUsingId($user->_id);
 
-    $user = User::where("email", $request->email)->first();
-
-  if (!empty($user)) {
-        if ($user->account_status == 'active') {
-            if (Hash::check($request->password, $user->password)) {
+                    return view('userhome');
+    
+                   # return redirect()->route('userhome')->with('success' , 'Login');
                 
-                // Set the desired expiration time (24 hours in this example)
-                $expirationTime = now()->addHours(24);
-
-                // Create the token instance
-                $token = $user->createToken(name: 'personal-token', expiresAt: now()->addMinutes(30))->plainTextToken;
-
-
-                // Store the plain text token in the user's record (optional)
-                $user->update(['token' => explode('|', $token)[1]]);
-
-                $expirationTime = now()->addHours(24)->format('Y-m-d H:i:s');
-                
-                return response()->json([
-                    "status" => true,
-                    "code" => 200,
-                    "message" => "Login successful!",
-                    "token" => $token,
-                    "expiration_time" => $expirationTime,
-                ]);
+                } else {
+                    return response()->json([
+                        "status" => false,
+                        "code" => 401,
+                        "message" => "Credenciais inválidas",
+                    ], 401);
+                }
             } else {
                 return response()->json([
                     "status" => false,
-                    "code" => 401,
-                    "message" => "Credenciais inválidas",
-                ], 401);
+                    "code" => 403,
+                    "message" => "Esta conta está desativada.",
+                ], 403);
             }
         } else {
             return response()->json([
                 "status" => false,
-                "code" => 403,
-                "message" => "Esta conta está desativada.",
-            ], 403);
+                "code" => 404,
+                "message" => "Utilizador não encontrado",
+            ], 404);
         }
-    } else {
-        return response()->json([
-            "status" => false,
-            "code" => 404,
-            "message" => "Utilizador não encontrado",
-        ], 404);
     }
-}
 
     //Deactivate account 
     public function deactivate(Request $request)
@@ -231,11 +250,9 @@ public function login(Request $request)
     // Logout API (GET)
 
     public function logout(){
-        auth()->user()->tokens()->delete();
-        return response()->json([
-            "status" => true,
-            "message" => "User logged out",
-        ]);
+        Auth::logout();
+
+        return view('home');
     }
 
     public function update2(Request $request)
@@ -255,7 +272,6 @@ public function login(Request $request)
             'password' => 'confirmed',
         ]);
 
-        // Update the user's information based on the request data
         $user->update($request->all());
 
         return response()->json([
@@ -292,6 +308,87 @@ public function login(Request $request)
             ], 404);
         }
     }
+
+
+public function lostObjects(Request $request){
+    try {
+        $request->validate([
+            'email' => 'required|string',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                "status" => false,
+                "message" => "User not found.",
+                "code" => 404,
+            ], 404);
+        }
+
+        // Get the array of lost object IDs for the user
+        $lostObjectIds = $user->lost_objects;
+
+        // Retrieve the lost objects from the database
+        $lostObjects = LostObject::whereIn('lostObjectId', $lostObjectIds)->get();
+
+        $response = [
+            "status" => true,
+            "message" => "Lost objects retrieved successfully.",
+            "lost_objects" => $lostObjects,
+        ];
+
+        return response()->json($response, 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            "status" => false,
+            "message" => "An error occurred while retrieving lost objects.",
+            "code" => 500,
+        ], 500);
+    }
+}
+
+public function myBids(Request $request){
+    try {
+        $request->validate([
+            'email' => 'required|string',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                "status" => false,
+                "message" => "Utilizador não encontrado.",
+                "code" => 404,
+            ], 404);
+        }
+
+        // Get the array of lost object IDs for the user
+        $bidIds = $user->bid_history;
+
+        // Retrieve the lost objects from the database
+        $bids = Bid::whereIn('bidId', $bidIds)->get();
+
+        $response = [
+            "status" => true,
+            "message" => "Licitações retornadas.",
+            "lost_objects" => $bids,
+        ];
+
+        return response()->json($response, 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            "status" => false,
+            "message" => "Ocorreu um erro ao tentar recuperar a lista de licitações.",
+            "code" => 500,
+        ], 500);
+    }
+}
+
+
 
 // Verify email method
 public function verify(Request $request)
@@ -367,11 +464,39 @@ public function sendResetLinkEmail(Request $request)
         ? redirect()->back()->with('status', trans($status))
         : back()->withErrors(['email' => trans($status)]);
 }
+//___---------------------------------------------------------------
+//___---------------------------------------------------------------
+
+/* old destroy
 
 public function destroy(string $id) {
     User::where('_id' ,$id )->delete();
     return redirect()->route('users.store');
 }
+*/
+//confirm destroy method
+
+
+public function confirmDelete(User $user)
+{
+    return view('confirm_deletion', compact('user'));
+}
+
+
+public function destroy(Request $request, $id)
+{
+    $user = User::findOrFail($id);
+    
+    if (Hash::check($request->password, $user->password)) {
+        $user->delete();
+        return redirect()->route('users.store')->with('success', 'User deleted successfully.');
+    } else {
+        return redirect()->route('users.store')->with('error', 'Incorrect password. User not deleted.');
+    }
+}
+//___---------------------------------------------------------------
+//___---------------------------------------------------------------
+
 
 public function edit(User $user) {
     return view('usereditform' , ['user' => $user]);
@@ -379,7 +504,22 @@ public function edit(User $user) {
 
 
 public function update(Request $request, string $id) {
-    $update = User::where('_id' , $id)->update($request->except(['_token' , '_method']));
+    $update = User::where('_id' , $id)->update(
+        ["name" => $request-> input('name'),
+            "gender" => $request->input('gender'),
+            "birthdate" => $request->input('birthdate'),
+            "address" => $request->input('address'),
+            "codigo_postal" => $request->input('codigo_postal'),
+            "localidade" => $request->input('localidade'),
+            "civilId" => $request->input('civilId'),
+            "taxId" => $request->input('taxId'),
+            "contactNumber" => $request->input('contactNumber'),
+            "email" => $request->input('email') ,
+            "password" => Hash::make($request->input('password')),
+            ]
+
+
+    );
     
     if ($update) {
         return redirect()->route('users.store');

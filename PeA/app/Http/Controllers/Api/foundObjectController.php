@@ -32,6 +32,7 @@ public function registerFoundObject(Request $request)
                 'regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),\s*[-]?((([1]?[0-7]?[0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?$/'
             ],
             'date_found' => 'required|date',
+            'estacao_policia' => 'required|string|exists:police_station,sigla',
         ]);
             
 
@@ -53,6 +54,7 @@ public function registerFoundObject(Request $request)
             "date_found" => $request->date_found,
             "date_registered" => $dateRegistered,
             "deadlineForAuction" => $deadlineForAuction,
+            "estacao_policia" => $request->estacao_policia,
         ]);
 
         return response()->json([
@@ -101,7 +103,7 @@ public function viewFoundObject(Request $request){
     }
 
    public function updateFoundObject(Request $request)
-{
+    {
     $object = foundObject::where('objectId', $request->objectId)->first();
     
     if ($object) {
@@ -122,6 +124,7 @@ public function viewFoundObject(Request $request){
             'value' => 'numeric|min:0',
             'date_found' => 'date',
             'deadlineForAuction' => 'date',
+            'estacao_policia' => 'string|exists:police_station,sigla',
         ]);
 
         $object->update($request->all());

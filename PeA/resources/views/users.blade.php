@@ -1,3 +1,6 @@
+@if (auth()->check())
+
+@if(auth()->user()->email == "admin@teste.pt")
 <!-- resources/views/users.blade.php -->
 
 <!DOCTYPE html>
@@ -44,11 +47,11 @@
                 <td>{{ $user->contactNumber }}</td>
                 <td>{{ $user->email }}</td>
                 <td class="action-buttons">
-                    <form method="post" action="{{ route('user.destroy', $user->id) }}" style="display: inline;">
+                    <form method="post" action="{{ route('user.confirm-delete', $user->id) }}" style="display: inline;">
                         @csrf
-                        @method('DELETE')
                         <button type="submit">Eliminar</button>
                     </form>
+                    
                     <form method="get" action="{{ route('user.edit', $user->id) }}" style="display: inline;">
                         @csrf
     
@@ -61,3 +64,12 @@
     </table>
 </body>
 </html>
+@else
+<h1>Area Administrativa</h1>
+@endif
+
+@else
+<h1>Area Administrativa</h1>
+@endif
+
+

@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use MongoDB\Laravel\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use MongoDB\Laravel\Eloquent\Model;
 
 
-class User extends Model implements MustVerifyEmail
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -93,5 +93,12 @@ class User extends Model implements MustVerifyEmail
         } elseif ($mostRecentBidderName !== $previousBidderName && $mostRecentBidValue > $previousBidValue) {
             $this->notify(new BidOvertakenNotification($mostRecentBidderName));
         }
+    }
+    public function createNotificationToken()
+    {
+        $token = new NotificationToken();
+        $token->user_id = $this->id;
+        $token->token = \Illuminate\Support\Str::random(60); 
+        $token->save();
     }
 }
