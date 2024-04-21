@@ -41,7 +41,6 @@ use Illuminate\Support\Facades\Route;
     use App\Http\Controllers\Api\PoliceStationController;
     use App\Http\Controllers\Api\PoliceController;
     use App\Http\Controllers\EmailController;
-    use App\Http\Controllers\EmailController;
     use App\Models\PoliceStation;
     use App\Http\Controllers\Emails\SendMailController;
 /*

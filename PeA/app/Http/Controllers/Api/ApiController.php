@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\LostObject;
-use App\Models\LostObject;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
@@ -78,6 +77,7 @@ public function register(Request $request){
             "email_verified_at" => '',
             "bid_history" => [],
             "lost_objects" => [],
+            "admin" => false,
         ]);
      
         event(new Registered($user));

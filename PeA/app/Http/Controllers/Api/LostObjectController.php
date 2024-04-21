@@ -113,36 +113,7 @@ class LostObjectController extends Controller
             ], 500);
         }
     }
-    public function getLostObject(Request $request){
-        try {
-            $request->validate([
-                'lostObjectId' => 'required|string',
-            ]);
-
-            $object = LostObject::where('lostObjectId', $request->lostObjectId)->first();
-
-            if ($object) {
-              
-                return response()->json([
-                    "status" => true,
-                    "data" => $object,
-                    "code" => 200,
-                ]);
-            } else {
-                return response()->json([
-                    "status" => false,
-                    "message" => "Objeto não encontrado.",
-                    "code" => 404,
-                ], 404);
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                "status" => false,
-                "message" => "Ocorreu um erro ao recuperar as informações do objeto.",
-                "code" => 500,
-            ], 500);
-        }
-    }
+    
 
 
     public function updateLostObject(Request $request){

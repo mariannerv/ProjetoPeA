@@ -40,6 +40,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at',
         'bid_history',
         'lost_objects',
+        'admin',
     ];
 
     /**
