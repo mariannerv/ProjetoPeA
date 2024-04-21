@@ -18,7 +18,7 @@ use App\Models\Bid;
 use App\Models\LostObject;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\crossCheckMailController;
+use App\Http\Controllers\Emails\crossCheckMailController;
 
 class LostObjectController extends Controller
 {

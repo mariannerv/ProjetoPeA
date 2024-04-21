@@ -16,7 +16,7 @@ use App\Models\User;
 use App\Models\Auction;
 use App\Models\Bid;
 use Illuminate\Validation\ValidationException;
-use App\Http\Controllers\bidMailUpdateController;
+use App\Http\Controllers\Emails\bidMailUpdateController;
 
 class BidController extends Controller
 {

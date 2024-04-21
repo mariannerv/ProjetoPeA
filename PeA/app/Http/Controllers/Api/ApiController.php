@@ -1,8 +1,5 @@
 <?php
-#TODO:IMPLEMENT EMAIL VERIFICATION, EMAIL NOTIFICATIONS AND PASSWORD RESETS
-#EMAIL VERIFICATIONS SHOULD BE EASY,SO START BY THERE
-#THEN PASSWORD RESETS
-#THEN EMAIL NOTIFS
+
 
 namespace App\Http\Controllers\Api;
 
@@ -20,8 +17,11 @@ use Illuminate\Auth\Events\PasswordReset;
 use PeA\database\factories\UserFactory;
 use PHPUnit\Metadata\Uses;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\SendMailController;
-
+use App\Http\Controllers\Emails\SendMailController;
+use App\Providers\RouteServiceProvider;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Validation\Rules;
+use Illuminate\View\View;
 
 
 
@@ -37,7 +37,7 @@ public function register(Request $request){
 
     try {
         $val = Validator::make($request->all(),[
-            'name' => 'required|string',
+            'name' => ['required', 'string', 'max:255'],
             'gender' => 'required|string',
             'birthdate' => 'required|date',
             'address' => 'required|string',
@@ -47,7 +47,7 @@ public function register(Request $request){
             'taxId' => 'required|string|unique:users',
             'contactNumber' => 'required|string',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:8',
+            'password' => ['required', Rules\Password::defaults()],
         ]);
         
         if ($val->fails()){
@@ -79,8 +79,11 @@ public function register(Request $request){
             "lost_objects" => [],
         ]);
      
-        $sendMailController = new SendMailController();
-        $sendMailController->sendWelcomeEmail(
+        event(new Registered($user));
+
+        
+
+        app(SendMailController::class)->sendWelcomeEmail(
             $request->input('email'),
             "Bem vindo ao PeA!",
             "Bem vindo!"

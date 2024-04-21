@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Emails;
 
 use Illuminate\Http\Request;
 use App\Mail\SampleMail;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\crossCheckUpdate;
-
+use App\Http\Controllers\Controller;
 
 class crossCheckMailController extends Controller
 {
