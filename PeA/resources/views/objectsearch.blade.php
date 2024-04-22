@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 
-<!--ideia : procura objetos perdidos e achados e mostra a localizacao no mapa atraves do tomtom-->
+<!--idea: Search for lost and found objects and display their locations on a map using TomTom-->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lost and Found Objects Search</title>
