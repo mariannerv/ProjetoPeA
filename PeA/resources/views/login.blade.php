@@ -13,8 +13,11 @@
 </head>
 
 <body>
-    <?php
-    include 'PeA\resources\views\chooseaccounttype.blade.php';?>
+@include('components.navbar')
+
+<div class="container">
+    @yield('content')
+</div>
     <div class="container">
         <h2>Login</h2>
         <!-- Form for user login -->
