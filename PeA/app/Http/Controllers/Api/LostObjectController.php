@@ -263,6 +263,29 @@ private function descriptionMatch($foundDescription, $lostDescription)
     return $matchPercentage >= $threshold;
 }
 
+public function searchByDescription(Request $request)
+{
+    try {
+        $request->validate([
+            'description' => 'required|string',
+        ]);
+
+        $objects = LostObject::where('description', 'like', '%' . $request->description . '%')->get();
+
+        return response()->json([
+            "status" => true,
+            "data" => $objects,
+            "code" => 200,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            "status" => false,
+            "message" => "An error occurred while searching for lost objects.",
+            "code" => 500,
+        ], 500);
+    }
+}
+
 
 private function calculateMatchPercentage($foundObject, $lostObject)
 {

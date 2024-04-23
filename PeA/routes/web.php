@@ -72,3 +72,5 @@ Route::middleware('auth')->group(function () {
 Route::get('/search', function () {
     return view('objectsearch');
 });
+Route::get('/api/lost-object-search-by-description', 'LostObjectController@searchByDescription');
+Route::get('/api/found-object-search-by-description', 'FoundObjectController@searchByDescription');
