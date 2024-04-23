@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<!--idea: Search for lost and found objects and display their locations on a map using TomTom-->
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lost and Found Objects Search</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lost and Found Objects Search</title>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 
@@ -20,12 +17,12 @@
     </div>
   </div>
 
-  <!-- Search Results -->
+  <!-- Search Results Table -->
   <div id="searchResults" class="mt-3">
     <!-- Results will be displayed here -->
   </div>
 </div>
-
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <!-- Bootstrap JS (optional, only if you need JavaScript features) -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
@@ -33,49 +30,78 @@
 
 <!-- Custom JavaScript -->
 <script>
-  // Function to search for lost and found objects
   function searchObjects() {
-    var searchTerm = document.getElementById("searchInput").value;
+  var searchTerm = document.getElementById("searchInput").value;
 
-    // Make AJAX request to search endpoint
-    $.ajax({
-      url: '/api/search', // Update the URL with your API endpoint
-      method: 'GET',
-      data: { query: searchTerm },
-      success: function(response) {
-        // Handle successful response
-        displaySearchResults(response.data); // Assuming the response contains data in a specific format
-      },
-      error: function(xhr, status, error) {
-        // Handle error
-        console.error(error);
-      }
-    });
-  }
+  // Make AJAX request to search for lost objects
+  jQuery.ajax({
+    url: '/api/lost-object-search', // Update the URL with your API endpoint for lost objects
+    method: 'GET',
+    data: { query: searchTerm },
+    success: function(response) {
+      displaySearchResults(response.data, "Lost Objects");
+    },
+    error: function(xhr, status, error) {
+      console.error(error);
+    }
+  });
 
-  // Function to display search results
-  function displaySearchResults(results) {
+  // Make AJAX request to search for found objects
+  jQuery.ajax({
+    url: '/api/found-object-search', // Update the URL with your API endpoint for found objects
+    method: 'GET',
+    data: { query: searchTerm },
+    success: function(response) {
+      displaySearchResults(response.data, "Found Objects");
+    },
+    error: function(xhr, status, error) {
+      console.error(error);
+    }
+  });
+}
+
+
+  function displaySearchResults(results, objectType) {
     var searchResultsDiv = document.getElementById("searchResults");
     searchResultsDiv.innerHTML = ""; // Clear previous results
 
+    var table = document.createElement("table");
+    table.className = "table";
+    var thead = document.createElement("thead");
+    var tbody = document.createElement("tbody");
+    var headerRow = document.createElement("tr");
+    var headerCell = document.createElement("th");
+    headerCell.textContent = objectType;
+    headerCell.setAttribute("colspan", "3");
+    headerRow.appendChild(headerCell);
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
     if (results.length === 0) {
-      searchResultsDiv.innerHTML = "<p>No results found.</p>";
+      var noResultsRow = document.createElement("tr");
+      var noResultsCell = document.createElement("td");
+      noResultsCell.textContent = "No results found.";
+      noResultsCell.setAttribute("colspan", "3");
+      noResultsRow.appendChild(noResultsCell);
+      tbody.appendChild(noResultsRow);
     } else {
-      // Iterate over results and display them
       results.forEach(function(result) {
-        // Create HTML elements to display result
-        var resultDiv = document.createElement("div");
-        resultDiv.className = "card mt-3";
-        resultDiv.innerHTML = `
-          <div class="card-body">
-            <h5 class="card-title">${result.title}</h5>
-            <p class="card-text">${result.description}</p>
-            <!-- Add more details as needed -->
-          </div>
-        `;
-        searchResultsDiv.appendChild(resultDiv);
+        var row = document.createElement("tr");
+        var categoryCell = document.createElement("td");
+        categoryCell.textContent = result.category;
+        var descriptionCell = document.createElement("td");
+        descriptionCell.textContent = result.description;
+        var locationCell = document.createElement("td");
+        locationCell.textContent = result.location;
+        row.appendChild(categoryCell);
+        row.appendChild(descriptionCell);
+        row.appendChild(locationCell);
+        tbody.appendChild(row);
       });
     }
+
+    table.appendChild(tbody);
+    searchResultsDiv.appendChild(table);
   }
 </script>
 </body>
