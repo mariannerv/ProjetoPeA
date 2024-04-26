@@ -63,7 +63,7 @@ public function placeBid(Request $request)
     }
 
 
-    $timestamp = Carbon::now()->timestamp;
+    $timestamp = date("Y-m-d H:i:s");
     $uuid = (string) Str::uuid();
     $bid = Bid::create([
         "bidId" => $uuid,
@@ -85,9 +85,9 @@ public function placeBid(Request $request)
         }
 
     if ($bid) {
-        $now = Carbon::now();
         
-        $bidDate = new UTCDateTime(now()->timestamp * 1000);;
+        
+        $bidDate = date("Y-m-d H:i:s");
         $auction->highestBid = $request->amount;
         $auction->highestBidderId = $request->bidderId;
         $auction->push('bids_list', $bid->bidId);
