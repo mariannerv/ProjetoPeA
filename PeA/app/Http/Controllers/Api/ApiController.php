@@ -22,6 +22,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use App\Http\Controllers\verificationCodeController;
 
 
 
@@ -74,6 +75,7 @@ public function register(Request $request){
             "password" => Hash::make($request->input('password')),
             "account_status" => 'active',
             "token" => '',
+            "email_verified" => "false",
             "email_verified_at" => '',
             "bid_history" => [],
             "lost_objects" => [],
@@ -90,6 +92,8 @@ public function register(Request $request){
             "Bem vindo!"
         );
         
+        //cria logo um token pra verificar o email
+        app(verificationCodeController::class)->createCode($request->input('email'));
         
         return redirect()->route('registerSuccess');
 
@@ -330,10 +334,8 @@ public function lostObjects(Request $request){
             ], 404);
         }
 
-        // Get the array of lost object IDs for the user
         $lostObjectIds = $user->lost_objects;
 
-        // Retrieve the lost objects from the database
         $lostObjects = LostObject::whereIn('lostObjectId', $lostObjectIds)->get();
 
         $response = [
@@ -369,10 +371,8 @@ public function myBids(Request $request){
             ], 404);
         }
 
-        // Get the array of lost object IDs for the user
         $bidIds = $user->bid_history;
 
-        // Retrieve the lost objects from the database
         $bids = Bid::whereIn('bidId', $bidIds)->get();
 
         $response = [
@@ -395,80 +395,10 @@ public function myBids(Request $request){
 
 
 // Verify email method
-public function verify(Request $request)
-{
-    $request->validate([
-        'id' => 'required|exists:users,id',
-        'hash' => 'required|string',
-    ]);
-
-    $user = User::findOrFail($request->id);
-
-    if (!hash_equals((string)$request->hash, sha1($user->getEmailForVerification()))) {
-        return response()->json(['message' => 'Email verification failed'], 403);
-    }
-
-    if ($user->hasVerifiedEmail()) {
-        return response()->json(['message' => 'Email already verified'], 400);
-    }
-
-    $user->markEmailAsVerified();
-
-    event(new Verified($user));
-
-    return response()->json(['message' => 'Email verified successfully'], 200);
-}
-
-// Forgot password method
-public function forgotPassword(Request $request)
-{
-    $request->validate(['email' => 'required|email']);
-
-    $status = Password::sendResetLink($request->only('email'));
-
-    return $status === Password::RESET_LINK_SENT
-        ? response()->json(['message' => 'Password reset link sent'], 200)
-        : response()->json(['message' => 'Unable to send password reset link'], 400);
-}
-
-
-    // Reset password method
-    public function resetPassword(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-        'token' => 'required|string',
-        'password' => 'required|string|min:8|confirmed',
-    ]);
-
-    $status = Password::reset(
-        $request->only('email', 'password', 'password_confirmation', 'token'),
-        function ($user, $password) {
-            $user->forceFill(['password' => Hash::make($password)])->save();
-            event(new PasswordReset($user));
-        }
-    );
-
-    return $status == Password::PASSWORD_RESET
-        ? response()->json(['message' => __($status)], 200)
-        : response()->json(['message' => __($status)], 400);
-}
 
 
 
-public function sendResetLinkEmail(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-    ]);
 
-    $status = Password::sendResetLink($request->only('email'));
-
-    return $status === Password::RESET_LINK_SENT
-        ? redirect()->back()->with('status', trans($status))
-        : back()->withErrors(['email' => trans($status)]);
-}
-//___---------------------------------------------------------------
 //___---------------------------------------------------------------
 
 /* old destroy
@@ -521,7 +451,6 @@ public function update(Request $request, string $id) {
             "email" => $request->input('email') ,
             "password" => Hash::make($request->input('password')),
             ]
-
 
     );
     

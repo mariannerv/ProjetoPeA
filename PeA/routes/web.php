@@ -36,13 +36,15 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-    use App\Http\Controllers\OwnerController;
-    use App\Http\Controllers\Api\ApiController;
-    use App\Http\Controllers\Api\PoliceStationController;
-    use App\Http\Controllers\Api\PoliceController;
-    use App\Http\Controllers\EmailController;
-    use App\Models\PoliceStation;
-    use App\Http\Controllers\Emails\SendMailController;
+use App\Http\Controllers\OwnerController;
+use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\Api\PoliceStationController;
+use App\Http\Controllers\Api\PoliceController;
+use App\Http\Controllers\EmailController;
+use App\Http\Controllers\emailVerificationCodeController;
+use App\Models\PoliceStation;
+use App\Http\Controllers\Emails\SendMailController;
+use App\Http\Controllers\verificationCodeController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -142,3 +144,25 @@ Route::get('send-mail',[EmailController::class, 'sendWelcomeEmail']);
 Route::get('/registerSuccess', function () {
     return view('registerSuccess');
 })->name('registerSuccess');
+
+
+Route::get('/verification-form', function () {
+    return view('verificaemail');
+});
+
+
+
+
+//caso o timer tenha expirado
+Route::post('/generate-new-token/{uuid}', [verificationCodeController::class, 'geraNovoToken'])->name('generate-new-token');
+
+
+
+
+//Cenas pra verificar os emails
+
+Route::get('/verify-email/{uuid}', [verificationCodeController::class, 'verifyEmail'])->name('verify-email');
+
+Route::view('/tokenexpirou/{uuid}', 'tokenexpirou')->name('tokenexpirou');
+Route::view('/novoemail/', 'novoemail')->name('novoemail');
+Route::view('/verificaemail/', 'verificaemail')->name('verificaemail');

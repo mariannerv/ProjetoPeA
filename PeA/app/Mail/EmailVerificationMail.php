@@ -10,26 +10,20 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Address;
 
-
-class welcome extends Mailable
+class EmailVerificationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $mailMessage;
+
     public $subject;
-    
+    public $uuid;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct($message, $subject)
+
+    public function __construct($uuid, $subject)
     {
-        $this->mailMessage = $message;
+        
         $this->subject = $subject;
-        
-        
-        
-
+        $this->uuid = $uuid;
     }
 
     /**
@@ -38,7 +32,7 @@ class welcome extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from : new Address('projetopea1@gmail.com', 'Perdidos & Achados'),
+            from: new Address('projetopea1@gmail.com', 'Perdidos & Achados'),
             replyTo:[
                 new Address('projetopea1@gmail.com', 'Perdidos & Achados'),
             ],
@@ -52,7 +46,7 @@ class welcome extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.welcomemail',
+            view: 'emails.verifyemailemail',
         );
     }
 

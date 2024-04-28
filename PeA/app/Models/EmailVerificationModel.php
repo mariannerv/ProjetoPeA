@@ -18,8 +18,8 @@ class EmailVerificationModel extends Model
 
     protected $fillable = [
         'user_email',
-        'code',
         'expiration_time',
+        'uuid',
     ];
 
 
