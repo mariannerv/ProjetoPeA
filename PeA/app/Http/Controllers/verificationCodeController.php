@@ -76,6 +76,15 @@ class verificationCodeController extends Controller
             "expiration_time" => $add_min,
             "uuid" => $uuidNovo,
         ]);
+
+
+        app(VerificationEmailController::class)->sendVerifyEmail(
+            $email,
+            "http://localhost:8000/verify-email/" . $uuid,
+            "Confirme o seu email"
+        );
+
+
         return redirect()->route('novoemail');
     }
 
