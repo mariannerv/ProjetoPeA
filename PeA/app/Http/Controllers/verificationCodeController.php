@@ -47,7 +47,7 @@ class verificationCodeController extends Controller
 
             // Checkar se o tempo expirou
             if (Carbon::now() > $verificationRecord->expiration_time) {
-                
+                $verificationRecord->delete();
                 return redirect()->route('tokenexpirou', ['uuid' => $uuid]);
 
             } else {
