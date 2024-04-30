@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OwnerController;
 use App\Models\Owner;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\verificationCodeController;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\PoliceStationController;
 use App\Http\Controllers\Api\PoliceController;
@@ -113,6 +114,7 @@ Route::post("crossCheck", [LostObjectController::class, "crossCheck"]);
 Route::get("getLostObject", [LostObjectController::class, "getLostObject"]);
 
 
+Route::post("createCode", [verificationCodeController::class, "createCode"]);
 
 // Route::get('/test_mongodb/', function (Illuminate\Http\Request $request) {
 

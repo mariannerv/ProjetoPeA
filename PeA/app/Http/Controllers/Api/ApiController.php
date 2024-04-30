@@ -1,8 +1,5 @@
 <?php
-#TODO:IMPLEMENT EMAIL VERIFICATION, EMAIL NOTIFICATIONS AND PASSWORD RESETS
-#EMAIL VERIFICATIONS SHOULD BE EASY,SO START BY THERE
-#THEN PASSWORD RESETS
-#THEN EMAIL NOTIFS
+
 
 namespace App\Http\Controllers\Api;
 
@@ -20,8 +17,12 @@ use Illuminate\Auth\Events\PasswordReset;
 use PeA\database\factories\UserFactory;
 use PHPUnit\Metadata\Uses;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\SendMailController;
-
+use App\Http\Controllers\Emails\SendMailController;
+use App\Providers\RouteServiceProvider;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Validation\Rules;
+use Illuminate\View\View;
+use App\Http\Controllers\verificationCodeController;
 
 
 
@@ -37,7 +38,7 @@ public function register(Request $request){
 
     try {
         $val = Validator::make($request->all(),[
-            'name' => 'required|string',
+            'name' => ['required', 'string', 'max:255'],
             'gender' => 'required|string',
             'birthdate' => 'required|date',
             'address' => 'required|string',
@@ -47,7 +48,7 @@ public function register(Request $request){
             'taxId' => 'required|string|unique:users',
             'contactNumber' => 'required|string',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:8',
+            'password' => ['required', Rules\Password::defaults()],
         ]);
         
         if ($val->fails()){
@@ -74,18 +75,25 @@ public function register(Request $request){
             "password" => Hash::make($request->input('password')),
             "account_status" => 'active',
             "token" => '',
+            "email_verified" => "false",
             "email_verified_at" => '',
             "bid_history" => [],
             "lost_objects" => [],
+            "admin" => false,
         ]);
      
-        $sendMailController = new SendMailController();
-        $sendMailController->sendWelcomeEmail(
+        event(new Registered($user));
+
+        
+
+        app(SendMailController::class)->sendWelcomeEmail(
             $request->input('email'),
             "Bem vindo ao PeA!",
             "Bem vindo!"
         );
         
+        //cria logo um token pra verificar o email
+        app(verificationCodeController::class)->createCode($request->input('email'));
         
         return redirect()->route('registerSuccess');
 
@@ -127,56 +135,57 @@ public function register(Request $request){
 
     //Login API (POST, formdata)
 
-public function login(Request $request)
-{
-    $request->validate([
-        "email" => "required|email",
-        "password" => "required",
-    ]);
+    public function login(Request $request)
+    {
+        $request->validate([
+            "email" => "required|email",
+            "password" => "required",
+        ]);
+        $email = $request->input('email');
+        $user = User::where("email", $email)->first();
+        
+      if (!empty($user)) {  
+            if ($user->account_status == 'active') {
+                if (Hash::check($request->input('password'), $user->password)) {
+                    
+                    $expirationTime = now()->addHours(24);
+    
+                   # $token = $user->createToken(name: 'personal-token', expiresAt: now()->addMinutes(30))->plainTextToken;
+    
+                    #$user->update(['token' => explode('|', $token)[1]]);
+    
+                    $expirationTime = now()->addHours(24)->format('Y-m-d H:i:s');
+                    
+                  
+                    
+                    Auth::loginUsingId($user->_id);
 
-    $user = User::where("email", $request->email)->first();
-
-  if (!empty($user)) {
-        if ($user->account_status == 'active') {
-            if (Hash::check($request->password, $user->password)) {
+                    return view('userhome');
+    
+                   # return redirect()->route('userhome')->with('success' , 'Login');
                 
-                $expirationTime = now()->addHours(24);
-
-                $token = $user->createToken(name: 'personal-token', expiresAt: now()->addMinutes(30))->plainTextToken;
-
-                $user->update(['token' => explode('|', $token)[1]]);
-
-                $expirationTime = now()->addHours(24)->format('Y-m-d H:i:s');
-                
-                return response()->json([
-                    "status" => true,
-                    "code" => 200,
-                    "message" => "Login successful!",
-                    "token" => $token,
-                    "expiration_time" => $expirationTime,
-                ]);
+                } else {
+                    return response()->json([
+                        "status" => false,
+                        "code" => 401,
+                        "message" => "Credenciais inválidas",
+                    ], 401);
+                }
             } else {
                 return response()->json([
                     "status" => false,
-                    "code" => 401,
-                    "message" => "Credenciais inválidas",
-                ], 401);
+                    "code" => 403,
+                    "message" => "Esta conta está desativada.",
+                ], 403);
             }
         } else {
             return response()->json([
                 "status" => false,
-                "code" => 403,
-                "message" => "Esta conta está desativada.",
-            ], 403);
+                "code" => 404,
+                "message" => "Utilizador não encontrado",
+            ], 404);
         }
-    } else {
-        return response()->json([
-            "status" => false,
-            "code" => 404,
-            "message" => "Utilizador não encontrado",
-        ], 404);
     }
-}
 
     //Deactivate account 
     public function deactivate(Request $request)
@@ -249,11 +258,9 @@ public function login(Request $request)
     // Logout API (GET)
 
     public function logout(){
-        auth()->user()->tokens()->delete();
-        return response()->json([
-            "status" => true,
-            "message" => "User logged out",
-        ]);
+        Auth::logout();
+
+        return view('home');
     }
 
     public function update2(Request $request)
@@ -327,10 +334,8 @@ public function lostObjects(Request $request){
             ], 404);
         }
 
-        // Get the array of lost object IDs for the user
         $lostObjectIds = $user->lost_objects;
 
-        // Retrieve the lost objects from the database
         $lostObjects = LostObject::whereIn('lostObjectId', $lostObjectIds)->get();
 
         $response = [
@@ -366,10 +371,8 @@ public function myBids(Request $request){
             ], 404);
         }
 
-        // Get the array of lost object IDs for the user
         $bidIds = $user->bid_history;
 
-        // Retrieve the lost objects from the database
         $bids = Bid::whereIn('bidId', $bidIds)->get();
 
         $response = [
@@ -392,80 +395,10 @@ public function myBids(Request $request){
 
 
 // Verify email method
-public function verify(Request $request)
-{
-    $request->validate([
-        'id' => 'required|exists:users,id',
-        'hash' => 'required|string',
-    ]);
-
-    $user = User::findOrFail($request->id);
-
-    if (!hash_equals((string)$request->hash, sha1($user->getEmailForVerification()))) {
-        return response()->json(['message' => 'Email verification failed'], 403);
-    }
-
-    if ($user->hasVerifiedEmail()) {
-        return response()->json(['message' => 'Email already verified'], 400);
-    }
-
-    $user->markEmailAsVerified();
-
-    event(new Verified($user));
-
-    return response()->json(['message' => 'Email verified successfully'], 200);
-}
-
-// Forgot password method
-public function forgotPassword(Request $request)
-{
-    $request->validate(['email' => 'required|email']);
-
-    $status = Password::sendResetLink($request->only('email'));
-
-    return $status === Password::RESET_LINK_SENT
-        ? response()->json(['message' => 'Password reset link sent'], 200)
-        : response()->json(['message' => 'Unable to send password reset link'], 400);
-}
-
-
-    // Reset password method
-    public function resetPassword(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-        'token' => 'required|string',
-        'password' => 'required|string|min:8|confirmed',
-    ]);
-
-    $status = Password::reset(
-        $request->only('email', 'password', 'password_confirmation', 'token'),
-        function ($user, $password) {
-            $user->forceFill(['password' => Hash::make($password)])->save();
-            event(new PasswordReset($user));
-        }
-    );
-
-    return $status == Password::PASSWORD_RESET
-        ? response()->json(['message' => __($status)], 200)
-        : response()->json(['message' => __($status)], 400);
-}
 
 
 
-public function sendResetLinkEmail(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-    ]);
 
-    $status = Password::sendResetLink($request->only('email'));
-
-    return $status === Password::RESET_LINK_SENT
-        ? redirect()->back()->with('status', trans($status))
-        : back()->withErrors(['email' => trans($status)]);
-}
-//___---------------------------------------------------------------
 //___---------------------------------------------------------------
 
 /* old destroy
@@ -505,7 +438,21 @@ public function edit(User $user) {
 
 
 public function update(Request $request, string $id) {
-    $update = User::where('_id' , $id)->update($request->except(['_token' , '_method']));
+    $update = User::where('_id' , $id)->update(
+        ["name" => $request-> input('name'),
+            "gender" => $request->input('gender'),
+            "birthdate" => $request->input('birthdate'),
+            "address" => $request->input('address'),
+            "codigo_postal" => $request->input('codigo_postal'),
+            "localidade" => $request->input('localidade'),
+            "civilId" => $request->input('civilId'),
+            "taxId" => $request->input('taxId'),
+            "contactNumber" => $request->input('contactNumber'),
+            "email" => $request->input('email') ,
+            "password" => Hash::make($request->input('password')),
+            ]
+
+    );
     
     if ($update) {
         return redirect()->route('users.store');
