@@ -129,11 +129,21 @@
                         </div>
                         <div class="col-md-6">
                             <label for="validationCustom10" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="validationCustom10" name="password" required>
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" id="validationCustom10" name="password" required autocomplete="current-password">
                             <div class="invalid-feedback">
                                 Please provide a valid password.
                             </div>
+                            @error('validationCustom10')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
                         </div>
+                        <div class="col-md-6">
+                             <label for="validationCustom11" class="form-label">Confirm Password</label>
+                             <input id="validationCustom11" type="password" class="form-control @error('password') is-invalid @enderror" name="c_password" required autocomplete="current-password">
+                        </div>
+
                         <div class="col-12">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
