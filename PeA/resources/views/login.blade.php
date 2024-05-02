@@ -16,6 +16,12 @@
     </header>
 
 <body>
+@include('components.navbar')
+
+<div class="container">
+    @yield('content')
+</div>
+    <div class="container">
         <h2>Login</h2>
         <!-- Form for user login -->
         <form method="POST" action="{{ route('login') }}" class="needs-validation" novalidate>
