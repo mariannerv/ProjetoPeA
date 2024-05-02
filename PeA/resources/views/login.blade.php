@@ -11,11 +11,11 @@
         /* Additional custom styles can be added here */
     </style>
 </head>
+<header>
+      <?php include 'navbar.php'?>
+    </header>
 
 <body>
-    <?php
-    include 'PeA\resources\views\chooseaccounttype.blade.php';?>
-    <div class="container">
         <h2>Login</h2>
         <!-- Form for user login -->
         <form method="POST" action="{{ route('login') }}" class="needs-validation" novalidate>
