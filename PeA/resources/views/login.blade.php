@@ -12,11 +12,12 @@
     </style>
 </head>
 <header>
-      <?php include 'navbar.php'?>
+      <?php     @include('components.navbar') 
+?>
     </header>
 
 <body>
-@include('components.navbar')
+
 
 <div class="container">
     @yield('content')

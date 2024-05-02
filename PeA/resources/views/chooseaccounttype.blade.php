@@ -14,9 +14,10 @@
   </head>
   <body>
     <header>
-      <?php include 'PeA\resources\views\navbar.php'?>
+    @include('components.navbar') 
     </header>
-    <?php 
+    <?php
+    
 $image  = public_path() . '/images/user.png';
     ?>
     <main class="my-5">
