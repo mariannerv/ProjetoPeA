@@ -30,11 +30,10 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.11.0/maps/maps-web.min.js"></script>
-<link rel="stylesheet" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.11.0/maps/maps.css" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css" rel="stylesheet">
 
 <script>
-// Function to fetch all lost objects initially and display them
 function fetchAllLostObjects() {
     $.ajax({
         url: '/api/allLostObjects',
@@ -48,7 +47,6 @@ function fetchAllLostObjects() {
     });
 }
 
-// Function to fetch all found objects initially and display them
 function fetchAllFoundObjects() {
     $.ajax({
         url: '/api/allFoundObjects',
@@ -62,16 +60,11 @@ function fetchAllFoundObjects() {
     });
 }
 
-// Function to fetch all objects initially when the page loads
 function fetchAllObjects() {
-    // Call the fetchAllLostObjects and fetchAllFoundObjects functions
     fetchAllLostObjects();
     fetchAllFoundObjects();
 }
 
-
-
-// Function to display search results in a table
 function displaySearchResults(results, objectType, tableId) {
     var tableDiv = document.getElementById(tableId);
     tableDiv.innerHTML = ""; 
@@ -108,8 +101,7 @@ function displaySearchResults(results, objectType, tableId) {
             var mapButton = document.createElement("button");
             mapButton.textContent = "Show Location";
             mapButton.onclick = function() {
-                // Call a function to display the location on a map (using TomTom API)
-                displayLocationOnMap(result.location);
+                displayLocationOnMap(result.location_coords);
             };
             mapButtonCell.appendChild(mapButton);
             row.appendChild(nameCell);
@@ -124,32 +116,38 @@ function displaySearchResults(results, objectType, tableId) {
     tableDiv.appendChild(table);
 }
 
-// Function to display location on map using TomTom API
 function displayLocationOnMap(locationCoords) {
-    // Parse the location coordinates string
     var coordinates = locationCoords.split(',');
 
-    // Extract latitude and longitude
+    if (coordinates.length !== 2) {
+        console.error('Invalid coordinates format:', locationCoords);
+        return;
+    }
+
     var latitude = parseFloat(coordinates[0]);
     var longitude = parseFloat(coordinates[1]);
 
-    // Initialize the map
-    var map = tt.map({
-        key: 'YOUR_TOMTOM_API_KEY',
+    if (isNaN(latitude) || isNaN(longitude) || latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+        console.error('Invalid latitude or longitude:', latitude, longitude);
+        return;
+    }
+
+    mapboxgl.accessToken = 'YOUR_MAPBOX_ACCESS_TOKEN';
+    var map = new mapboxgl.Map({
         container: 'map',
-        style: 'tomtom://vector/1/basic-main',
-        center: [latitude, longitude],
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [longitude, latitude],
         zoom: 13
     });
 
-    // Add a marker to the map
-    var marker = new tt.Marker().setLngLat([latitude, longitude]).addTo(map);
+    var marker = new mapboxgl.Marker()
+        .setLngLat([longitude, latitude])
+        .addTo(map);
 }
-// Function to search for lost objects based on the entered search term
+
 function searchLostObjects() {
     var searchTerm = document.getElementById("searchInput").value;
 
-    // Perform search for lost objects based on the entered search term
     $.ajax({
         url: '/api/lost-object-search-by-description',
         method: 'GET',
@@ -163,11 +161,9 @@ function searchLostObjects() {
     });
 }
 
-// Function to search for found objects based on the entered search term
 function searchFoundObjects() {
     var searchTerm = document.getElementById("searchInput").value;
 
-    // Perform search for found objects based on the entered search term
     $.ajax({
         url: '/api/found-object-search-by-description',
         method: 'GET',
@@ -181,14 +177,11 @@ function searchFoundObjects() {
     });
 }
 
-// Function to search for objects based on the entered search term
 function searchObjects() {
-    // Call the searchLostObjects and searchFoundObjects functions
     searchLostObjects();
     searchFoundObjects();
 }
 
-// Fetch all objects initially when the page loads
 fetchAllObjects();
 
 </script>
