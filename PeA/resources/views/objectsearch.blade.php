@@ -30,8 +30,8 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"></script>
-<link href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps-web.min.js"></script>
+<link href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css" rel="stylesheet">
 
 <script>
 function fetchAllLostObjects() {
@@ -132,15 +132,17 @@ function displayLocationOnMap(locationCoords) {
         return;
     }
 
-    mapboxgl.accessToken = 'YOUR_MAPBOX_ACCESS_TOKEN';
-    var map = new mapboxgl.Map({
+    tt.setProductInfo('YourAppName', '1.0');
+
+    var map = tt.map({
+        key: 'YOUR_TOMTOM_API_KEY',
         container: 'map',
-        style: 'mapbox://styles/mapbox/streets-v11',
+        style: 'tomtom://vector/1/basic-main',
         center: [longitude, latitude],
         zoom: 13
     });
 
-    var marker = new mapboxgl.Marker()
+    var marker = new tt.Marker()
         .setLngLat([longitude, latitude])
         .addTo(map);
 }
