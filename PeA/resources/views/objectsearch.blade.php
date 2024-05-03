@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lost and Found Objects Search</title>
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    .similar-description {
+        background-color: #ffcccc; /* Cor para destacar objetos semelhantes */
+    }
+</style>
 </head>
 <body>
 
@@ -22,6 +27,11 @@
     <div id="lostObjectsTable"></div>
     <h2>Found Objects</h2>
     <div id="foundObjectsTable"></div>
+    <div id="reportFoundObject" style="display: none;">
+        <h3>Report Possible Found Object</h3>
+        <textarea id="reportFoundObjectText" class="form-control" rows="3" placeholder="Enter details..."></textarea>
+        <button id="submitReport" class="btn btn-primary mt-2">Submit</button>
+    </div>
   </div>
 </div>
 
@@ -65,7 +75,7 @@ function fetchAllObjects() {
     fetchAllFoundObjects();
 }
 
-function displaySearchResults(results, objectType, tableId) {
+function displaySearchResults(results, objectType, tableId, searchTerm) {
     var tableDiv = document.getElementById(tableId);
     tableDiv.innerHTML = ""; 
 
@@ -97,6 +107,13 @@ function displaySearchResults(results, objectType, tableId) {
             dateCell.textContent = result.date; 
             var descriptionCell = document.createElement("td");
             descriptionCell.textContent = result.description; 
+
+            // Comparar a descrição com o termo de busca
+            if (searchTerm && result.description.toLowerCase().includes(searchTerm.toLowerCase())) {
+                descriptionCell.classList.add('similar-description'); // Adicionar classe de estilo
+                showReportFoundObject(); // Mostrar o elemento de relatório
+            }
+
             var mapButtonCell = document.createElement("td");
             var mapButton = document.createElement("button");
             mapButton.textContent = "Show Location";
@@ -114,6 +131,10 @@ function displaySearchResults(results, objectType, tableId) {
 
     table.appendChild(tbody);
     tableDiv.appendChild(table);
+}
+
+function showReportFoundObject() {
+    document.getElementById('reportFoundObject').style.display = 'block';
 }
 
 function displayLocationOnMap(locationCoords) {
@@ -155,7 +176,7 @@ function searchLostObjects() {
         method: 'GET',
         data: { description: searchTerm }, 
         success: function(response) {
-            displaySearchResults(response.data, "Lost Objects", "lostObjectsTable");
+            displaySearchResults(response.data, "Lost Objects", "lostObjectsTable", searchTerm);
         },
         error: function(xhr, status, error) {
             console.error(error);
@@ -171,7 +192,7 @@ function searchFoundObjects() {
         method: 'GET',
         data: { description: searchTerm }, 
         success: function(response) {
-            displaySearchResults(response.data, "Found Objects", "foundObjectsTable");
+            displaySearchResults(response.data, "Found Objects", "foundObjectsTable", searchTerm);
         },
         error: function(xhr, status, error) {
             console.error(error);
@@ -186,6 +207,20 @@ function searchObjects() {
 
 fetchAllObjects();
 
+document.getElementById('submitReport').addEventListener('click', function() {
+    var reportText = document.getElementById('reportFoundObjectText').value;
+    // Envie o relatório para o servidor
+    submitReport(reportText);
+});
+
+function submitReport(reportText) {
+    // Lógica para enviar o relatório para o servidor
+    console.log("Report submitted:", reportText);
+    // Limpar caixa de texto
+    document.getElementById('reportFoundObjectText').value = "";
+    // Esconder o elemento de relatório
+    document.getElementById('reportFoundObject').style.display = 'none';
+}
 </script>
 
 </body>
