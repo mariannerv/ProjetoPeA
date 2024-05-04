@@ -1,34 +1,17 @@
-<!-- dashboard.blade.php -->
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Dashboard') }}
+        </h2>
+    </x-slot>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <!-- Add any necessary meta tags, CSS, or JavaScript libraries here -->
-    <link href="path/to/bootstrap.min.css" rel="stylesheet">
-    <!-- Add any custom stylesheets here -->
-    <style>
-        /* Add custom CSS styles here */
-    </style>
-</head>
-<body>
-@include('components.navbar')
-
-<div class="container">
-    @yield('content')
-</div>
-    
-    <div>
-        <!-- No surplus words or unnecessary actions. - Marcus Aurelius -->
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    {{ __("You're logged in!") }}
+                </div>
+            </div>
+        </div>
     </div>
-
-    <!-- Add any necessary JavaScript libraries here -->
-    <script src="path/to/bootstrap.bundle.min.js"></script>
-    <!-- Add any custom JavaScript here -->
-    <script>
-        // Add custom JavaScript code here
-    </script>
-</body>
-</html>
+</x-app-layout>

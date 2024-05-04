@@ -1,3 +1,6 @@
+@if (auth()->check())
+
+@if(auth()->user()->email == "admin@teste.pt")
 <!-- resources/views/users.blade.php -->
 
 <!DOCTYPE html>
@@ -61,3 +64,12 @@
     </table>
 </body>
 </html>
+@else
+<h1>Area Administrativa</h1>
+@endif
+
+@else
+<h1>Area Administrativa</h1>
+@endif
+
+

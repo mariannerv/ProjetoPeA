@@ -22,7 +22,7 @@ class PoliceController extends Controller
 
 
     //Register
-    public function registerPolice(Request $request){
+    public function registerPolicia(Request $request){
         try{
             $val = Validator::make($request->all(),[
                 'name' => 'required|string',
@@ -52,7 +52,7 @@ class PoliceController extends Controller
                 "email_verified_at" => '',
             ]);
 
-            return redirect()->route('polices.store');
+            return redirect()->route('registerSuccess');
 
         } catch (ValidationException $e){
             if ($e->errors()['internalId'] && $e->erros()['internalId'][0] === "Policia com este Id já associado a outra conta.");
