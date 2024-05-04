@@ -91,6 +91,14 @@ Route::delete('deletePost', [PoliceStationController::class, "deletePost"]);
 Route::get('viewPost', [PoliceStationController::class, "viewPost"]);
 
 
+//API pra procurar objetos encontrados
+Route::get("allFoundObjects", [foundObjectController::class, "getAllFoundObjects"]);
+Route::get("found-object-search-by-description", [foundObjectController::class, "searchByDescription"]);
+
+
+//API pra procurar 0bjetos perdidos
+Route::get("allLostObjects", [LostObjectController::class, "getAllLostObjects"]);
+Route::get("lost-object-search-by-description", [LostObjectController::class, "searchByDescription"]);
 
 //API do Auction
 

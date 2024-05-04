@@ -14,8 +14,12 @@
   </head>
   <body>
     <header>
-      @include('navbar')
+    @include('components.navbar') 
     </header>
+    <?php
+    
+$image  = public_path() . '/images/user.png';
+    ?>
     <main class="my-5">
       <div class="container text-center">
         <div class="container mt-5">

@@ -196,3 +196,11 @@ Route::get('/verify-email/{uuid}', [verificationCodeController::class, 'verifyEm
 Route::view('/tokenexpirou/{uuid}', 'tokenexpirou')->name('tokenexpirou');
 Route::view('/novoemail/', 'novoemail')->name('novoemail');
 Route::view('/verificaemail/', 'verificaemail')->name('verificaemail');
+//API pra procurar objetos encontrados
+Route::get("allFoundObjects", [foundObjectController::class, "getAllFoundObjects"]);
+Route::get("found-object-search-by-description", [foundObjectController::class, "searchByDescription"]);
+
+
+//API pra procurar 0bjetos perdidos
+Route::get("allLostObjects", [LostObjectController::class, "getAllLostObjects"]);
+Route::get("lost-object-search-by-description", [LostObjectController::class, "searchByDescription"]);

@@ -83,6 +83,26 @@ class LostObjectController extends Controller
 
     }
 
+
+    public function getAllLostObjects()
+{
+    try {
+        $lostObjects = LostObject::all();
+        
+        return response()->json([
+            "status" => true,
+            "data" => $lostObjects,
+            "code" => 200,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            "status" => false,
+            "message" => "An error occurred while fetching all lost objects.",
+            "code" => 500,
+        ], 500);
+    }
+}
+
     public function getLostObject(Request $request){
         try {
             $request->validate([
@@ -115,7 +135,7 @@ class LostObjectController extends Controller
     }
     
 
-
+    
     public function updateLostObject(Request $request){
         $object = LostObject::where('lostObjectId', $request->lostObjectId)->first();
 

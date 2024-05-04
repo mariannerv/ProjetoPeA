@@ -170,7 +170,24 @@ public function deleteFoundObject(Request $request){
         ], 500);
     }
 }
-
+public function getAllFoundObjects()
+    {
+        try {
+            $foundObjects = foundObject::all();
+            
+            return response()->json([
+                "status" => true,
+                "data" => $foundObjects,
+                "code" => 200,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "An error occurred while fetching all found objects.",
+                "code" => 500,
+            ], 500);
+        }
+    }
 public function searchByDescription(Request $request)
 {
     try {
