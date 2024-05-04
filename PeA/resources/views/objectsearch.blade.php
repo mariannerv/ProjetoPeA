@@ -156,7 +156,7 @@ function displayLocationOnMap(locationCoords) {
     tt.setProductInfo('YourAppName', '1.0');
 
     var map = tt.map({
-        key: 'YOUR_TOMTOM_API_KEY',
+        key: 'YhDS9lVCH9D9Ep2imuZKAG79jv7GuvQG',
         container: 'map',
         style: 'tomtom://vector/1/basic-main',
         center: [longitude, latitude],
