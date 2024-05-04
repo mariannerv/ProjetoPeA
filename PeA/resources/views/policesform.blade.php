@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
     <title>Registar Conta</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
@@ -137,11 +138,11 @@
                     if (!input.checkValidity()) {
                       event.preventDefault();
                       event.stopPropagation();
-                      // input.classList.add('is-invalid');
+                      input.classList.add('is-invalid');
                     } 
-                    // else {
-                    //     input.classList.remove('is-invalid');
-                    // }
+                    else {
+                        input.classList.remove('is-invalid');
+                    }
                 });
 
                 // Check date input validity
@@ -153,11 +154,11 @@
                     if (selectedDate > maxDate) {
                         event.preventDefault();
                         event.stopPropagation();
-                        // dateInput.classList.add('is-invalid');
+                        dateInput.classList.add('is-invalid');
                     } 
-                    // else {
-                    //     dateInput.classList.remove('is-invalid');
-                    // }
+                    else {
+                        dateInput.classList.remove('is-invalid');
+                    }
                 }
 
                 if (!isValid) {
