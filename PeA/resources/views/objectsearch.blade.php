@@ -86,7 +86,7 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
     var headerRow = document.createElement("tr");
     var headerCell = document.createElement("th");
     headerCell.textContent = objectType;
-    headerCell.setAttribute("colspan", "4"); 
+    headerCell.setAttribute("colspan", "2"); 
     headerRow.appendChild(headerCell);
     thead.appendChild(headerRow);
     table.appendChild(thead);
@@ -95,22 +95,16 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
         var noResultsRow = document.createElement("tr");
         var noResultsCell = document.createElement("td");
         noResultsCell.textContent = "No results found.";
-        noResultsCell.setAttribute("colspan", "4");
+        noResultsCell.setAttribute("colspan", "2");
         noResultsRow.appendChild(noResultsCell);
         tbody.appendChild(noResultsRow);
     } else {
         results.forEach(function(result) {
             var row = document.createElement("tr");
-            var nameCell = document.createElement("td");
-            nameCell.textContent = result.name; 
-            var dateCell = document.createElement("td");
-            dateCell.textContent = result.date; 
-            var addressCell = document.createElement("td");
-            addressCell.textContent = result.address; 
-
-            // Comparar a descrição com o termo de busca
+            var descriptionCell = document.createElement("td");
+            descriptionCell.textContent = result.description; 
             if (searchTerm && result.description.toLowerCase().includes(searchTerm.toLowerCase())) {
-                addressCell.classList.add('similar-description'); // Adicionar classe de estilo
+                descriptionCell.classList.add('similar-description'); // Adicionar classe de estilo
                 showReportFoundObject(); // Mostrar o elemento de relatório
             }
 
@@ -118,12 +112,10 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
             var mapButton = document.createElement("button");
             mapButton.textContent = "Show Location";
             mapButton.onclick = function() {
-                geocodeAddress(result.address);
+                geocodeAddress(result.location_id.$oid);
             };
             mapButtonCell.appendChild(mapButton);
-            row.appendChild(nameCell);
-            row.appendChild(dateCell);
-            row.appendChild(addressCell);
+            row.appendChild(descriptionCell);
             row.appendChild(mapButtonCell);
             tbody.appendChild(row);
         });
@@ -132,6 +124,7 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
     table.appendChild(tbody);
     tableDiv.appendChild(table);
 }
+
 
 function showReportFoundObject() {
     document.getElementById('reportFoundObject').style.display = 'block';
@@ -175,9 +168,14 @@ function geocodeAddress(address) {
     });
 }
 
-function searchLostObjects() {
-    var searchTerm = document.getElementById("searchInput").value;
 
+function searchObjects() {
+    var searchTerm = document.getElementById("searchInput").value;
+    searchLostObjects(searchTerm);
+    searchFoundObjects(searchTerm);
+}
+
+function searchLostObjects(searchTerm) {
     $.ajax({
         url: '/api/lost-object-search-by-description',
         method: 'GET',
@@ -191,9 +189,7 @@ function searchLostObjects() {
     });
 }
 
-function searchFoundObjects() {
-    var searchTerm = document.getElementById("searchInput").value;
-
+function searchFoundObjects(searchTerm) {
     $.ajax({
         url: '/api/found-object-search-by-description',
         method: 'GET',
@@ -205,11 +201,6 @@ function searchFoundObjects() {
             console.error(error);
         }
     });
-}
-
-function searchObjects() {
-    searchLostObjects();
-    searchFoundObjects();
 }
 
 fetchAllObjects();
