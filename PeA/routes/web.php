@@ -153,9 +153,9 @@ Route::get('/usersform',function(){
     return view('usersform');
 });
 
-Route::get('/policesform',function(){
-    return view('policesform');
-});
+// Route::get('/policesform',function(){
+//     return view('policesform');
+// });
 
 Route::get('/stationsform',function(){
     return view('stationsform');
