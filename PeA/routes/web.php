@@ -165,7 +165,9 @@ Route::get('/chooseaccounttype',function(){
     return view('chooseaccounttype');
 });
 
-
+Route::get('/search',function(){
+    return view('objectsearch');
+});
 
 Route::get('/send-mail', [SendMailController::class, 'sendWelcomeEmail']);
 

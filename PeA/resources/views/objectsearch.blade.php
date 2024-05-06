@@ -16,7 +16,7 @@
 <div class="container">
   <h1>Lost and Found Objects Search</h1>
   <div class="input-group mb-3">
-    <input type="text" class="form-control" id="searchInput" placeholder="Search..." aria-label="Search" aria-describedby="basic-addon2">
+    <input type="text" class="form-control" id="searchInput" placeholder="Search..." aria-label="Search" aria-describedby="basic-addon2" onkeyup="searchObjects()">
     <div class="input-group-append">
       <button class="btn btn-outline-secondary" type="button" onclick="searchObjects()">Search</button>
     </div>
@@ -105,12 +105,12 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
             nameCell.textContent = result.name; 
             var dateCell = document.createElement("td");
             dateCell.textContent = result.date; 
-            var descriptionCell = document.createElement("td");
-            descriptionCell.textContent = result.description; 
+            var addressCell = document.createElement("td");
+            addressCell.textContent = result.address; 
 
             // Comparar a descrição com o termo de busca
             if (searchTerm && result.description.toLowerCase().includes(searchTerm.toLowerCase())) {
-                descriptionCell.classList.add('similar-description'); // Adicionar classe de estilo
+                addressCell.classList.add('similar-description'); // Adicionar classe de estilo
                 showReportFoundObject(); // Mostrar o elemento de relatório
             }
 
@@ -118,12 +118,12 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
             var mapButton = document.createElement("button");
             mapButton.textContent = "Show Location";
             mapButton.onclick = function() {
-                displayLocationOnMap(result.location_coords);
+                geocodeAddress(result.address);
             };
             mapButtonCell.appendChild(mapButton);
             row.appendChild(nameCell);
             row.appendChild(dateCell);
-            row.appendChild(descriptionCell);
+            row.appendChild(addressCell);
             row.appendChild(mapButtonCell);
             tbody.appendChild(row);
         });
@@ -137,22 +137,7 @@ function showReportFoundObject() {
     document.getElementById('reportFoundObject').style.display = 'block';
 }
 
-function displayLocationOnMap(locationCoords) {
-    var coordinates = locationCoords.split(',');
-
-    if (coordinates.length !== 2) {
-        console.error('Invalid coordinates format:', locationCoords);
-        return;
-    }
-
-    var latitude = parseFloat(coordinates[0]);
-    var longitude = parseFloat(coordinates[1]);
-
-    if (isNaN(latitude) || isNaN(longitude) || latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
-        console.error('Invalid latitude or longitude:', latitude, longitude);
-        return;
-    }
-
+function displayLocationOnMap(latitude, longitude) {
     tt.setProductInfo('YourAppName', '1.0');
 
     var map = tt.map({
@@ -166,6 +151,28 @@ function displayLocationOnMap(locationCoords) {
     var marker = new tt.Marker()
         .setLngLat([longitude, latitude])
         .addTo(map);
+}
+
+function geocodeAddress(address) {
+    $.ajax({
+        url: 'https://api.tomtom.com/search/2/geocode/' + encodeURI(address) + '.json',
+        method: 'GET',
+        data: {
+            key: 'YhDS9lVCH9D9Ep2imuZKAG79jv7GuvQG'
+        },
+        success: function(response) {
+            if (response && response.results && response.results.length > 0) {
+                var latitude = response.results[0].position.lat;
+                var longitude = response.results[0].position.lon;
+                displayLocationOnMap(latitude, longitude);
+            } else {
+                console.error('No coordinates found for the address:', address);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error geocoding address:', error);
+        }
+    });
 }
 
 function searchLostObjects() {
