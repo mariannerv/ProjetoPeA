@@ -75,7 +75,7 @@ Route::post('activatePolice', [PoliceController::class, "activatePolice"]);
 
 //locationcontroller para posteridade
 
-Route::get('api/fetchLocationAddress/{id}', [LocationController::class, 'fetchLocationAddress']);
+Route::get('api/fetchLocationAddress/{locationId}', 'LocationController@fetchLocationAddress');
 
 //API foundObject
 

@@ -162,14 +162,17 @@ function fetchLocationAddress(locationId) {
         url: '/api/fetchLocationAddress/' + locationId,
         method: 'GET',
         success: function(response) {
-            geocodeAddress(response.address);
+            if (response.status) {
+                geocodeAddress(response.data);
+            } else {
+                console.error('Error fetching location address:', response.message);
+            }
         },
         error: function(xhr, status, error) {
             console.error('Error fetching location address:', error);
         }
     });
 }
-
 
 function geocodeAddress(address) {
     $.ajax({
