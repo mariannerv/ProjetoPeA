@@ -74,7 +74,6 @@ function fetchAllObjects() {
     fetchAllLostObjects();
     fetchAllFoundObjects();
 }
-
 function displaySearchResults(results, objectType, tableId, searchTerm) {
     var tableDiv = document.getElementById(tableId);
     tableDiv.innerHTML = ""; 
@@ -84,10 +83,15 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
     var thead = document.createElement("thead");
     var tbody = document.createElement("tbody");
     var headerRow = document.createElement("tr");
-    var headerCell = document.createElement("th");
-    headerCell.textContent = objectType;
-    headerCell.setAttribute("colspan", "2"); 
-    headerRow.appendChild(headerCell);
+    var headerCell1 = document.createElement("th");
+    headerCell1.textContent = "Description";
+    var headerCell2 = document.createElement("th");
+    headerCell2.textContent = "Location ID";
+    var headerCell3 = document.createElement("th");
+    headerCell3.textContent = "Action";
+    headerRow.appendChild(headerCell1);
+    headerRow.appendChild(headerCell2);
+    headerRow.appendChild(headerCell3);
     thead.appendChild(headerRow);
     table.appendChild(thead);
 
@@ -95,27 +99,42 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
         var noResultsRow = document.createElement("tr");
         var noResultsCell = document.createElement("td");
         noResultsCell.textContent = "No results found.";
-        noResultsCell.setAttribute("colspan", "2");
+        noResultsCell.setAttribute("colspan", "3");
         noResultsRow.appendChild(noResultsCell);
         tbody.appendChild(noResultsRow);
     } else {
         results.forEach(function(result) {
+            console.log("Found Object:", result);
+            // Ensure that the locationId field is present and has a value
+            console.log("Location ID:", result.locationId);
+            var locationId = result.locationId;
+            console.log("Parsed Location ID:", locationId);
             var row = document.createElement("tr");
             var descriptionCell = document.createElement("td");
-            descriptionCell.textContent = result.description; 
+            descriptionCell.textContent = result.description;
+
+            var locationIdCell = document.createElement("td");
+            locationIdCell.textContent = result.locationId; // Access locationId using bracket notation
+
             if (searchTerm && result.description.toLowerCase().includes(searchTerm.toLowerCase())) {
-                descriptionCell.classList.add('similar-description'); // Adicionar classe de estilo
-                showReportFoundObject(); // Mostrar o elemento de relatório
+                descriptionCell.classList.add('similar-description');
+                showReportFoundObject();
             }
 
             var mapButtonCell = document.createElement("td");
             var mapButton = document.createElement("button");
             mapButton.textContent = "Show Location";
             mapButton.onclick = function() {
-                geocodeAddress(result.location_id.$oid);
+                var locationId = result.locationId; // Access locationId using bracket notation
+                if (locationId) {
+                    geocodeAddress(locationId);
+                } else {
+                    console.error('Location ID is undefined or null');
+                }
             };
             mapButtonCell.appendChild(mapButton);
             row.appendChild(descriptionCell);
+            row.appendChild(locationIdCell);
             row.appendChild(mapButtonCell);
             tbody.appendChild(row);
         });
@@ -124,6 +143,9 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
     table.appendChild(tbody);
     tableDiv.appendChild(table);
 }
+
+
+
 
 
 function showReportFoundObject() {
