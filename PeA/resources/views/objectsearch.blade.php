@@ -7,7 +7,7 @@
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 <style>
     .similar-description {
-        background-color: #ffcccc; /* Cor para destacar objetos semelhantes */
+        background-color: #ffcccc; /* Color to highlight similar objects */
     }
 </style>
 </head>
@@ -50,6 +50,7 @@ function fetchAllLostObjects() {
         method: 'GET',
         success: function(response) {
             displaySearchResults(response.data, "Lost Objects", "lostObjectsTable");
+            fetchAllFoundObjects(); // Call fetchAllFoundObjects inside the success callback
         },
         error: function(xhr, status, error) {
             console.error(error);
@@ -72,11 +73,11 @@ function fetchAllFoundObjects() {
 
 function fetchAllObjects() {
     fetchAllLostObjects();
-    fetchAllFoundObjects();
 }
+
 function displaySearchResults(results, objectType, tableId, searchTerm) {
     var tableDiv = document.getElementById(tableId);
-    tableDiv.innerHTML = ""; 
+    tableDiv.innerHTML = "";
 
     var table = document.createElement("table");
     table.className = "table";
@@ -104,17 +105,12 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
         tbody.appendChild(noResultsRow);
     } else {
         results.forEach(function(result) {
-            console.log("Found Object:", result);
-            // Ensure that the locationId field is present and has a value
-            console.log("Location ID:", result.locationId);
-            var locationId = result.locationId;
-            console.log("Parsed Location ID:", locationId);
             var row = document.createElement("tr");
             var descriptionCell = document.createElement("td");
             descriptionCell.textContent = result.description;
 
             var locationIdCell = document.createElement("td");
-            locationIdCell.textContent = result.locationId; // Access locationId using bracket notation
+            locationIdCell.textContent = result.locationId;
 
             if (searchTerm && result.description.toLowerCase().includes(searchTerm.toLowerCase())) {
                 descriptionCell.classList.add('similar-description');
@@ -125,9 +121,8 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
             var mapButton = document.createElement("button");
             mapButton.textContent = "Show Location";
             mapButton.onclick = function() {
-                var locationId = result.locationId; // Access locationId using bracket notation
-                if (locationId) {
-                    geocodeAddress(locationId);
+                var locationId = result.locationId.toString();
+                if (locationId) {fetchLocationAddress(locationId)
                 } else {
                     console.error('Location ID is undefined or null');
                 }
@@ -145,16 +140,11 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
 }
 
 
-
-
-
 function showReportFoundObject() {
     document.getElementById('reportFoundObject').style.display = 'block';
 }
 
 function displayLocationOnMap(latitude, longitude) {
-    tt.setProductInfo('YourAppName', '1.0');
-
     var map = tt.map({
         key: 'YhDS9lVCH9D9Ep2imuZKAG79jv7GuvQG',
         container: 'map',
@@ -167,16 +157,26 @@ function displayLocationOnMap(latitude, longitude) {
         .setLngLat([longitude, latitude])
         .addTo(map);
 }
+function fetchLocationAddress(locationId) {
+    $.ajax({
+        url: '/api/fetchLocationAddress/' + locationId,
+        method: 'GET',
+        success: function(response) {
+            geocodeAddress(response.address);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching location address:', error);
+        }
+    });
+}
+
 
 function geocodeAddress(address) {
     $.ajax({
-        url: 'https://api.tomtom.com/search/2/geocode/' + encodeURI(address) + '.json',
+        url: 'https://api.tomtom.com/search/2/geocoding/search?key=YhDS9lVCH9D9Ep2imuZKAG79jv7GuvQG&query=' + encodeURI(address),
         method: 'GET',
-        data: {
-            key: 'YhDS9lVCH9D9Ep2imuZKAG79jv7GuvQG'
-        },
         success: function(response) {
-            if (response && response.results && response.results.length > 0) {
+            if (response && response.results && response.results.length > 0 && response.results[0].type === "Point Address") {
                 var latitude = response.results[0].position.lat;
                 var longitude = response.results[0].position.lon;
                 displayLocationOnMap(latitude, longitude);
@@ -190,9 +190,8 @@ function geocodeAddress(address) {
     });
 }
 
-
 function searchObjects() {
-    var searchTerm = document.getElementById("searchInput").value;
+    var searchTerm = document.getElementById("searchInput").value.trim(); // Trim the search term
     searchLostObjects(searchTerm);
     searchFoundObjects(searchTerm);
 }
@@ -201,7 +200,7 @@ function searchLostObjects(searchTerm) {
     $.ajax({
         url: '/api/lost-object-search-by-description',
         method: 'GET',
-        data: { description: searchTerm }, 
+        data: { description: searchTerm },
         success: function(response) {
             displaySearchResults(response.data, "Lost Objects", "lostObjectsTable", searchTerm);
         },
@@ -215,7 +214,7 @@ function searchFoundObjects(searchTerm) {
     $.ajax({
         url: '/api/found-object-search-by-description',
         method: 'GET',
-        data: { description: searchTerm }, 
+        data: { description: searchTerm },
         success: function(response) {
             displaySearchResults(response.data, "Found Objects", "foundObjectsTable", searchTerm);
         },
@@ -229,16 +228,12 @@ fetchAllObjects();
 
 document.getElementById('submitReport').addEventListener('click', function() {
     var reportText = document.getElementById('reportFoundObjectText').value;
-    // Envie o relatório para o servidor
     submitReport(reportText);
 });
 
 function submitReport(reportText) {
-    // Lógica para enviar o relatório para o servidor
     console.log("Report submitted:", reportText);
-    // Limpar caixa de texto
     document.getElementById('reportFoundObjectText').value = "";
-    // Esconder o elemento de relatório
     document.getElementById('reportFoundObject').style.display = 'none';
 }
 </script>

@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\LostObjectController;
 use App\Http\Controllers\Api\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\LocationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,7 +73,9 @@ Route::group([
 Route::post('deactivatePolice', [PoliceController::class, "deactivatePolice"]);
 Route::post('activatePolice', [PoliceController::class, "activatePolice"]);
 
+//locationcontroller para posteridade
 
+Route::get('api/fetchLocationAddress/{id}', [LocationController::class, 'fetchLocationAddress']);
 
 //API foundObject
 
@@ -159,7 +162,6 @@ Route::get('/test_mongodb', function (Request $request) {
     return ['msg' => $msg, 'dbName' => $dbName];
 
 });
-
 
 
 
