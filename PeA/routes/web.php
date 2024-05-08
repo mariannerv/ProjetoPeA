@@ -163,3 +163,6 @@ Route::get('/verify-email/{uuid}', [verificationCodeController::class, 'verifyEm
 Route::view('/tokenexpirou/{uuid}', 'tokenexpirou')->name('tokenexpirou');
 Route::view('/novoemail/', 'novoemail')->name('novoemail');
 Route::view('/verificaemail/', 'verificaemail')->name('verificaemail');
+Route::get('/search', function (){
+    return view('object-search');
+} );
