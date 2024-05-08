@@ -256,7 +256,7 @@ function fetchLocationAddress(locationId) {
         method: 'GET',
         success: function(response) {
             if (response && response.data) {
-                geocodeAddress(response.data);
+                geocodeAddress(response.data[0],response.data[1]);
             } else {
                 console.error("Invalid response format for location address data.");
             }
@@ -267,9 +267,9 @@ function fetchLocationAddress(locationId) {
     });
 }
 
-function geocodeAddress(address) {
+function geocodeAddress(address, apiKey) {
     $.ajax({
-        url: 'https://api.tomtom.com/search/2/geocoding/search?key=esi2aEIxbZ9vM3sFRH07xvj9wdMWEPZb&query=' + encodeURI(address),
+        url: 'https://api.tomtom.com/search/2/geocode/' + encodeURIComponent(address) + '.json?key=' + apiKey,
         method: 'GET',
         success: function(response) {
             if (response && response.results && response.results.length > 0 && response.results[0].type === "Point Address") {
@@ -286,9 +286,10 @@ function geocodeAddress(address) {
     });
 }
 
+
 function displayLocationOnMap(latitude, longitude) {
     var map = tt.map({
-        key: 'esi2aEIxbZ9vM3sFRH07xvj9wdMWEPZb',
+        key: 'YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn',
         container: 'map',
         center: [longitude, latitude],
         zoom: 10

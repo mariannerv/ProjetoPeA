@@ -52,28 +52,22 @@ public function fetchLocationAddress($id)
         if ($location) {
             $addressComponents = [];
             if (!empty(trim($location->rua))) {
-                $addressComponents[] = $location->rua;
-            }
-            if (!empty(trim($location->freguesia))) {
-                $addressComponents[] = $location->freguesia;
-            }
-            if (!empty(trim($location->municipio))) {
-                $addressComponents[] = $location->municipio;
-            }
-            if (!empty(trim($location->distrito))) {
-                $addressComponents[] = $location->distrito;
+                $addressComponents[] = str_replace(' ', '%20', $location->rua);
             }
             if (!empty(trim($location->codigo_postal))) {
-                $addressComponents[] = $location->codigo_postal;
+                $addressComponents[] = str_replace(' ', '%20', $location->codigo_postal);
             }
-            if (!empty(trim($location->pais))) {
-                $addressComponents[] = $location->pais;
+            if (!empty(trim($location->municipio))) {
+                $addressComponents[] = str_replace(' ', '%20', $location->municipio);
             }
-
-            $address = implode(', ', $addressComponents);
+            
+            $encodedAddress = implode('%20', $addressComponents);
+            
+            $apiKey = "YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn";
+            
             return response()->json([
                 "status" => true,
-                "data" => $address,
+                "data" => [$encodedAddress, $apiKey],
                 "code" => 200,
             ]);
         } else {
@@ -91,6 +85,8 @@ public function fetchLocationAddress($id)
         ], 500);
     }
 }
+
+
 
     public function getAllLocations()
 {
