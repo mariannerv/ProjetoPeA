@@ -53,12 +53,22 @@ public function fetchLocationAddress($id)
             $addressComponents = [];
             if (!empty(trim($location->rua))) {
                 $addressComponents[] = str_replace(' ', '%20', $location->rua);
+            }// freguesia n funciona, o tomtom n reconhece
+            /* 
+            if (!empty(trim($location->freguesia))) {
+                $addressComponents[] = str_replace(' ', '%20', $location->freguesia);
+            }*/
+            if (!empty(trim($location->municipio))) {
+                $addressComponents[] = str_replace(' ', '%20', $location->municipio);
+            }
+            if (!empty(trim($location->distrito))) {
+                $addressComponents[] = str_replace(' ', '%20', $location->distrito);
             }
             if (!empty(trim($location->codigo_postal))) {
                 $addressComponents[] = str_replace(' ', '%20', $location->codigo_postal);
             }
-            if (!empty(trim($location->municipio))) {
-                $addressComponents[] = str_replace(' ', '%20', $location->municipio);
+            if (!empty(trim($location->pais))) {
+                $addressComponents[] = str_replace(' ', '%20', $location->pais);
             }
             
             $encodedAddress = implode('%20', $addressComponents);
@@ -85,7 +95,6 @@ public function fetchLocationAddress($id)
         ], 500);
     }
 }
-
 
 
     public function getAllLocations()
