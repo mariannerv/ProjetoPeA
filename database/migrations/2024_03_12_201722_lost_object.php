@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('lostObject', function (Blueprint $table) {
             $table->id();
-            $table->string('ownerId');
-            $table->string('categoryId');
+            $table->foreignId('locationId')->constrained('location');
+            $table->foreignId('owner_id')->constrained('users'); 
+            $table->foreignId('category_id')->constrained('categories'); 
             $table->string('description');
             $table->date('date_found');
-            $table->string('locationid');
             $table->timestamps();
         });
     }

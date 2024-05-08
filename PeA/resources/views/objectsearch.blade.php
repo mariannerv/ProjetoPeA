@@ -239,13 +239,19 @@ function displaylocations(locations, objectType, tableId) {
     table.appendChild(tbody);
     tableDiv.appendChild(table);
 }
-
 function fetchLocationAddress(locationId) {
     $.ajax({
         url: '/api/fetchLocationAddress/' + locationId,
         method: 'GET',
         success: function(response) {
-            geocodeAddress(response.data);
+            if (response && response.data) {
+                geocodeAddress(response.data);
+            } else {
+                console.error("Invalid response format for location address data.");
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error fetching location address:", error);
         }
     });
 }

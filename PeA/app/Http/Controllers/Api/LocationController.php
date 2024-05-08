@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Models\Location;
 use MongoDB\BSON\ObjectId;
@@ -11,6 +12,38 @@ class LocationController extends Controller
 {
     protected $connection = 'mongodb';
     protected $collection = 'location'; 
+
+
+    public function viewLocation(Request $request)
+{
+    try {
+        $request->validate([
+            '_id' => 'required|string',
+        ]);
+
+        $location = Location::find($request->_id);
+
+        if ($location) {
+            return response()->json([
+                "status" => true,
+                "data" => $location,
+                "code" => 200,
+            ]);
+        } else {
+            return response()->json([
+                "status" => false,
+                "message" => "Location not found.",
+                "code" => 404,
+            ], 404);
+        }
+    } catch (\Exception $e) {
+        return response()->json([
+            "status" => false,
+            "message" => "An error occurred while retrieving location information.",
+            "code" => 500,
+        ], 500);
+    }
+}
 
     public function fetchLocationAddress(Request $request)
     {
@@ -51,38 +84,130 @@ class LocationController extends Controller
     {
         try {
             $locations = Location::all();
-            return response()->json($locations);
+
+            return response()->json([
+                "status" => true,
+                "data" => $locations,
+                "code" => 200,
+            ]);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json([
+                "status" => false,
+                "message" => "An error occurred while fetching all locations.",
+                "code" => 500,
+            ], 500);
         }
     }
 
-    public function viewLocation(Request $request, $_id)
-{
-    try {
-        $location = Location::find($_id);
+    public function registerLocation(Request $request)
+    {
+        try {
+            $request->validate([
+                'rua' => 'required|string',
+                'freguesia' => 'required|string',
+                'municipio' => 'required|string',
+                'distrito' => 'required|string',
+                'codigo_postal' => 'required|string',
+                'pais' => 'required|string',
+            ]);
 
-        if ($location) {
+            $location = Location::create($request->all());
+
             return response()->json([
                 "status" => true,
                 "data" => $location,
+                "message" => "Location registered successfully.",
                 "code" => 200,
             ]);
-        } else {
+        } catch (\Exception $e) {
             return response()->json([
                 "status" => false,
-                "message" => "Location not found.",
-                "code" => 404,
-            ], 404);
+                "message" => "An error occurred while registering the location.",
+                "code" => 500,
+            ], 500);
         }
-    } catch (\Exception $e) {
-        return response()->json([
-            "status" => false,
-            "message" => "An error occurred while retrieving location information.",
-            "code" => 500,
-        ], 500);
+    }
+
+    public function updateLocation(Request $request, $_id)
+    {
+        try {
+            $location = Location::find($_id);
+
+            if ($location) {
+                $location->update($request->all());
+
+                return response()->json([
+                    "status" => true,
+                    "data" => $location,
+                    "message" => "Location updated successfully.",
+                    "code" => 200,
+                ]);
+            } else {
+                return response()->json([
+                    "status" => false,
+                    "message" => "Location not found.",
+                    "code" => 404,
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "An error occurred while updating the location.",
+                "code" => 500,
+            ], 500);
+        }
+    }
+
+    public function deleteLocation(Request $request, $_id)
+    {
+        try {
+            $location = Location::find($_id);
+
+            if ($location) {
+                $location->delete();
+
+                return response()->json([
+                    "status" => true,
+                    "message" => "Location deleted successfully.",
+                    "code" => 200,
+                ]);
+            } else {
+                return response()->json([
+                    "status" => false,
+                    "message" => "Location not found.",
+                    "code" => 404,
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "An error occurred while deleting the location.",
+                "code" => 500,
+            ], 500);
+        }
+    }
+
+    public function searchByAddress(Request $request)
+    {
+        try {
+            $request->validate([
+                'address' => 'required|string',
+            ]);
+
+            $locations = Location::where('address', 'like', '%' . $request->address . '%')->get();
+
+            return response()->json([
+                "status" => true,
+                "data" => $locations,
+                "code" => 200,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "An error occurred while searching for locations.",
+                "code" => 500,
+            ], 500);
+        }
     }
 }
 
-
-}

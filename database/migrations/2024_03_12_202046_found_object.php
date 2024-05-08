@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('foundObject', function (Blueprint $table) {
             $table->id();
             $table->string('categoryId');
-            $table->string('locationId');
+            $table->foreignId('locationId')->constrained('location');
             $table->string('description');
             $table->string('value');
             $table->date('dateFound');

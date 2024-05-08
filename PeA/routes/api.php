@@ -74,11 +74,11 @@ Route::group([
 Route::post('deactivatePolice', [PoliceController::class, "deactivatePolice"]);
 Route::post('activatePolice', [PoliceController::class, "activatePolice"]);
 
-//locationcontroller para posteridade
+//API Location
 
 Route::post('fetchLocationAddress', [LocationController::class, "fetchLocationAddress"]);
 Route::get('getAllLocations', [LocationController::class, "getAllLocations"]);
-Route::get('viewLocation/{id}', [LocationController::class, "viewLocation"]);
+Route::get('viewLocation', [LocationController::class, "viewLocation"]);
 
 //API foundObject
 
