@@ -160,7 +160,7 @@ public function register(Request $request){
                     
                     Auth::loginUsingId($user->_id);
 
-                    return view('userhome');
+                    return view('home');
     
                    # return redirect()->route('userhome')->with('success' , 'Login');
                 

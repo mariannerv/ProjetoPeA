@@ -69,10 +69,7 @@ Route::get('/', function () {
     Route::put('/user/{user}' ,[ApiController::class ,'update'])->name('user.update');
     //confirmdelete
     Route::post('/users/{user}/confirm-delete', [ApiController::class, 'confirmDelete'])->name('user.confirm-delete');
-
-    //confirmdelete
-    Route::post('/users/{user}/confirm-delete', [ApiController::class, 'confirmDelete'])->name('user.confirm-delete');
-
+    
     Route::get('/login', function(){
         return view('login');
     });
@@ -123,9 +120,9 @@ Route::get('/usersform',function(){
     return view('usersform');
 });
 
-// Route::get('/policesform',function(){
-//     return view('policesform');
-// });
+Route::get('/edit',function(){
+    return view('profile.edit');
+});
 
 Route::get('/stationsform',function(){
     return view('stationsform');

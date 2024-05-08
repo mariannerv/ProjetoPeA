@@ -15,7 +15,11 @@
   </head>
   <body>
     <header>
-      @include('navbar')
+    @if (auth()->check())
+        @include('navbar')
+      @else
+        @include('navbar-guest')
+      @endif 
     </header>
     <main class="my-5">
       <div class="container">
