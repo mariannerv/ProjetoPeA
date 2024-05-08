@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('location', function (Blueprint $table) {
-            $table->id();
+            $table->id(); 
             $table->string('rua');
             $table->string('freguesia');
             $table->string('municipio');
@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('pais');
             $table->string('coordenadas');
             $table->timestamps();
-
         });
     }
 
@@ -30,6 +29,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('location');
     }
 };
+

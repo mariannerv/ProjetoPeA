@@ -7,6 +7,7 @@ use App\Models\Owner;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\verificationCodeController;
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\PoliceStationController;
 use App\Http\Controllers\Api\PoliceController;
 use App\Http\Controllers\Api\AuctionController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\Api\LostObjectController;
 use App\Http\Controllers\Api\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\DB;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -72,7 +74,11 @@ Route::group([
 Route::post('deactivatePolice', [PoliceController::class, "deactivatePolice"]);
 Route::post('activatePolice', [PoliceController::class, "activatePolice"]);
 
+//API Location
 
+Route::get('fetchLocationAddress/{id}', [LocationController::class, "fetchLocationAddress"]);
+Route::get('getAllLocations', [LocationController::class, "getAllLocations"]);
+Route::get('viewLocation/{id}', [LocationController::class, "viewLocation"]);
 
 //API foundObject
 
@@ -91,6 +97,14 @@ Route::delete('deletePost', [PoliceStationController::class, "deletePost"]);
 Route::get('viewPost', [PoliceStationController::class, "viewPost"]);
 
 
+//API pra procurar objetos encontrados
+Route::get("allFoundObjects", [foundObjectController::class, "getAllFoundObjects"]);
+Route::get("found-object-search-by-description", [foundObjectController::class, "searchByDescription"]);
+
+
+//API pra procurar 0bjetos perdidos
+Route::get("allLostObjects", [LostObjectController::class, "getAllLostObjects"]);
+Route::get("lost-object-search-by-description", [LostObjectController::class, "searchByDescription"]);
 
 //API do Auction
 
@@ -151,7 +165,6 @@ Route::get('/test_mongodb', function (Request $request) {
     return ['msg' => $msg, 'dbName' => $dbName];
 
 });
-
 
 
 
