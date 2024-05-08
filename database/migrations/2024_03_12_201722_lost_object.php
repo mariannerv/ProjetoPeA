@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('categoryId');
             $table->string('description');
             $table->date('date_found');
-            $table->string('location_id');
+            $table->string('locationid');
             $table->timestamps();
         });
     }

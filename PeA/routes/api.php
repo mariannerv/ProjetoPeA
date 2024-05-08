@@ -7,6 +7,7 @@ use App\Models\Owner;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\verificationCodeController;
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\PoliceStationController;
 use App\Http\Controllers\Api\PoliceController;
 use App\Http\Controllers\Api\AuctionController;
@@ -16,7 +17,7 @@ use App\Http\Controllers\Api\LostObjectController;
 use App\Http\Controllers\Api\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\LocationController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -75,7 +76,9 @@ Route::post('activatePolice', [PoliceController::class, "activatePolice"]);
 
 //locationcontroller para posteridade
 
-Route::get('api/fetchLocationAddress/{locationId}', 'LocationController@fetchLocationAddress');
+Route::post('fetchLocationAddress', [LocationController::class, "fetchLocationAddress"]);
+Route::get('getAllLocations', [LocationController::class, "getAllLocations"]);
+Route::get('viewLocation/{id}', [LocationController::class, "viewLocation"]);
 
 //API foundObject
 

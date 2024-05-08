@@ -16,7 +16,7 @@
 <div class="container">
   <h1>Lost and Found Objects Search</h1>
   <div class="input-group mb-3">
-    <input type="text" class="form-control" id="searchInput" placeholder="Search..." aria-label="Search" aria-describedby="basic-addon2" onkeyup="searchObjects()">
+    <input type="text" class="form-control" id="searchInput" placeholder="Search..." aria-label="Search" aria-describedby="basic-addon2">
     <div class="input-group-append">
       <button class="btn btn-outline-secondary" type="button" onclick="searchObjects()">Search</button>
     </div>
@@ -44,37 +44,6 @@
 <link href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css" rel="stylesheet">
 
 <script>
-function fetchAllLostObjects() {
-    $.ajax({
-        url: '/api/allLostObjects',
-        method: 'GET',
-        success: function(response) {
-            displaySearchResults(response.data, "Lost Objects", "lostObjectsTable");
-            fetchAllFoundObjects(); // Call fetchAllFoundObjects inside the success callback
-        },
-        error: function(xhr, status, error) {
-            console.error(error);
-        }
-    });
-}
-
-function fetchAllFoundObjects() {
-    $.ajax({
-        url: '/api/allFoundObjects',
-        method: 'GET',
-        success: function(response) {
-            displaySearchResults(response.data, "Found Objects", "foundObjectsTable");
-        },
-        error: function(xhr, status, error) {
-            console.error(error);
-        }
-    });
-}
-
-function fetchAllObjects() {
-    fetchAllLostObjects();
-}
-
 function displaySearchResults(results, objectType, tableId, searchTerm) {
     var tableDiv = document.getElementById(tableId);
     tableDiv.innerHTML = "";
@@ -139,44 +108,151 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
     tableDiv.appendChild(table);
 }
 
-
-function showReportFoundObject() {
-    document.getElementById('reportFoundObject').style.display = 'block';
+function fetchAllData() {
+    fetchAllLostObjects();
+    fetchAllFoundObjects();
+    fetchAllLocations();
+    displayCurrentLocation();
 }
 
-function displayLocationOnMap(latitude, longitude) {
-    var map = tt.map({
-        key: 'YhDS9lVCH9D9Ep2imuZKAG79jv7GuvQG',
-        container: 'map',
-        style: 'tomtom://vector/1/basic-main',
-        center: [longitude, latitude],
-        zoom: 13
+function displayCurrentLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+            displayLocationOnMap(latitude, longitude);
+        });
+    } else {
+        console.error('Geolocation is not supported by this browser.');
+    }
+}
+
+function fetchAllLostObjects() {
+    $.ajax({
+        url: '/api/allLostObjects',
+        method: 'GET',
+        success: function(response) {
+            displaySearchResults(response.data, "Lost Objects", "lostObjectsTable");
+        },
+        error: function(xhr, status, error) {
+            console.error("Error fetching all lost objects:", error);
+        }
     });
-
-    var marker = new tt.Marker()
-        .setLngLat([longitude, latitude])
-        .addTo(map);
 }
+
+function fetchAllFoundObjects() {
+    $.ajax({
+        url: '/api/allFoundObjects',
+        method: 'GET',
+        success: function(response) {
+            displaySearchResults(response.data, "Found Objects", "foundObjectsTable");
+        },
+        error: function(xhr, status, error) {
+            console.error("Error fetching all found objects:", error);
+        }
+    });
+}
+
+function fetchAllLocations() {
+    $.ajax({
+        url: '/api/getAllLocations',
+        method: 'GET',
+        success: function(response) {
+            displaylocations(response.data, "Locations", "allLocationsTable");
+        },
+        error: function(xhr, status, error) {
+            console.error("Error fetching all locations:", error);
+        }
+    });
+}
+
+function displaylocations(locations, objectType, tableId) {
+    var tableDiv = document.getElementById(tableId);
+    tableDiv.innerHTML = "";
+
+    var table = document.createElement("table");
+    table.className = "table";
+    var thead = document.createElement("thead");
+    var tbody = document.createElement("tbody");
+    var headerRow = document.createElement("tr");
+    var headerCell1 = document.createElement("th");
+    headerCell1.textContent = "Location ID";
+    var headerCell2 = document.createElement("th");
+    headerCell2.textContent = "Street";
+    var headerCell3 = document.createElement("th");
+    headerCell3.textContent = "Freguesia";
+    var headerCell4 = document.createElement("th");
+    headerCell4.textContent = "Municipio";
+    var headerCell5 = document.createElement("th");
+    headerCell5.textContent = "Distrito";
+    var headerCell6 = document.createElement("th");
+    headerCell6.textContent = "Postal Code";
+    var headerCell7 = document.createElement("th");
+    headerCell7.textContent = "Country";
+
+    headerRow.appendChild(headerCell1);
+    headerRow.appendChild(headerCell2);
+    headerRow.appendChild(headerCell3);
+    headerRow.appendChild(headerCell4);
+    headerRow.appendChild(headerCell5);
+    headerRow.appendChild(headerCell6);
+    headerRow.appendChild(headerCell7);
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    if (locations.length === 0) {
+        var noResultsRow = document.createElement("tr");
+        var noResultsCell = document.createElement("td");
+        noResultsCell.textContent = "No locations found.";
+        noResultsCell.setAttribute("colspan", "7");
+        noResultsRow.appendChild(noResultsCell);
+        tbody.appendChild(noResultsRow);
+    } else {
+        locations.forEach(function(location) {
+            var row = document.createElement("tr");
+            var locationIdCell = document.createElement("td");
+            locationIdCell.textContent = location._id;
+            var streetCell = document.createElement("td");
+            streetCell.textContent = location.rua;
+            var freguesiaCell = document.createElement("td");
+            freguesiaCell.textContent = location.freguesia;
+            var municipioCell = document.createElement("td");
+            municipioCell.textContent = location.municipio;
+            var distritoCell = document.createElement("td");
+            distritoCell.textContent = location.distrito;
+            var postalCodeCell = document.createElement("td");
+            postalCodeCell.textContent = location.codigo_postal;
+            var countryCell = document.createElement("td");
+            countryCell.textContent = location.pais;
+
+            row.appendChild(locationIdCell);
+            row.appendChild(streetCell);
+            row.appendChild(freguesiaCell);
+            row.appendChild(municipioCell);
+            row.appendChild(distritoCell);
+            row.appendChild(postalCodeCell);
+            row.appendChild(countryCell);
+            tbody.appendChild(row);
+        });
+    }
+
+    table.appendChild(tbody);
+    tableDiv.appendChild(table);
+}
+
 function fetchLocationAddress(locationId) {
     $.ajax({
         url: '/api/fetchLocationAddress/' + locationId,
         method: 'GET',
         success: function(response) {
-            if (response.status) {
-                geocodeAddress(response.data);
-            } else {
-                console.error('Error fetching location address:', response.message);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('Error fetching location address:', error);
+            geocodeAddress(response.data);
         }
     });
 }
 
 function geocodeAddress(address) {
     $.ajax({
-        url: 'https://api.tomtom.com/search/2/geocoding/search?key=YhDS9lVCH9D9Ep2imuZKAG79jv7GuvQG&query=' + encodeURI(address),
+        url: 'https://api.tomtom.com/search/2/geocoding/search?key=esi2aEIxbZ9vM3sFRH07xvj9wdMWEPZb&query=' + encodeURI(address),
         method: 'GET',
         success: function(response) {
             if (response && response.results && response.results.length > 0 && response.results[0].type === "Point Address") {
@@ -193,41 +269,36 @@ function geocodeAddress(address) {
     });
 }
 
+function displayLocationOnMap(latitude, longitude) {
+    var map = tt.map({
+        key: 'esi2aEIxbZ9vM3sFRH07xvj9wdMWEPZb',
+        container: 'map',
+        center: [longitude, latitude],
+        zoom: 10
+    });
+    map.on('load', () => {
+    var marker = new tt.Marker().setLngLat([longitude, latitude]).addTo(map);
+})
+}
+
 function searchObjects() {
     var searchTerm = document.getElementById("searchInput").value.trim(); // Trim the search term
-    searchLostObjects(searchTerm);
-    searchFoundObjects(searchTerm);
+    searchObjectsByDescription(searchTerm);
 }
 
-function searchLostObjects(searchTerm) {
+function searchObjectsByDescription(searchTerm) {
     $.ajax({
-        url: '/api/lost-object-search-by-description',
+        url: '/api/searchObjectsByDescription',
         method: 'GET',
         data: { description: searchTerm },
         success: function(response) {
-            displaySearchResults(response.data, "Lost Objects", "lostObjectsTable", searchTerm);
+            displaySearchResults(response.data, "Objects", "searchResults", searchTerm);
         },
         error: function(xhr, status, error) {
-            console.error(error);
+            console.error("Error searching objects:", error);
         }
     });
 }
-
-function searchFoundObjects(searchTerm) {
-    $.ajax({
-        url: '/api/found-object-search-by-description',
-        method: 'GET',
-        data: { description: searchTerm },
-        success: function(response) {
-            displaySearchResults(response.data, "Found Objects", "foundObjectsTable", searchTerm);
-        },
-        error: function(xhr, status, error) {
-            console.error(error);
-        }
-    });
-}
-
-fetchAllObjects();
 
 document.getElementById('submitReport').addEventListener('click', function() {
     var reportText = document.getElementById('reportFoundObjectText').value;
@@ -239,6 +310,8 @@ function submitReport(reportText) {
     document.getElementById('reportFoundObjectText').value = "";
     document.getElementById('reportFoundObject').style.display = 'none';
 }
+
+fetchAllData();
 </script>
 
 </body>
