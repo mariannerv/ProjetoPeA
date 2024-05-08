@@ -110,9 +110,9 @@ Route::get('/', function () {
         return view('userhome');
     });
 
-// Login routes
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+// // Login routes
+// Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+// Route::post('/login', [AuthController::class, 'login']);
 
 //Police Routes
     Route::get('/polices' ,[PoliceController::class ,'index'])->name('polices.store');
