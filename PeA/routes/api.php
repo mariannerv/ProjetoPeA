@@ -76,9 +76,9 @@ Route::post('activatePolice', [PoliceController::class, "activatePolice"]);
 
 //API Location
 
-Route::post('fetchLocationAddress', [LocationController::class, "fetchLocationAddress"]);
+Route::get('fetchLocationAddress/{id}', [LocationController::class, "fetchLocationAddress"]);
 Route::get('getAllLocations', [LocationController::class, "getAllLocations"]);
-Route::get('viewLocation', [LocationController::class, "viewLocation"]);
+Route::get('viewLocation/{id}', [LocationController::class, "viewLocation"]);
 
 //API foundObject
 

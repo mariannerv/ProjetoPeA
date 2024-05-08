@@ -45,59 +45,75 @@ class LocationController extends Controller
     }
 }
 
-    public function fetchLocationAddress(Request $request)
-    {
-        try {
-            $request->validate([
-                'locationId' => 'required|string',
-            ]);
-
-            $locationId = new ObjectId($request->locationId);
-
-            $location = Location::where('_id', $locationId)->first();
-
-            if ($location) {
-                $address = $location->rua . ', ' . $location->freguesia . ', ' . $location->municipio . ', ' . $location->distrito . ', ' . $location->codigo_postal . ', ' . $location->pais;
-
-                return response()->json([
-                    "status" => true,
-                    "data" => $address,
-                    "code" => 200,
-                ]);
-            } else {
-                return response()->json([
-                    "status" => false,
-                    "message" => "Location not found.",
-                    "code" => 404,
-                ], 404);
+public function fetchLocationAddress($id)
+{
+    try {
+        $location = Location::where('_id', $id)->first();
+        if ($location) {
+            $addressComponents = [];
+            if (!empty(trim($location->rua))) {
+                $addressComponents[] = $location->rua;
             }
-        } catch (\Exception $e) {
-            return response()->json([
-                "status" => false,
-                "message" => "An error occurred while retrieving location information.",
-                "code" => 500,
-            ], 500);
-        }
-    }
+            if (!empty(trim($location->freguesia))) {
+                $addressComponents[] = $location->freguesia;
+            }
+            if (!empty(trim($location->municipio))) {
+                $addressComponents[] = $location->municipio;
+            }
+            if (!empty(trim($location->distrito))) {
+                $addressComponents[] = $location->distrito;
+            }
+            if (!empty(trim($location->codigo_postal))) {
+                $addressComponents[] = $location->codigo_postal;
+            }
+            if (!empty(trim($location->pais))) {
+                $addressComponents[] = $location->pais;
+            }
 
-    public function getAllLocations()
-    {
-        try {
-            $locations = Location::all();
-
+            $address = implode(', ', $addressComponents);
             return response()->json([
                 "status" => true,
-                "data" => $locations,
+                "data" => $address,
                 "code" => 200,
             ]);
-        } catch (\Exception $e) {
+        } else {
             return response()->json([
                 "status" => false,
-                "message" => "An error occurred while fetching all locations.",
-                "code" => 500,
-            ], 500);
+                "message" => "Location not found.",
+                "code" => 404,
+            ], 404);
         }
+    } catch (\Exception $e) {
+        return response()->json([
+            "status" => false,
+            "message" => "An error occurred while retrieving location information.",
+            "code" => 500,
+        ], 500);
     }
+}
+
+    public function getAllLocations()
+{
+    try {
+        $locations = Location::all();
+
+        return response()->json([
+            "status" => true,
+            "data" => $locations,
+            "code" => 200,
+        ]);
+    } catch (\Exception $e) {
+        // Log the exception
+        \Log::error("Error fetching all locations: " . $e->getMessage());
+
+        return response()->json([
+            "status" => false,
+            "message" => "An error occurred while fetching all locations.",
+            "code" => 500,
+        ], 500);
+    }
+}
+
 
     public function registerLocation(Request $request)
     {

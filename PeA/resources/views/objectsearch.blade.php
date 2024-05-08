@@ -34,7 +34,7 @@
     </div>
   </div>
 </div>
-
+<div id= "allLocationsTable"></div>
 <div id="map" style="height: 400px;"></div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -90,7 +90,7 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
             var mapButton = document.createElement("button");
             mapButton.textContent = "Show Location";
             mapButton.onclick = function() {
-                var locationId = result.locationId.toString();
+                var locationId = result.locationId;
                 if (locationId) {fetchLocationAddress(locationId)
                 } else {
                     console.error('Location ID is undefined or null');
@@ -155,13 +155,24 @@ function fetchAllFoundObjects() {
 
 function fetchAllLocations() {
     $.ajax({
-        url: '/api/getAllLocations',
+        url: 'api/getAllLocations',
         method: 'GET',
         success: function(response) {
-            displaylocations(response.data, "Locations", "allLocationsTable");
+            if (response.status === false) {
+                console.error("Error fetching all locations objects", response.message);
+                
+            } else {
+                displaylocations(response.data, "Locations", "allLocationsTable");
+            }
         },
         error: function(xhr, status, error) {
-            console.error("Error fetching all locations:", error);
+            if (xhr.status === 404) {
+                console.error("Route not found:", error);
+             
+            } else {
+                console.error("Error fetching all locations route:", error);
+                
+            }
         }
     });
 }

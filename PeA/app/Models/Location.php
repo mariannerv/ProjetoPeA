@@ -10,5 +10,4 @@ class Location extends Model
     protected $collection = 'location'; 
 
     protected $fillable = ['rua', 'freguesia', 'municipio', 'distrito', 'codigo_postal', 'pais'];
-    protected $casts = '_id';
 }
