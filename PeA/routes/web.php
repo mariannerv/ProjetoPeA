@@ -84,14 +84,17 @@ Route::get('/{station}', function () {
     return view('');
 });
 */
-// Route::get('/delete-account/{user}', function () {
+// Route::get('/delete-account/{user}', function () {objectregister
 //     return view('profile.users.confirm-deletion');
 // })->name('user.delete.account');
 
 // Object views
-Route::get('/search',function(){
-    return view('objects.objectsearch');
-});
+
+Route::get('/objects/register', function () {
+    return view('objects.register');
+})->name('objects.register');
+
+Route::post('/objects/register', [ApiController::class, 'lostObjects'])->name('objects.register');
 
 // Email routes
 Route::get('/send-mail', [SendMailController::class, 'sendWelcomeEmail']);
