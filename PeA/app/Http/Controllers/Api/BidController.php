@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\Auction;
 use App\Models\Bid;
 use Illuminate\Validation\ValidationException;
+use App\Http\Controllers\Emails\bidMailUpdateController;
 
 class BidController extends Controller
 {
@@ -23,6 +24,7 @@ public function placeBid(Request $request)
 {
     $auctionId = $request->auctionId;
     $auction = Auction::where('auctionId', $auctionId)->first();
+    $currentHightestBidder = null;
 
     if (!$auction) {
         return response()->json([
@@ -40,6 +42,7 @@ public function placeBid(Request $request)
         ]);
     }
 
+    $currentHighestBidderEmail = $auction->highestBidderId;
     $request->validate([
         'amount' => 'required|numeric',
         'bidderId' => [
@@ -59,7 +62,8 @@ public function placeBid(Request $request)
         ]);
     }
 
-    $timestamp = Carbon::now()->timestamp;
+
+    $timestamp = date("Y-m-d H:i:s");
     $uuid = (string) Str::uuid();
     $bid = Bid::create([
         "bidId" => $uuid,
@@ -81,14 +85,29 @@ public function placeBid(Request $request)
         }
 
     if ($bid) {
-        $now = Carbon::now();
         
-        $bidDate = new UTCDateTime(now()->timestamp * 1000);;
+        
+        $bidDate = date("Y-m-d H:i:s");
         $auction->highestBid = $request->amount;
         $auction->highestBidderId = $request->bidderId;
         $auction->push('bids_list', $bid->bidId);
         $auction->recentBidDate = $bidDate;
         $auction->save();
+
+
+        $emailContent = "A sua licitação foi ultrapassada:\n";
+        $emailContent .= "Licitação mais alta: " . $request->amount . "\n";
+        $emailContent .= "ID do leilão: " . $auction->auctionId . "\n";
+        $emailContent .= "Data de fim: " . $auction->end_date . "\n";
+
+        $sendMailController = new bidMailUpdateController();
+        $sendMailController->sendBidEmail(
+            $currentHighestBidderEmail,
+            "Licitação ultrapassada",
+            "Novo valor mais alto: " . $request->amount . "€",
+            "ID do leilão: " . $auction->auctionId,
+            "Data de fim: " . $auction->end_date,
+        );
     }
 
     return response()->json([

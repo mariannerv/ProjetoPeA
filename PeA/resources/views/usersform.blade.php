@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
     <title>Registar Conta</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
@@ -14,7 +15,11 @@
   </head>
   <body>
     <header>
-      @include('navbar')
+        @if (auth()->check())
+        @include('navbar')
+      @else
+        @include('navbar-guest')
+      @endif 
     </header>
     <main class="my-5">
       <div class="container">
@@ -129,11 +134,21 @@
                         </div>
                         <div class="col-md-6">
                             <label for="validationCustom10" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="validationCustom10" name="password" required>
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" id="validationCustom10" name="password" required autocomplete="current-password">
                             <div class="invalid-feedback">
                                 Please provide a valid password.
                             </div>
+                            @error('validationCustom10')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
                         </div>
+                        <div class="col-md-6">
+                             <label for="validationCustom11" class="form-label">Confirm Password</label>
+                             <input id="validationCustom11" type="password" class="form-control @error('password') is-invalid @enderror" name="c_password" required autocomplete="current-password">
+                        </div>
+
                         <div class="col-12">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
@@ -156,14 +171,7 @@
       </div>
       </div>
     </main>
-    <footer class="footer mt-auto py-3 bg-dark">
-      <div class="container">
-        <span class="text-muted"
-          >Copyrights
-          <a href="https://mdbootstrap.com">MDBootstrap.com</a></span
-        >
-      </div>
-    </footer>
+    @include('footer')
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
       integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"

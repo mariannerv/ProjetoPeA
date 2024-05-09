@@ -11,17 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('foundObject', function (Blueprint $table) {
+        Schema::create('lostObject', function (Blueprint $table) {
             $table->id();
-            $table->string('categoryId');
-            $table->string('locationId');
+            $table->foreignId('locationId')->constrained('location');
+            $table->foreignId('owner_id')->constrained('users'); 
+            $table->foreignId('category_id')->constrained('categories'); 
             $table->string('description');
-            $table->string('value');
-            $table->date('dateFound');
-            $table->date('dateRegistered');
-            $table->date('deadlineForAuction');
-            $table->string('objectId');
-            $table->string('finderId');
+            $table->date('date_found');
             $table->timestamps();
         });
     }

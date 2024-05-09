@@ -11,20 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('location', function (Blueprint $table) {
+        Schema::create('verification_codes', function (Blueprint $table) {
             $table->id();
-            $table->string('rua');
-            $table->string('freguesia');
-            $table->string('municipio');
-            $table->string('distrito');
-            $table->string('codigo_postal');
-            $table->string('pais');
-            $table->string('coordenadas');
-            $table->timestamps();
-
+            $table->string('user_email');
+            $table->string('verification_code');
+           
         });
     }
-
     /**
      * Reverse the migrations.
      */

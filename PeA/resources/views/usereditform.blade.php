@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Editar Conta</title>
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    <title>Editar perfil</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -14,63 +15,12 @@
   </head>
   <body>
     <header>
-      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-          <a class="navbar-brand" href="#">Navbar</a>
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
-              </li>
-              <li class="nav-item dropdown">
-                <a
-                  class="nav-link dropdown-toggle"
-                  href="#"
-                  id="navbarDropdown"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Dropdown
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li><a class="dropdown-item" href="#">Action</a></li>
-                  <li><a class="dropdown-item" href="#">Another action</a></li>
-                  <li><hr class="dropdown-divider" /></li>
-                  <li>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-            <form class="d-flex">
-              <input
-                class="form-control me-2"
-                type="search"
-                placeholder="Search"
-                aria-label="Search"
-              />
-              <button class="btn btn-outline-success" type="submit">
-                Search
-              </button>
-            </form>
-          </div>
-        </div>
-      </nav>
+      @if (auth()->check())
+        @include('navbar')
+      @else
+        @include('navbar-guest')
+      @endif 
+      
     </header>
     <main class="my-5">
       <div class="container">
@@ -78,22 +28,8 @@
           <div class="row justify-content-center">
               <div class="col-md-8">
                   <div class="card">
-                      <div class="card-header">Register</div>
+                      <div class="card-header">Editar</div>
                       <div class="card-body">
-                     
-                           <!--
-                         'name' => 'required|string',
-            'gender' => 'required|string',
-            'birthdate' => 'required|date',
-            'address' => 'required|string',
-            'codigo_postal' => 'required|string',
-            'localidade' => 'required|string',
-            'civilId' => 'required|string',
-            'taxId' => 'required|string|unique:users',
-            'contactNumber' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8|confirmed',
-                        -->    
                       <form class="row g-3 needs-validation" novalidate action="{{route('user.update' , ['user' => $user->_id])}}" method="post">
                         @csrf
                         @method('PUT')
@@ -183,18 +119,7 @@
                             </div>
                         </div>
                         <div class="col-12">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
-                                <label class="form-check-label" for="invalidCheck">
-                                    Agree to terms and conditions
-                                </label>
-                                <div class="invalid-feedback">
-                                    You must agree before submitting.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <button class="btn btn-primary" type="submit">Submit form</button>
+                            <button class="btn btn-primary" type="submit">Confirmar alterações</button><button class="btn btn-secondary" onclick="goBack()">Cancelar</button>
                         </div>
                     </form>
                       </div>
@@ -222,6 +147,11 @@
       integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
       crossorigin="anonymous"
     ></script>
+    <script>
+      function goBack() {
+          window.history.back();
+      }
+  </script>
     <script>
       // Example starter JavaScript for disabling form submissions if there are invalid fields
       (() => {

@@ -10,19 +10,23 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Address;
 
-class WelcomeEmail extends Mailable
+class crossCheckUpdate extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $mailMessage;
     public $subject;
+    public $mensagem;
+    public $buttonUrl;
+    
+
     /**
      * Create a new message instance.
      */
-    public function __construct($mailMessage,$subject)
+    public function __construct($subject, $mensagem, $buttonUrl)
     {
-        $this->mailMessage = $mailMessage;
-        $this->subject =$subject;
+        $this->subject = $subject;
+        $this->mensagem = $mensagem;
+        $this->buttonUrl = $buttonUrl;
     }
 
     /**
@@ -31,12 +35,11 @@ class WelcomeEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('projetopea1@gmail.com','ProjetoPeA'),
+            from: new Address('projetopea1@gmail.com', 'Perdidos & Achados'),
             replyTo:[
-                new Address('projetopea1@gmail.com','ProjetoPeA')
+                new Address('projetopea1@gmail.com', 'Perdidos & Achados'),
             ],
             subject: $this->subject,
-
         );
     }
 
@@ -46,7 +49,7 @@ class WelcomeEmail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'registerSuccess',
+            view: 'emails.crosscheck',
         );
     }
 
