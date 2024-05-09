@@ -91,7 +91,7 @@ Route::get('/{station}', function () {
 // Object views
 
 Route::get('/objects/register', function () {
-    return view('objects.register');
+    return view('objectregister');
 })->name('objects.register');
 
 Route::post('/objects/register', [ApiController::class, 'lostObjects'])->name('objects.register');
