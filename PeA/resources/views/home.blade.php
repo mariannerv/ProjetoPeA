@@ -40,7 +40,7 @@
         </div>
         <div class="col-md-auto">
           <div class="text-center">
-            <a role="button" href="http://localhost:8000/" class="btn btn-secondary btn-lg btn-block mb-3">Ver os seus objetos</a>
+            <a role="button" href="{{ route('user.profile', auth()->user()->id) }}" class="btn btn-secondary btn-lg btn-block mb-3">Ver os seus objetos</a>
           </div>
         </div>
       </div>

@@ -73,10 +73,8 @@ Route::get('/usersform', function () {
 // });
 
 // Profile views
+Route::view('/users/{user}','profile.users.user')->name('user.profile');
 /*
-Route::get('/{user}', function () {
-    return view('');
-});
 Route::get('/{police}', function () {
     return view('');
 });
