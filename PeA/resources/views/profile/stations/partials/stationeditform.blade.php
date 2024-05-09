@@ -16,12 +16,12 @@
   <body>
     <header>
       @if (auth()->check())
-        @include('navbar')
+        @include('components.components.navbar')
       @else
-        @include('navbar-guest')
+        @include('components.components.navbar-guest')
       @endif 
       
-    </header>
+  </header>
     <main class="my-5">
       <div class="container">
         <div class="container mt-5">
@@ -30,41 +30,15 @@
                   <div class="card">
                       <div class="card-header">Editar</div>
                       <div class="card-body">
-                      <form class="row g-3 needs-validation" novalidate action="{{route('user.update' , ['user' => $user->_id])}}" method="post">
+
+                    
+                      <form class="row g-3 needs-validation" action="{{route('station.update' , ['station' => $user->_id])}}" method="post" novalidate>
+                        
                         @csrf
                         @method('PUT')
-                        <div class="col-md-4">  
-                            <label for="validationCustom01" class="form-label">Full name</label>
-                            <input type="text" class="form-control" id="validationCustom01" name="name" value="{{$user->name}}" required>
-                            <div class="valid-feedback">
-                                Looks good!
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="validationCustom02" class="form-label">Gender</label>
-                            <select class="form-select" id="validationCustom02" name="gender" value="{{$user->gender}}" required>
-                                <option selected disabled value="">Choose...</option>
-                                <option>Male</option>
-                                <option>Female</option>
-                                <option>Other</option>
-                            </select>
-                            <div class="invalid-feedback">
-                                Please select a valid gender.
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="validationCustomDate" class="form-label">Birthdate</label>
-                            <div class="input-group has-validation">
-                                <input type="date" class="form-control" id="validationCustomDate" name="birthdate" value="{{$user->birthdate}}" required>
-                                <div class="invalid-feedback">
-                                    You need to be over 18 years old.
-                                </div>
-                            </div>
-                        </div>
-                    
                         <div class="col-md-6">
                             <label for="validationCustom03" class="form-label">Address</label>
-                            <input type="text" class="form-control" id="validationCustom03" name="address"  value="{{$user->address}}" required>
+                            <input type="text" class="form-control" id="validationCustom03" name="morada" value="{{$user->morada}}" required>
                             <div class="invalid-feedback">
                                 Please provide a valid address.
                             </div>
@@ -77,47 +51,54 @@
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <label for="validationCustom05" class="form-label">City</label>
+                            <label for="validationCustom05" class="form-label">Zone</label>
                             <input type="text" class="form-control" id="validationCustom05" name="localidade" value="{{$user->localidade}}" required>
                             <div class="invalid-feedback">
-                                Please provide a valid city.
+                                Please provide a valid zone.
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <label for="validationCustom06" class="form-label">Civil ID</label>
-                            <input type="text" class="form-control" id="validationCustom06" name="civilId" value="{{$user->civilId}}" required>
+                        <div class="col-md-6">
+                            <label for="validationCustom03" class="form-label">Unit</label>
+                            <input type="text" class="form-control" id="validationCustom03" name="unidade" value="{{$user->unidade}}" required>
                             <div class="invalid-feedback">
-                                Please provide a valid Civil ID.
+                                Please provide a valid unit.
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <label for="validationCustom07" class="form-label">Tax ID</label>
-                            <input type="text" class="form-control" id="validationCustom07" name="taxId" value="{{$user->taxId}}" required>
+                        <div class="col-md-6">
+                            <label for="validationCustom03" class="form-label">Acronym</label>
+                            <input type="text" class="form-control" id="validationCustom03" name="sigla" value="{{$user->sigla}}" required>
                             <div class="invalid-feedback">
-                                Please provide a valid Tax ID.
+                                Please provide a valid acronym.
                             </div>
                         </div>
                         <div class="col-md-4">
                             <label for="validationCustom08" class="form-label">Contact Number</label>
-                            <input type="tel" class="form-control" id="validationCustom08" name="contactNumber" value="{{$user->contactNumber}}" required>
+                            <input type="tel" class="form-control" id="validationCustom08" name="telefone" value="{{$user->telefone}}" required>
                             <div class="invalid-feedback">
                                 Please provide a valid contact number.
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <label for="validationCustom08" class="form-label">Fax Number</label>
+                            <input type="tel" class="form-control" id="validationCustom08" name="fax" value="{{$user->fax}}" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid fax number.
+                            </div>
+                        </div>
                         <div class="col-md-6">
                             <label for="validationCustom09" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="validationCustom09" name="email" value="{{$user->email}}" required>
+                            <input type="email" class="form-control" id="validationCustom09" name="email"  value="{{$user->email}}"required>
                             <div class="invalid-feedback">
                                 Please provide a valid email address.
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        {{-- <div class="col-md-6">
                             <label for="validationCustom10" class="form-label">Password</label>
                             <input type="password" class="form-control" id="validationCustom10" name="password" required>
                             <div class="invalid-feedback">
                                 Please provide a valid password.
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="col-12">
                             <button class="btn btn-primary" type="submit">Confirmar alterações</button><button class="btn btn-secondary" onclick="goBack()">Cancelar</button>
                         </div>
@@ -129,14 +110,7 @@
       </div>
       </div>
     </main>
-    <footer class="footer mt-auto py-3 bg-dark">
-      <div class="container">
-        <span class="text-muted"
-          >Copyrights
-          <a href="https://mdbootstrap.com">MDBootstrap.com</a></span
-        >
-      </div>
-    </footer>
+    @include('components.footer')
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
       integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"

@@ -17,7 +17,7 @@ class PoliceStationController extends Controller
     public function index() {
 
         $user =  PoliceStation::all();
-        return view('stations' ,['users' => $user]);
+        return view('admin.stations' ,['users' => $user]);
     }
 
 
@@ -54,7 +54,7 @@ class PoliceStationController extends Controller
         "email" => $request->input('email'),
     ]);
 
-    return  redirect()->route('registerSuccess');
+    return  redirect()->route('register.registerSuccess');
 
 } catch (ValidationException $e) {
     if ($e->errors()['unidade'] && $e->errors()['unidade'][0] === 'Unidade já registada.') {
@@ -191,7 +191,7 @@ public function deletePost(Request $request) {
 public function sigla() {
 
     $user =  PoliceStation::all();
-    return view('policesform' , ['users' => $user]);
+    return view('register.policesform' , ['users' => $user]);
 
 }
 
@@ -208,7 +208,7 @@ public function edit(PoliceStation $user) {
 
     session(['sigla' => $user->sigla]);
 
-    return view('stationeditform' , ['user' => $user]);
+    return view('profile.stations.partials.stationeditform' , ['user' => $user]);
 
     
 

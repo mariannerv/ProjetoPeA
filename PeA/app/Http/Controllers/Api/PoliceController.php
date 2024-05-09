@@ -17,7 +17,7 @@ class PoliceController extends Controller
     public function index() {
 
         $user =  Police::all();
-        return view('polices' ,['users' => $user]);
+        return view('admin.polices' ,['users' => $user]);
     }
 
 
@@ -52,7 +52,7 @@ class PoliceController extends Controller
                 "email_verified_at" => '',
             ]);
 
-            return redirect()->route('registerSuccess');
+            return redirect()->route('register.registerSuccess');
 
         } catch (ValidationException $e){
             if ($e->errors()['internalId'] && $e->erros()['internalId'][0] === "Policia com este Id já associado a outra conta.");
@@ -254,7 +254,7 @@ class PoliceController extends Controller
     public function edit(Police $user) {
 
         $sigla = PoliceStation::all();
-        return view('policeseditform' , ['user' => $user , 'siglas' => $sigla]);
+        return view('profile.polices.partials.policeseditform' , ['user' => $user , 'siglas' => $sigla]);
 
     }
 }

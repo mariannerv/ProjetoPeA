@@ -14,7 +14,6 @@
     />
   </head>
   <body>
-    {{-- @include('navbar') --}}
     <main class="my-5">
       <div class="container">
         <div class="container mt-auto">

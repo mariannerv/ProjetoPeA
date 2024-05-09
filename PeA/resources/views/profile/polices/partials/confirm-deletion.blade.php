@@ -17,9 +17,9 @@
 </head>
 <body>
     @if (auth()->check())
-    @include('navbar')
+    @include('components.navbar')
   @else
-    @include('navbar-guest')
+    @include('components.navbar-guest')
   @endif 
     <main class="my-5">
         <div class="container">
@@ -54,7 +54,7 @@
         </div>
       </main>
     
-    @include('footer')
+    @include('components.footer')
     <script>
         function goBack() {
             window.history.back();
