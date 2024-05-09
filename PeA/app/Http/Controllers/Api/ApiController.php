@@ -455,7 +455,7 @@ public function update(Request $request, string $id) {
     );
     
     if ($update) {
-        return redirect()->route('users.store');
+        return view('home');
     }
 }
 

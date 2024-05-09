@@ -94,7 +94,7 @@ Route::get('/stationsform', function () {
 });
 
 Route::get('/', function () {
-    return view('chooseaccounttype');
+    return view('home');
 });
     
     Route::get('/login', function(){
@@ -154,14 +154,6 @@ Route::get('/edit',function(){
     return view('profile.edit');
 });
 
-Route::get('/stationsform',function(){
-    return view('stationsform');
-});
-
-Route::get('/chooseaccounttype',function(){
-    return view('chooseaccounttype');
-});
-
 Route::get('/search',function(){
     return view('objectsearch');
 });
@@ -179,7 +171,9 @@ Route::get('/verification-form', function () {
     return view('verificaemail');
 });
 
-
+Route::get('/deleteAccount/{user}', function () {
+    return view('confirm-deletion');
+})->name('deleteAccount');
 
 
 //caso o timer tenha expirado
