@@ -3,6 +3,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\Api\LostObjectController;
 use App\Http\Controllers\Api\PoliceStationController;
 use App\Http\Controllers\Api\PoliceController;
 use App\Http\Controllers\EmailController;
@@ -87,9 +88,12 @@ Route::get('/{station}', function () {
 // })->name('user.delete.account');
 
 // Object views
+Route::get('/lost-objects', [LostObjectController::class, 'getAllLostObjects'])->name('lost-objects.get');
+
 Route::get('/search',function(){
     return view('objects.objectsearch');
 });
+
 
 // Email routes
 Route::get('/send-mail', [SendMailController::class, 'sendWelcomeEmail']);

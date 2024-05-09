@@ -30,12 +30,14 @@
     @if (auth()->check())
     <br><br>
     <div class="container">
-        <div class="row row-cols-4 border">
-            <div class="col-auto">
-                <img src="images/Sample_User_Icon.png" height="100%" class="img-fluid" id="prof-pic" alt="User icon">
+        <div class="row border">
+            <div class="col-2">
+                  <img src="../images/Sample_User_Icon.png" class="img-fluid" id="prof-pic" alt="User icon">
             </div>
-            <div class="col-6">
+            <div class="col">
                 <h2>{{auth()->user()->name}}</h2>
+                <br>
+                <h4 >{{auth()->user()->email}}</h4>
             </div>
             <div class="col-auto">
                 <button class="btn btn-primary">Editar perfil</button>
@@ -59,42 +61,30 @@
               </ul>
               <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-                    <h2>Os meus objetos perdidos</h2>
-                    <p>Aqui serão inseridos os objetos que foram perdidos pelo utilizador e pode-se filtrar + pesquisar</p>  
-                    <input class="form-control" id="lostObj" type="text" placeholder="Search..">
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Filtrar
-                        </button>
-                        <ul class="dropdown-menu">
-                          <li><button class="dropdown-item" type="button">Todos</button></li>
-                          <li><button class="dropdown-item" type="button">Presente</button></li>
-                          <li><button class="dropdown-item" type="button">Passado</button></li>
-                          <li><button class="dropdown-item" type="button">Futuro</button></li>
-                        </ul>
-                      </div>
+                    <div class="container">
+                      <div class="row">
+                        <h2>Os meus objetos perdidos</h2>
+                    </div> 
+                    <div class="row">
+                      <p>Aqui serão inseridos os objetos que foram perdidos pelo utilizador e pode-se filtrar + pesquisar</p>  
+                      <input class="form-control" id="lostObj" type="text" placeholder="Procurar..">
+                    </div>
+                    </div>
+                    
                 </div>
                 <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
                     <h2>Os meus objetos encontrados</h2>
                     <p>Aqui serão inseridos os objetos que foram encontrados pelo utilizador e pode-se filtrar + pesquisar</p>  
                     <input class="form-control" id="foundObj" type="text" placeholder="Search..">
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Filtrar
-                        </button>
-                        <ul class="dropdown-menu">
-                          <li><button class="dropdown-item" type="button">Todos</button></li>
-                          <li><button class="dropdown-item" type="button">Presente</button></li>
-                          <li><button class="dropdown-item" type="button">Passado</button></li>
-                          <li><button class="dropdown-item" type="button">Futuro</button></li>
-                        </ul>
-                      </div>
                 </div>
                 <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">
-                    <h2>Os meus leilões</h2>
-                    <p>Aqui serão inseridos todos os leilões em que o utilizador esteve envolvido (presente, passado) e pode-se filtrar + pesquisar</p>  
-                    <input class="form-control" id="myAuct" type="text" placeholder="Search..">
-                    <div class="dropdown">
+                  <div class="container">
+                    <div class="row">
+                    <div class="col">
+                      <h2>Os meus leilões</h2>
+                    </div>
+                    <div class="col-auto">
+                      <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                           Filtrar
                         </button>
@@ -105,6 +95,13 @@
                           <li><button class="dropdown-item" type="button">Futuro</button></li>
                         </ul>
                       </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <p>Aqui serão inseridos os leilões em que o utilizador está envolvido e pode-se filtrar + pesquisar</p>  
+                    <input class="form-control" id="lostObj" type="text" placeholder="Procurar..">
+                  </div>
+                  </div>
                 </div>
               </div>
         </div>
