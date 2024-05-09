@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-    <title>Editar perfil</title>
+    <title>Registar Conta</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -16,50 +16,78 @@
   <body>
     <header>
       @if (auth()->check())
-        @include('navbar')
+        @include('components.navbar')
       @else
-        @include('navbar-guest')
+        @include('components.navbar-guest')
       @endif 
-      
     </header>
     <main class="my-5">
       <div class="container">
         <div class="container mt-5">
           <div class="row justify-content-center">
-              <div class="col-md-8">
+              <div class="col-8">
                   <div class="card">
-                      <div class="card-header">Editar</div>
+                      <div class="card-header">Register</div>
                       <div class="card-body">
-                      <form class="row g-3 needs-validation"   action="{{route('police.update' , ['police' => $user->_id])}}" method="post" novalidate>
+
+                        @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                               
+                            </ul>
+                        </div>
+                    @endif
+
+                         <!---
+                            $val = $request->validate([
+                'name' => 'required|string',
+                'internalId' => 'required|string|unique:police_user',
+                'password' => 'required|min:8',
+                'policeStationId' =>  'required|string|exists:police_station,sigla',
+            ]); 
+                         -->
+
+                      <form class="row g-3 needs-validation"   action="{{route('police.register')}}" method="post" novalidate>
                         @csrf
-                        @method('PUT')
-                        <div class="col-md-4">
+                        <div class="col-4">
                             <label for="validationCustom01" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="validationCustom01" name="name" value="{{$user->name}}" required>
+                            <input type="text" class="form-control" id="validationCustom01" name="name" value="{{old('name')}}" required>
                             <div class="valid-feedback">
                                 Looks good!
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-4">
                             <label for="validationCustom02" class="form-label">Internal ID</label>
-                            <input type="text" class="form-control" id="validationCustom02" name="internalId" value="{{$user->internalId}}">
+                            <input type="text" class="form-control" id="validationCustom02" name="internalId" value="{{old('internalId')}}">
                             <div class="invalid-feedback">
                                 Please provide a valid ID
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-4">
                           <label for="validationCustom03" class="form-label">Police Station ID</label>
-                          <select class="form-select" id="validationCustom02" name="policeStationId" value="{{$user->policeStationId}}" required>
+                          <select class="form-select" id="validationCustom02" name="policeStationId" value="{{old('policeStationId')}}" required>
                             <option selected disabled value="">Choose...</option>
-                            @foreach ($siglas as $sig)
-                            <option>{{$sig->sigla}}</option>
+                            @foreach ($users as $user)
+                            <option>{{$user->sigla}}</option>
                             @endforeach
                         </select>
                           <div class="invalid-feedback">
                               Please provide a valid station ID
                           </div>
                       </div>
-                        <div class="col-md-6">
+                        {{-- <div class="col-6">
+                            <label for="validationCustom09" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="validationCustom09" name="email" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid email address.
+                            </div>
+
+                            
+                        </div> --}}
+                        <div class="col-6">
                             <label for="validationCustom10" class="form-label">Password</label>
                             <input type="password" class="form-control" id="validationCustom10" name="password" required>
                             <div class="invalid-feedback">
@@ -67,7 +95,18 @@
                             </div>
                         </div>
                         <div class="col-12">
-                            <button class="btn btn-primary" type="submit">Confirmar alterações</button><button class="btn btn-secondary" onclick="goBack()">Cancelar</button>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
+                                <label class="form-check-label" for="invalidCheck">
+                                    Agree to terms and conditions
+                                </label>
+                                <div class="invalid-feedback">
+                                    You must agree before submitting.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-primary" type="submit">Submit form</button>
                         </div>
                     </form>
                       </div>
@@ -77,14 +116,7 @@
       </div>
       </div>
     </main>
-    <footer class="footer mt-auto py-3 bg-dark">
-      <div class="container">
-        <span class="text-muted"
-          >Copyrights
-          <a href="https://mdbootstrap.com">MDBootstrap.com</a></span
-        >
-      </div>
-    </footer>
+    @include('components.footer')
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
       integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
@@ -95,11 +127,6 @@
       integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
       crossorigin="anonymous"
     ></script>
-    <script>
-      function goBack() {
-          window.history.back();
-      }
-  </script>
     <script>
       // Example starter JavaScript for disabling form submissions if there are invalid fields
       (() => {
@@ -115,11 +142,11 @@
                     if (!input.checkValidity()) {
                       event.preventDefault();
                       event.stopPropagation();
-                      // input.classList.add('is-invalid');
+                      input.classList.add('is-invalid');
                     } 
-                    // else {
-                    //     input.classList.remove('is-invalid');
-                    // }
+                    else {
+                        input.classList.remove('is-invalid');
+                    }
                 });
 
                 // Check date input validity
@@ -131,11 +158,11 @@
                     if (selectedDate > maxDate) {
                         event.preventDefault();
                         event.stopPropagation();
-                        // dateInput.classList.add('is-invalid');
+                        dateInput.classList.add('is-invalid');
                     } 
-                    // else {
-                    //     dateInput.classList.remove('is-invalid');
-                    // }
+                    else {
+                        dateInput.classList.remove('is-invalid');
+                    }
                 }
 
                 if (!isValid) {
