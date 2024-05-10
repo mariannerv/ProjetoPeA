@@ -19,6 +19,10 @@ use App\Models\LostObject;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Emails\crossCheckMailController;
+use App\Http\Controllers\Emails\SendMailController;
+use Exception;
+use Illuminate\Support\Facades\Validator;
+
 
 class LostObjectController extends Controller
 {
@@ -34,30 +38,57 @@ class LostObjectController extends Controller
             "code" => 404,
         ]);
     }
+    try {
+        $val = Validator::make($request->all(),[
+            'ownerEmail' => 'required|email',
+            'category' => 'required|string',
+            'description' => 'required|string',
+            'date_lost' => 'required|date',
+            // 'location_id' => 'required|string',
 
-    $request->validate([
-        'ownerEmail' => 'required|email',
-        'categoryId' => 'required|string',
-        'description' => 'required|string',
-        'date_found' => 'required|date',
-        'location_id' => 'required|string',
-    ]);
-
-    $uuid = (string) Str::uuid();
+        ]);
+        if ($val->fails()){
+            return redirect()->back()->withErrors($val)->withInput();
+        }
 
     $lostObject = LostObject::create([
-        "ownerId" => $owner->id,
-        "categoryId" => $request->categoryId,
-        "description" => $request->description,
-        "date_found" => $request->date_found,
-        "location_id" => $request->location_id,
+        "ownerEmail" => $ownerEmail,
+        "description" => $request->input('description'),
+        "date_lost" => $request->input('date_lost'),
+        "brand" => $request->input('brand'),
+        "color" => $request->input('color'),
+        "size" => $request->input('size'),
+        "category" => $request->input('category'),
+        "location" => "12345fsaw1",
+        "status" => "Lost",
+        "lostObjectId" => 0,
     ]);
 
+    event(new Registered($lostObject));
+
+    // app(SendMailController::class)->sendWelcomeEmail(
+    //     $request->input('email'),
+    //     "Objecto registado com sucesso!",
+    //     "Obrigado por ter registado um objeto, esperamos que o consiga encontrar."
+    // );
+
     return response()->json([
-        "status" => true,
-        "code" => 200,
-        "message" => "Objeto perdido registado com sucesso.",
-    ], 200);
+        'message' => 'Lost object registered successfully',
+        'lost_object' => $lostObject,
+    ]);
+} catch (Exception $e) {
+    $exceptionInfo = [
+        'message' => $e->getMessage(),
+        
+        // Add more properties as needed
+    ];
+    return response()->json([
+        "status" => false,
+        "message" => "Ocorreu um erro ao recuperar as informações do objeto.",
+        "exception" => $exceptionInfo,
+        "code" => 500,
+    ], 500);
+}
 }
 
 
@@ -81,21 +112,17 @@ class LostObjectController extends Controller
     }
 }
 
-    public function getLostObject(Request $request){
+    public function getLostObject(Request $request, String $id){
         try {
+            echo($request); 
             $request->validate([
-                'lostObjectId' => 'required|string',
+                '_id' => 'required|string',
             ]);
 
-            $object = LostObject::where('lostObjectId', $request->lostObjectId)->first();
+            $object = LostObject::where('_id', $id)->first();
 
             if ($object) {
-              
-                return response()->json([
-                    "status" => true,
-                    "data" => $object,
-                    "code" => 200,
-                ]);
+                return view('objects.lost-object',$object->_id);
             } else {
                 return response()->json([
                     "status" => false,
@@ -104,9 +131,15 @@ class LostObjectController extends Controller
                 ], 404);
             }
         } catch (\Exception $e) {
+            $exceptionInfo = [
+                'message' => $e->getMessage(),
+                
+                // Add more properties as needed
+            ];
             return response()->json([
                 "status" => false,
                 "message" => "Ocorreu um erro ao recuperar as informações do objeto.",
+                "exception" => $exceptionInfo,
                 "code" => 500,
             ], 500);
         }

@@ -66,7 +66,7 @@ class FoundObjectController extends Controller
         }
     }
 
-    public function viewFoundObject(Request $request)
+    public function getFoundObject(Request $request)
     {
         try {
             $request->validate([
