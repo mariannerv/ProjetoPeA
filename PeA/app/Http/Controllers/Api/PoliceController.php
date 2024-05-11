@@ -79,24 +79,26 @@ class PoliceController extends Controller
         if ($user->account_status == 'active') {
             if (Hash::check($request->password, $user->password)) {
                 
-             
-                $expirationTime = now()->addHours(24);
+                //Auth::loginUsingId($user->_id);
+                //var_dump($user);
+                $userg = auth()->guard('police')->loginUsingId($user->_id);
+
+                var_dump($userg);
 
                 // Create the token instance
-                $token = $user->createToken(name: 'personal-token', expiresAt: now()->addMinutes(30))->plainTextToken;
+               // $token = $user->createToken(name: 'personal-token', expiresAt: now()->addMinutes(30))->plainTextToken;
 
 
 
-                $user->update(['token' => explode('|', $token)[1]]);
+                //$user->update(['token' => explode('|', $token)[1]]);
 
-                $expirationTime = now()->addHours(24)->format('Y-m-d H:i:s');
+                //$expirationTime = now()->addHours(24)->format('Y-m-d H:i:s');
                 
                 return response()->json([
                     "status" => true,
                     "code" => 200,
-                    "message" => "Login successful!",
-                    "token" => $token,
-                    "expiration_time" => $expirationTime,
+                    "message" => "Login policia successful!",
+                    
                 ]);
             } else {
                 return response()->json([
@@ -256,5 +258,11 @@ class PoliceController extends Controller
         $sigla = PoliceStation::all();
         return view('policeseditform' , ['user' => $user , 'siglas' => $sigla]);
 
+    }
+
+    public function logout(){
+        Auth::logout();
+        Auth::guard('police')->logout();
+        return view('home');
     }
 }

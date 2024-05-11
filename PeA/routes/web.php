@@ -34,6 +34,7 @@ Route::get('/', function () {
     //confirmdelete
     Route::post('/users/{user}/confirm-delete', [ApiController::class, 'confirmDelete'])->name('user.confirm-delete');
 
+<<<<<<< Updated upstream
     Route::get('/login', function(){
         return view('login');
     });
@@ -82,6 +83,33 @@ Route::get('/', function () {
 
 Route::get('/usersform',function(){
     return view('usersform');
+=======
+// Police Routes
+Route::get('/polices', [PoliceController::class, 'index'])->name('polices.store');
+Route::get('/police/{user}/edit', [PoliceController::class, 'edit'])->name('police.edit');
+Route::delete('/police/{police}', [PoliceController::class, 'destroy'])->name("police.destroy");
+Route::put('/police/{police}', [PoliceController::class, 'update'])->name('police.update');
+Route::post('/Policecreate', [PoliceController::class, 'registerPolicia'])->name('police.register');
+Route::get('/policesform', [PoliceStationController::class, 'sigla'])->name('policesform.store');
+Route::get('/loginpolice', function(){
+    return view('auth.policelogin');
+});
+Route::post('/policelogin' , [PoliceController::class, 'loginPolice'])->name('polices.login');
+
+Route::get('/logoutpolice' ,[PoliceController::class, 'logout'])->name('polices.logout');
+// Station routes
+Route::get('/stations', [PoliceStationController::class, 'index'])->name('stations.store');
+Route::post('/stationcreate', [PoliceStationController::class, 'registerPost'])->name('station.register');
+Route::delete('/policestation/{station}', [PoliceStationController::class, 'destroy'])->name("policestation.destroy");
+Route::get('/station/{user}/edit', [PoliceStationController::class, 'edit'])->name('station.edit');
+Route::put('/station/{station}', [PoliceStationController::class, 'update'])->name('station.update');
+Route::get('/testeauth', function(){
+    return view('auth.testeauth');
+});
+// Login views/routes
+Route::get('/login', function(){
+    return view('auth.login');
+>>>>>>> Stashed changes
 });
 
 Route::get('/policesform',function(){
