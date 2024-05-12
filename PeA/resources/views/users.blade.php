@@ -5,31 +5,27 @@
 
 <!DOCTYPE html>
 <html>
+
+<link href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.0.7/datatables.min.css" rel="stylesheet">
+ 
+<script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.0.7/datatables.min.js"></script>
+
+
+
 <head>
     <title>Tabela de Utilizadores</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-        }
-    </style>
+ 
 </head>
 <body>
+    <h2>Numero de Utilizadores: {{$numberusers}} </h2>
+    <h2>Numero de Utilizadores ativos {{$numberactive}} </h2>
+    <h2>Numero de Utilizadores Desativos: {{$deactivated}} </h2>
+   <button id="test">teste</button>
+    <a href="{{route('usersactive.store')}}"><button>Mostrar Utilizadores Ativos</button></a>
+    <a href="{{route('usersdeactivated.store')}}"><button>Mostrar Utilizadores Destivos</button></a>
     <h2>Tabela de Utilizadores</h2>
 
-    <table>
+    <table id="usertabel">
         <thead>
             <tr>
                 <th>Nome</th>
@@ -47,21 +43,29 @@
                 <td>{{ $user->contactNumber }}</td>
                 <td>{{ $user->email }}</td>
                 <td class="action-buttons">
-                    <form method="post" action="{{ route('user.confirm-delete', $user->id) }}" style="display: inline;">
+                    @if($user->account_status == 'active')
+                    <form method="post" action="{{ route('user.desactive', $user->id) }}" id="formactive" style="display: inline;">
                         @csrf
-                        <button type="submit">Eliminar</button>
+                        <button type="submit">Destivar</button>               
                     </form>
+                    @else
+                    <form method="post" action="{{ route('user.useractive', $user->id) }}" style="display: inline;">
+                        @csrf
+                        <button type="submit">Ativar</button>               
+                    </form>
+                    @endif
                     
-                    <form method="get" action="{{ route('user.edit', $user->id) }}" style="display: inline;">
-                        @csrf
-    
-                        <button type="submit">Editar</button>
-                    </form>
                 </td>
             </tr>
             @endforeach
         </tbody>
     </table>
+
+    <script>
+        let table = new DataTable('#usertabel');
+    
+    
+    </script>
 </body>
 </html>
 @else
