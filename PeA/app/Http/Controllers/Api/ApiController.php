@@ -1,8 +1,5 @@
 <?php
-#TODO:IMPLEMENT EMAIL VERIFICATION, EMAIL NOTIFICATIONS AND PASSWORD RESETS
-#EMAIL VERIFICATIONS SHOULD BE EASY,SO START BY THERE
-#THEN PASSWORD RESETS
-#THEN EMAIL NOTIFS
+
 
 namespace App\Http\Controllers\Api;
 
@@ -20,8 +17,12 @@ use Illuminate\Auth\Events\PasswordReset;
 use PeA\database\factories\UserFactory;
 use PHPUnit\Metadata\Uses;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\SendMailController;
-
+use App\Http\Controllers\Emails\SendMailController;
+use App\Providers\RouteServiceProvider;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Validation\Rules;
+use Illuminate\View\View;
+use App\Http\Controllers\verificationCodeController;
 
 
 
@@ -30,14 +31,18 @@ class ApiController extends Controller
 
 public function index() {
     $user =  User::all();
-    return view('users' ,['users' => $user]);
+    $numberUsers = User::count();
+    $numberactive = User::where('account_status', 'active')->count();
+    $deactivated = User::where('account_status', 'deactivated')->count();
+    return view('admin.users' ,['users' => $user , 'numberusers' => $numberUsers , 
+    'numberactive' => $numberactive , 'deactivated' => $deactivated]);
 }
 
 public function register(Request $request){
 
     try {
         $val = Validator::make($request->all(),[
-            'name' => 'required|string',
+            'name' => ['required', 'string', 'max:255'],
             'gender' => 'required|string',
             'birthdate' => 'required|date',
             'address' => 'required|string',
@@ -47,7 +52,7 @@ public function register(Request $request){
             'taxId' => 'required|string|unique:users',
             'contactNumber' => 'required|string',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:8',
+            'password' => ['required', Rules\Password::defaults()],
         ]);
         
         if ($val->fails()){
@@ -74,20 +79,27 @@ public function register(Request $request){
             "password" => Hash::make($request->input('password')),
             "account_status" => 'active',
             "token" => '',
+            "email_verified" => "false",
             "email_verified_at" => '',
             "bid_history" => [],
             "lost_objects" => [],
+            "admin" => false,
         ]);
      
-        $sendMailController = new SendMailController();
-        $sendMailController->sendWelcomeEmail(
+        event(new Registered($user));
+
+        
+
+        app(SendMailController::class)->sendWelcomeEmail(
             $request->input('email'),
             "Bem vindo ao PeA!",
             "Bem vindo!"
         );
         
+        //cria logo um token pra verificar o email
+        app(verificationCodeController::class)->createCode($request->input('email'));
         
-        return redirect()->route('registerSuccess');
+        return redirect()->route('register.registerSuccess');
 
     } catch (ValidationException $e) {
         if ($e->errors()['taxId'] && $e->errors()['taxId'][0] === 'Número de contribuinte já associado a outra conta.') {
@@ -152,7 +164,7 @@ public function register(Request $request){
                     
                     Auth::loginUsingId($user->_id);
 
-                    return view('userhome');
+                    return view('home');
     
                    # return redirect()->route('userhome')->with('success' , 'Login');
                 
@@ -326,10 +338,8 @@ public function lostObjects(Request $request){
             ], 404);
         }
 
-        // Get the array of lost object IDs for the user
         $lostObjectIds = $user->lost_objects;
 
-        // Retrieve the lost objects from the database
         $lostObjects = LostObject::whereIn('lostObjectId', $lostObjectIds)->get();
 
         $response = [
@@ -365,10 +375,8 @@ public function myBids(Request $request){
             ], 404);
         }
 
-        // Get the array of lost object IDs for the user
         $bidIds = $user->bid_history;
 
-        // Retrieve the lost objects from the database
         $bids = Bid::whereIn('bidId', $bidIds)->get();
 
         $response = [
@@ -388,83 +396,55 @@ public function myBids(Request $request){
     }
 }
 
-
-
-// Verify email method
-public function verify(Request $request)
-{
-    $request->validate([
-        'id' => 'required|exists:users,id',
-        'hash' => 'required|string',
-    ]);
-
-    $user = User::findOrFail($request->id);
-
-    if (!hash_equals((string)$request->hash, sha1($user->getEmailForVerification()))) {
-        return response()->json(['message' => 'Email verification failed'], 403);
-    }
-
-    if ($user->hasVerifiedEmail()) {
-        return response()->json(['message' => 'Email already verified'], 400);
-    }
-
-    $user->markEmailAsVerified();
-
-    event(new Verified($user));
-
-    return response()->json(['message' => 'Email verified successfully'], 200);
+public function showactive() {
+    $user = User::where('account_status', 'active')->get();
+    $numberUsers = User::count();
+    $numberactive = User::where('account_status', 'active')->count();
+    $deactivated = User::where('account_status', 'deactivated')->count();
+    return view('admin.users' ,['users' => $user , 'numberusers' => $numberUsers , 
+    'numberactive' => $numberactive , 'deactivated' => $deactivated]);
 }
-
-// Forgot password method
-public function forgotPassword(Request $request)
-{
-    $request->validate(['email' => 'required|email']);
-
-    $status = Password::sendResetLink($request->only('email'));
-
-    return $status === Password::RESET_LINK_SENT
-        ? response()->json(['message' => 'Password reset link sent'], 200)
-        : response()->json(['message' => 'Unable to send password reset link'], 400);
+public function showdeactivated() {
+    $user = User::where('account_status', 'deactivated')->get();
+    $numberUsers = User::count();
+    $numberactive = User::where('account_status', 'active')->count();
+    $deactivated = User::where('account_status', 'deactivated')->count();
+    return view('admin.users' ,['users' => $user , 'numberusers' => $numberUsers , 
+    'numberactive' => $numberactive , 'deactivated' => $deactivated]);
 }
+public function deactivateacount($id) {
+    //$userd = User::where('_id', $id)->get();
+    $user = User::find($id);
+    $user->account_status = 'deactivated';
+    $user->save();
 
-
-    // Reset password method
-    public function resetPassword(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-        'token' => 'required|string',
-        'password' => 'required|string|min:8|confirmed',
-    ]);
-
-    $status = Password::reset(
-        $request->only('email', 'password', 'password_confirmation', 'token'),
-        function ($user, $password) {
-            $user->forceFill(['password' => Hash::make($password)])->save();
-            event(new PasswordReset($user));
-        }
+    app(SendMailController::class)->sendWelcomeEmail(
+        $user->email,
+        "Conta Destivada",
+        "Sua conta foi destivada."
     );
 
-    return $status == Password::PASSWORD_RESET
-        ? response()->json(['message' => __($status)], 200)
-        : response()->json(['message' => __($status)], 400);
 }
 
+public function activeacount($id) {
+    //$userd = User::where('_id', $id)->get();
+    $user = User::find($id);
+    $user->account_status = 'active';
+    $user->save();
 
+    app(SendMailController::class)->sendWelcomeEmail(
+        $user->email,
+        "Conta Ativada",
+        "Sua conta foi Ativada."
+    );
 
-public function sendResetLinkEmail(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-    ]);
-
-    $status = Password::sendResetLink($request->only('email'));
-
-    return $status === Password::RESET_LINK_SENT
-        ? redirect()->back()->with('status', trans($status))
-        : back()->withErrors(['email' => trans($status)]);
 }
-//___---------------------------------------------------------------
+
+// Verify email method
+
+
+
+
 //___---------------------------------------------------------------
 
 /* old destroy
@@ -479,7 +459,7 @@ public function destroy(string $id) {
 
 public function confirmDelete(User $user)
 {
-    return view('confirm_deletion', compact('user'));
+    return view('profile.users.partials.confirm-deletion', compact('user'));
 }
 
 
@@ -499,7 +479,7 @@ public function destroy(Request $request, $id)
 
 
 public function edit(User $user) {
-    return view('usereditform' , ['user' => $user]);
+    return view('profile.users.partials.usereditform' , ['user' => $user]);
 }
 
 
@@ -518,11 +498,10 @@ public function update(Request $request, string $id) {
             "password" => Hash::make($request->input('password')),
             ]
 
-
     );
     
     if ($update) {
-        return redirect()->route('users.store');
+        return view('home');
     }
 }
 
