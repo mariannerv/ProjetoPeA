@@ -87,16 +87,19 @@ Route::get('/{station}', function () {
 // })->name('user.delete.account');
 
 // Object views
+Route::view('/objects/register-form', 'objects.objectregister')->name('objects.register-form');
+Route::post('/objects/register', [LostObjectController::class, 'registerLostObject'])->name('objects.register');
 Route::get('/lost-objects', [LostObjectController::class, 'getAllLostObjects'])->name('lost-objects.get');
 Route::get('/lost-objects/{object}', [LostObjectController::class,'getLostObject'])->name('lost-object.get');
-// Route::view('/objects/{object}', 'objects.lost-object')->name('lost-object.get');
+Route::delete('lost-objects/delete/{object}', [LostObjectController::class,'deleteLostObject'])->name('lost-object.delete');
+Route::get('/found-objects', [foundObjectController::class, 'getAllFoundObjects'])->name('found-objects.get');
+Route::get('/found-objects/{object}', [foundObjectController::class,'getFoundObject'])->name('found-object.get');
+Route::delete('found-objects/delete/{object}', [foundObjectController::class,'deleteFoundObject'])->name('found-object.delete');
 Route::get('/search',function(){
     return view('objects.objectsearch');
 });
-Route::view('/objects/register-form', 'objects.objectregister')->name('objects.register-form');
-Route::post('/objects/register', [LostObjectController::class, 'registerLostObject'])->name('objects.register');
-Route::get('/found-objects', [foundObjectController::class, 'getAllFoundObjects'])->name('found-objects.get');
-Route::get('/found-objects/{object}', [foundObjectController::class,'getFoundObject'])->name('found-object.get');
+
+
 
 // Email routes
 Route::get('/send-mail', [SendMailController::class, 'sendWelcomeEmail']);

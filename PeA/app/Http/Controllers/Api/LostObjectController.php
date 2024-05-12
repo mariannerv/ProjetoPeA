@@ -112,17 +112,12 @@ class LostObjectController extends Controller
     }
 }
 
-    public function getLostObject(Request $request, String $id){
+    public function getLostObject(String $id){
         try {
-            echo($request); 
-            $request->validate([
-                '_id' => 'required|string',
-            ]);
-
             $object = LostObject::where('_id', $id)->first();
 
             if ($object) {
-                return view('objects.lost-object',$object->_id);
+                return view('objects.lost-object', ['object' => $object]);
             } else {
                 return response()->json([
                     "status" => false,
@@ -130,7 +125,7 @@ class LostObjectController extends Controller
                     "code" => 404,
                 ], 404);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $exceptionInfo = [
                 'message' => $e->getMessage(),
                 
@@ -183,13 +178,14 @@ class LostObjectController extends Controller
     public function deleteLostObject(Request $request){
     try {
         $lostObjectId = $request->lostObjectId;
-
-        $lostObject = LostObject::where('lostObjectId', $lostObjectId)->first();
+        
+        $lostObject = LostObject::where('_id', $lostObjectId)->first();
 
         if (!$lostObject) {
             return response()->json([
                 "status" => false,
                 "message" => "Objeto não encontrado.",
+                "object id" => $lostObjectId,
                 "code" => "404",
             ], 404);
         }
