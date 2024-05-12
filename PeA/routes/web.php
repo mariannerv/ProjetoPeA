@@ -40,7 +40,7 @@ Route::get('/polices', [PoliceController::class, 'index'])->name('polices.store'
 Route::get('/police/{user}/edit', [PoliceController::class, 'edit'])->name('police.edit');
 Route::delete('/police/{police}', [PoliceController::class, 'destroy'])->name("police.destroy");
 Route::put('/police/{police}', [PoliceController::class, 'update'])->name('police.update');
-Route::post('/Policecreate', [PoliceController::class, 'registerPolice'])->name('police.register');
+Route::post('/police-create', [PoliceController::class, 'registerPolicia'])->name('police.register');
 Route::get('/policesform', [PoliceStationController::class, 'sigla'])->name('policesform.store');
 
 // Station routes
@@ -62,9 +62,9 @@ Route::get('/logout' ,[ApiController::class, 'logout'])->name('user.logout');
 Route::get('/chooseaccounttype',function(){
     return view('register.chooseaccounttype');
 });
-// Route::get('/registerSuccess', function () {
-//     return view('registerSuccess');
-// })->name('registerSuccess');
+Route::get('/registerSuccess', function () {
+    return view('register.registerSuccess');
+})->name('register.success');
 Route::get('/stationsform', function () {
     return view('register.stationsform');
 });
@@ -92,14 +92,15 @@ Route::post('/objects/register', [LostObjectController::class, 'registerLostObje
 Route::get('/lost-objects', [LostObjectController::class, 'getAllLostObjects'])->name('lost-objects.get');
 Route::get('/lost-objects/{object}', [LostObjectController::class,'getLostObject'])->name('lost-object.get');
 Route::delete('lost-objects/delete/{object}', [LostObjectController::class,'deleteLostObject'])->name('lost-object.delete');
+Route::get('/lost-objects/{object}/edit', [LostObjectController::class,'editLostObject'])->name('lost-object.edit');
+Route::put('/lost-objects/{object}', [LostObjectController::class,'upadteLostObject'])->name('lost-object.update');
+
 Route::get('/found-objects', [foundObjectController::class, 'getAllFoundObjects'])->name('found-objects.get');
 Route::get('/found-objects/{object}', [foundObjectController::class,'getFoundObject'])->name('found-object.get');
 Route::delete('found-objects/delete/{object}', [foundObjectController::class,'deleteFoundObject'])->name('found-object.delete');
 Route::get('/search',function(){
     return view('objects.objectsearch');
 });
-
-
 
 // Email routes
 Route::get('/send-mail', [SendMailController::class, 'sendWelcomeEmail']);

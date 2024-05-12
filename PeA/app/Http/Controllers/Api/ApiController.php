@@ -95,7 +95,7 @@ public function register(Request $request){
         //cria logo um token pra verificar o email
         app(verificationCodeController::class)->createCode($request->input('email'));
         
-        return redirect()->route('register.registerSuccess');
+        return redirect()->route('register.success');
 
     } catch (ValidationException $e) {
         if ($e->errors()['taxId'] && $e->errors()['taxId'][0] === 'Número de contribuinte já associado a outra conta.') {

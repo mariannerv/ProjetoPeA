@@ -351,5 +351,8 @@ private function calculateMatchPercentage($foundObject, $lostObject)
     return $matchPercentage;
 }
 
+public function editLostObject(LostObject $lostObject) {
+    return view('profile.users.partials.usereditform' , ['user' => $lostObject]);
+}
 
 }

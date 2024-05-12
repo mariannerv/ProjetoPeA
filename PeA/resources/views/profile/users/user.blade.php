@@ -16,7 +16,9 @@
       integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
   </head>
   <body>
     <header>
@@ -134,21 +136,26 @@
     @include('auth.noaccess')
     @endif
     {{-- @include('components.footer') --}}
+
+    {{-- JQuery --}}
     <script 
       src="https://code.jquery.com/jquery-3.6.0.min.js" 
       integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" 
       crossorigin="anonymous"
     ></script>
+    {{-- Popper --}}
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
       integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
       crossorigin="anonymous"
     ></script>
+    {{-- Bootstrap --}}
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
       integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
       crossorigin="anonymous"
     ></script>
+    {{-- Filtro --}}
     <script>
         $(document).ready(function(){
           $("#myInput").on("keyup", function() {
@@ -159,7 +166,8 @@
           });
         });
     </script>
-    <script>
+    {{-- Objetos perdidos --}}
+    <script >
       $.ajax({
         url: '{{ route("lost-objects.get") }}',
         method: 'GET',
@@ -168,11 +176,11 @@
             let html = '';
             let counter = 0;
             for (let i = 0; i < response.data.length; i++) {
-              const item = response.data[i];
-              
-              if ( item.ownerEmail == '{{auth()->user()->email}}' && item.status === "Lost"){
+            const item = response.data[i];
+            
+            if ( item.ownerEmail == '{{auth()->user()->email}}' && item.status === "Lost"){
                 if (counter % 3 === 0 || counter === 0){
-                  html += "<div class = 'row'>";
+                html += "<div class = 'row'>";
                 }
                 html += "<div class = 'col-4 border'>";
                 html += "<div class = 'row'>"; 
@@ -181,32 +189,40 @@
                 html += "</div>";
                 html += "<div class= 'col-auto'>";
                 html += "<button class='btn btn-danger' data-bs-toggle='modal' data-bs-target='#lostObject' onclick='setID(\"" + item._id + "\")'> \
-                          <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-trash2' viewBox='0 0 16 16'>\
+                        <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-trash2' viewBox='0 0 16 16'>\
                             <path d='M14 3a.7.7 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225A.7.7 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2M3.215 4.207l1.493 8.957a1 1 0 0 0 .986.836h4.612a1 1 0 0 0 .986-.836l1.493-8.957C11.69 4.689 9.954 5 8 5s-3.69-.311-4.785-.793'/>\
-                          </svg>\
-                         </button>";
+                        </svg>\
+                        </button>";
                 html += "</div>";  
                 html += "</div>";  
                 html += "<p>Marca: " + item.brand + "</p>";
                 html += "<p>Cor: " + item.color + "</p>";
                 html += "<p>Data do desaparecimento: " + item.date_lost + "</p>";
-                html += "<a class='btn btn-secondary' href={{ route('lost-object.get', '') }}/" + item._id + ">Ver Objeto </a><br><br>"
-                 // Add a horizontal line between each object
+                html += "<div class = 'row justify-content-end'>";
+                html += "<div class = 'col-auto'>";
+                html += "<a class='btn btn-secondary' href={{ route('lost-object.get', '') }}/" + item._id + ">Ver Objeto </a><br><br>";
+                html += "</div>";
+                html += "<div class = 'col-auto'>";
+                html += "<a class='btn btn-secondary' href={{ route('lost-object.edit', '') }}/" + item._id + ">Editar Objeto </a><br><br>";
+                html += "</div>";
+                html += "</div>";
+                // Add a horizontal line between each object
                 counter+=1
                 html += "</div>";
                 if (counter % 3 === 0 && counter !== 0){
-                  html += "</div><br>";
+                html += "</div><br>";
                 }
                 
-              }
+            }
             }
             $('#lost_objects').html(html); // Insert the generated HTML into the DOM
         },
         error: function(xhr, status, error) {
             console.error(xhr.responseText);
         }
-     });
+      });
     </script>
+    {{-- Objetos encontrados --}}
     <script>
       $.ajax({
         url: '{{ route("lost-objects.get") }}',
@@ -237,8 +253,14 @@
                 html += "<p>Marca: " + item.brand + "</p>";
                 html += "<p>Cor: " + item.color + "</p>";
                 html += "<p>Data de devolução: " +/* item.date_found + */"</p>"; // Adicionar BD a data devolução
-                html += "<a class='btn btn-secondary' href={{ route('lost-object.get', '') }}/" + item._id + ">Ver Objeto </a><br><br>"
-                 // Add a horizontal line between each object
+                html += "<div class = 'row justify-content-end'>";
+                html += "<div class = 'col-auto'>";
+                html += "<a class='btn btn-secondary' href={{ route('lost-object.get', '') }}/" + item._id + ">Ver Objeto </a><br><br>";
+                html += "</div>";
+                html += "<div class = 'col-auto'>";
+                html += "<a class='btn btn-secondary' href={{ route('lost-object.edit', '') }}/" + item._id + ">Editar Objeto </a><br><br>";
+                html += "</div>";
+                html += "</div>";
                 counter+=1
                 html += "</div>";
                 if (counter % 3 === 0 && counter !== 0){
@@ -254,6 +276,7 @@
         }
      });
     </script>
+    {{-- Leilões --}}
     <script>
       $.ajax({
         url: '{{ route("auctions.get") }}',
@@ -285,6 +308,7 @@
         }
      });
     </script>
+    {{-- Inserir ID --}}
     <script>
       function setID(id){
         $("#lostObjectIdInput").val(id);
@@ -292,8 +316,9 @@
         $('#deleteObject').attr('action', formAction);
       } 
     </script>
+    {{-- Apagar objeto --}}
     <script>  
-    $(document).ready(function() {
+      $(document).ready(function() {
         $('form').submit(function(event) {
             // Prevent the default form submission
             event.preventDefault();
@@ -308,15 +333,8 @@
                 data: formData,
                 dataType: 'json',
                 success: function(response) {
-                    // Handle the response from the server
-                    console.log(response);
-                    // Here you can access the response data and perform further actions
-                    // For example, show a modal, display a success message, or redirect the user
-                    // You can access specific fields from the response like response.message or response.lost_object
-                    // Example:
                     $('#lostObject').modal('hide')
-                    alert(response.message);
-                    
+                    toastr.success(response.message, 'Success', { closeButton: true });
                     $.ajax({
                       url: '{{ route("lost-objects.get") }}',
                       method: 'GET',
@@ -357,7 +375,7 @@
                               
                             }
                           }
-                          $('#lost_objects').html(html); // Insert the generated HTML into the DOM
+                          $('#lost_objects').html(html); 
                       },
                       error: function(xhr, status, error) {
                           console.error(xhr.responseText);
@@ -366,13 +384,11 @@
                     // $('#myModal').modal('show');
                 },
                 error: function(xhr, status, error) {
-                    // Handle errors
                     console.error(xhr.responseText);
-                    // Optionally, display an error message to the user
                 }
             });
         });
-    });
-</script>
-  </body>
+      });
+    </script>
+</body>
 </html>

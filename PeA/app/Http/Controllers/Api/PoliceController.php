@@ -52,7 +52,7 @@ class PoliceController extends Controller
                 "email_verified_at" => '',
             ]);
 
-            return redirect()->route('register.registerSuccess');
+            return redirect()->route('register.success');
 
         } catch (ValidationException $e){
             if ($e->errors()['internalId'] && $e->erros()['internalId'][0] === "Policia com este Id já associado a outra conta.");
