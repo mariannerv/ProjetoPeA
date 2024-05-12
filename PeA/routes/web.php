@@ -29,11 +29,15 @@ Route::get('/', function () {
 
 // User Routes
 Route::get('/users', [ApiController::class, 'index'])->name('users.store');
+Route::get('/usersactive', [ApiController::class, 'showactive'])->name('usersactive.store'); 
+Route::get('/usersdeactivated.', [ApiController::class, 'showdeactivated'])->name('usersdeactivated.store');
 Route::post('/create', [ApiController::class, 'register'])->name('user.register');
 Route::delete('/users/{user}', [ApiController::class, 'destroy'])->name("user.destroy");
 Route::get('/user{user}/edit', [ApiController::class, 'edit'])->name('user.edit');
 Route::put('/user/{user}', [ApiController::class, 'update'])->name('user.update');
 Route::get('/users/{user}/confirm-delete', [ApiController::class, 'confirmDelete'])->name('user.confirm-delete');
+Route::post('/userdeactive/{user}', [ApiController::class, 'deactivateacount'])->name('user.desactive');
+Route::post('/useractive/{user}', [ApiController::class, 'activeacount'])->name('user.useractive');
 
 // Police Routes
 Route::get('/polices', [PoliceController::class, 'index'])->name('polices.store');
