@@ -15,17 +15,17 @@
   </head>
   <body>
     <header>
-      @if (auth()->check())
-        @include('navbar')
+    @if (auth()->check())
+        @include('components.navbar')
       @else
-        @include('navbar-guest')
+        @include('components.navbar-guest')
       @endif 
     </header>
     <main class="my-5">
       <div class="container">
         <div class="container mt-5">
           <div class="row justify-content-center">
-              <div class="col-8">
+              <div class="col-md-8">
                   <div class="card">
                       <div class="card-header">Register</div>
                       <div class="card-body">
@@ -41,59 +41,71 @@
                         </div>
                     @endif
 
-                         <!---
-                            $val = $request->validate([
-                'name' => 'required|string',
-                'internalId' => 'required|string|unique:police_user',
-                'password' => 'required|min:8',
-                'policeStationId' =>  'required|string|exists:police_station,sigla',
-            ]); 
-                         -->
-
-                      <form class="row g-3 needs-validation"   action="{{route('police.register')}}" method="post" novalidate>
+                      <form class="row g-3 needs-validation" action="{{route('station.register')}}" method="post" novalidate>
                         @csrf
-                        <div class="col-4">
-                            <label for="validationCustom01" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="validationCustom01" name="name" value="{{old('name')}}" required>
-                            <div class="valid-feedback">
-                                Looks good!
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <label for="validationCustom02" class="form-label">Internal ID</label>
-                            <input type="text" class="form-control" id="validationCustom02" name="internalId" value="{{old('internalId')}}">
+                        <div class="col-md-6">
+                            <label for="validationCustom03" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="validationCustom03" name="morada" value="{{old('morada')}}" required>
                             <div class="invalid-feedback">
-                                Please provide a valid ID
+                                Please provide a valid address.
                             </div>
                         </div>
-                        <div class="col-4">
-                          <label for="validationCustom03" class="form-label">Police Station ID</label>
-                          <select class="form-select" id="validationCustom02" name="policeStationId" value="{{old('policeStationId')}}" required>
-                            <option selected disabled value="">Choose...</option>
-                            @foreach ($users as $user)
-                            <option>{{$user->sigla}}</option>
-                            @endforeach
-                        </select>
-                          <div class="invalid-feedback">
-                              Please provide a valid station ID
-                          </div>
-                      </div>
-                        {{-- <div class="col-6">
+                        <div class="col-md-3">
+                            <label for="validationCustom04" class="form-label">Postal Code</label>
+                            <input type="text" class="form-control" id="validationCustom04" name="codigo_postal" value="{{old('codigo_postal')}}" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid postal code.
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="validationCustom05" class="form-label">Zone</label>
+                            <input type="text" class="form-control" id="validationCustom05" name="localidade" value="{{old('localidade')}}" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid zone.
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="validationCustom03" class="form-label">Unit</label>
+                            <input type="text" class="form-control" id="validationCustom03" name="unidade" value="{{old('unidade')}}" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid unit.
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="validationCustom03" class="form-label">Acronym</label>
+                            <input type="text" class="form-control" id="validationCustom03" name="sigla" value="{{old('sigla')}}" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid acronym.
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="validationCustom08" class="form-label">Contact Number</label>
+                            <input type="tel" class="form-control" id="validationCustom08" name="telefone" value="{{old('telefone')}}" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid contact number.
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="validationCustom08" class="form-label">Fax Number</label>
+                            <input type="tel" class="form-control" id="validationCustom08" name="fax" value="{{old('fax')}}" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid fax number.
+                            </div>
+                        </div>
+                        <div class="col-md-6">
                             <label for="validationCustom09" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="validationCustom09" name="email" required>
+                            <input type="email" class="form-control" id="validationCustom09" name="email"  value="{{old('email')}}"required>
                             <div class="invalid-feedback">
                                 Please provide a valid email address.
                             </div>
-
-                            
-                        </div> --}}
-                        <div class="col-6">
+                        </div>
+                        {{-- <div class="col-md-6">
                             <label for="validationCustom10" class="form-label">Password</label>
                             <input type="password" class="form-control" id="validationCustom10" name="password" required>
                             <div class="invalid-feedback">
                                 Please provide a valid password.
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="col-12">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
@@ -116,7 +128,7 @@
       </div>
       </div>
     </main>
-    @include('footer')
+    @include('components.footer')
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
       integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
@@ -142,11 +154,11 @@
                     if (!input.checkValidity()) {
                       event.preventDefault();
                       event.stopPropagation();
-                      input.classList.add('is-invalid');
+                      // input.classList.add('is-invalid');
                     } 
-                    else {
-                        input.classList.remove('is-invalid');
-                    }
+                    // else {
+                    //     input.classList.remove('is-invalid');
+                    // }
                 });
 
                 // Check date input validity
@@ -158,11 +170,11 @@
                     if (selectedDate > maxDate) {
                         event.preventDefault();
                         event.stopPropagation();
-                        dateInput.classList.add('is-invalid');
+                        // dateInput.classList.add('is-invalid');
                     } 
-                    else {
-                        dateInput.classList.remove('is-invalid');
-                    }
+                    // else {
+                    //     dateInput.classList.remove('is-invalid');
+                    // }
                 }
 
                 if (!isValid) {

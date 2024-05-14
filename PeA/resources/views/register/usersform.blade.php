@@ -16,9 +16,9 @@
   <body>
     <header>
         @if (auth()->check())
-        @include('navbar')
+        @include('components.navbar')
       @else
-        @include('navbar-guest')
+        @include('components.navbar-guest')
       @endif 
     </header>
     <main class="my-5">
@@ -171,7 +171,7 @@
       </div>
       </div>
     </main>
-    @include('footer')
+    @include('components.footer')
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
       integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"

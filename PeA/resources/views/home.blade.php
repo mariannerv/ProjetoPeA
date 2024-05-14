@@ -16,9 +16,9 @@
   <body>
     <header>
       @if (auth()->check())
-        @include('navbar')
+        @include('components.navbar')
       @else
-        @include('navbar-guest')
+        @include('components.navbar-guest')
       @endif 
       
     </header>
@@ -35,12 +35,12 @@
       <div class="row justify-content-center">
         <div class="col-md-auto">
           <div class="text-center">
-            <a role="button" href="http://localhost:8000/" class="btn btn-primary btn-lg btn-block mb-3">Registar um objeto</a>
+            <a role="button" href="{{ route('objects.register-form') }}" class="btn btn-primary btn-lg btn-block mb-3">Registar um objeto</a>
           </div>
         </div>
         <div class="col-md-auto">
           <div class="text-center">
-            <a role="button" href="http://localhost:8000/" class="btn btn-secondary btn-lg btn-block mb-3">Ver os seus objetos</a>
+            <a role="button" href="{{ route('user.profile', auth()->user()->id) }}" class="btn btn-secondary btn-lg btn-block mb-3">Ver os seus objetos</a>
           </div>
         </div>
       </div>
@@ -68,10 +68,8 @@
         </div>
       </div>
     </div>
-    {{-- @else
-     --}}
     @endif
-    @include('footer')
+    @include('components.footer')
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
       integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"

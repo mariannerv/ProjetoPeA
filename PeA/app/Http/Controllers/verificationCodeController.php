@@ -85,7 +85,7 @@ class verificationCodeController extends Controller
         );
 
 
-        return redirect()->route('novoemail');
+        return redirect()->route('mail-template.novoemail');
     }
 
 }

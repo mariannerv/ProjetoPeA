@@ -14,7 +14,7 @@ class OwnerController extends Controller
     }
     public function index() {
         $users = $this->user->all();
-        return view('users' , ['users' => $users]);
+        return view('admin.users' , ['users' => $users]);
     }
     
     public function store(Request $request)
