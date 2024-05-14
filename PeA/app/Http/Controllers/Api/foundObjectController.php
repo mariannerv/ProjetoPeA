@@ -181,6 +181,30 @@ class FoundObjectController extends Controller
         }
     }
 
+    public function getStatistics()
+    {
+        try {
+            // Group found objects by category and date found
+            $statistics = DB::table('foundObject')
+                ->select('categoryId', 'date_found', DB::raw('count(*) as count'))
+                ->groupBy('categoryId', 'date_found')
+                ->get();
+
+            return response()->json([
+                "status" => true,
+                "data" => $statistics,
+                "code" => 200,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "An error occurred while fetching statistics for found objects.",
+                "code" => 500,
+            ], 500);
+        }
+    }
+
+
     public function searchByDescription(Request $request)
     {
         try {
@@ -203,4 +227,5 @@ class FoundObjectController extends Controller
             ], 500);
         }
     }
+    
 }
