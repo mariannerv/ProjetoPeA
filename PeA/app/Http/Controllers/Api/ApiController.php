@@ -31,7 +31,7 @@ class ApiController extends Controller
 
 public function index() {
     $user =  User::all();
-    return view('users' ,['users' => $user]);
+    return view('admin.users' ,['users' => $user]);
 }
 
 public function register(Request $request){
@@ -95,7 +95,7 @@ public function register(Request $request){
         //cria logo um token pra verificar o email
         app(verificationCodeController::class)->createCode($request->input('email'));
         
-        return redirect()->route('registerSuccess');
+        return redirect()->route('register.success');
 
     } catch (ValidationException $e) {
         if ($e->errors()['taxId'] && $e->errors()['taxId'][0] === 'Número de contribuinte já associado a outra conta.') {
@@ -160,7 +160,7 @@ public function register(Request $request){
                     
                     Auth::loginUsingId($user->_id);
 
-                    return view('userhome');
+                    return view('home');
     
                    # return redirect()->route('userhome')->with('success' , 'Login');
                 
@@ -413,7 +413,7 @@ public function destroy(string $id) {
 
 public function confirmDelete(User $user)
 {
-    return view('confirm_deletion', compact('user'));
+    return view('profile.users.partials.confirm-deletion', compact('user'));
 }
 
 
@@ -433,7 +433,7 @@ public function destroy(Request $request, $id)
 
 
 public function edit(User $user) {
-    return view('usereditform' , ['user' => $user]);
+    return view('profile.users.partials.usereditform' , ['user' => $user]);
 }
 
 
@@ -455,7 +455,7 @@ public function update(Request $request, string $id) {
     );
     
     if ($update) {
-        return redirect()->route('users.store');
+        return view('home');
     }
 }
 
