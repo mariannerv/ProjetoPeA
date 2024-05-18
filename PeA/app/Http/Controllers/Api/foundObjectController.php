@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\FoundObject;
@@ -185,14 +185,19 @@ class FoundObjectController extends Controller
     {
         try {
             // Group found objects by category and date found
-            $statistics = DB::table('foundObject')
-                ->select('categoryId', 'date_found', DB::raw('count(*) as count'))
-                ->groupBy('categoryId', 'date_found')
+            $statistics = DB::table('FoundObject')
+                ->select('categoryId', DB::raw('count(*) as count'))
+                ->groupBy('categoryId')
                 ->get();
+
+            $data = [
+                'categories' => $statistics->pluck('categoryId'),
+                'counts' => $statistics->pluck('count')
+            ];
 
             return response()->json([
                 "status" => true,
-                "data" => $statistics,
+                "data" => $data,
                 "code" => 200,
             ]);
         } catch (\Exception $e) {

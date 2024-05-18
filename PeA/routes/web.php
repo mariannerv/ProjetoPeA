@@ -102,8 +102,9 @@ Route::get('/search',function(){
     return view('objects.objectsearch');
 });
 
-Route::view('/statmap', function () { return view('objectstatmap'); });
-
+Route::get('/statmap',function(){
+    return view('objectstatmap');
+});
 
 // Email routes
 Route::get('/send-mail', [SendMailController::class, 'sendWelcomeEmail']);
