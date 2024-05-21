@@ -55,14 +55,14 @@
         }
 
         function updateLostObjectsChart(data) {
-            var ctx = document.getElementById('lostObjectsChart').getContext('2d');
-            var lostObjectsChart = new Chart(ctx, {
+            const ctx = document.getElementById('lostObjectsChart').getContext('2d');
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: data.categories,
+                    labels: data.map(item => item.category_id),
                     datasets: [{
                         label: 'Number of Lost Objects',
-                        data: data.counts,
+                        data: data.map(item => item.count),
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
                         borderColor: 'rgba(255, 99, 132, 1)',
                         borderWidth: 1
@@ -79,14 +79,14 @@
         }
 
         function updateFoundObjectsChart(data) {
-            var ctx = document.getElementById('foundObjectsChart').getContext('2d');
-            var foundObjectsChart = new Chart(ctx, {
+            const ctx = document.getElementById('foundObjectsChart').getContext('2d');
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: data.categories,
+                    labels: data.map(item => item.categoryId),
                     datasets: [{
                         label: 'Number of Found Objects',
-                        data: data.counts,
+                        data: data.map(item => item.count),
                         backgroundColor: 'rgba(54, 162, 235, 0.2)',
                         borderColor: 'rgba(54, 162, 235, 1)',
                         borderWidth: 1
@@ -140,7 +140,7 @@
                 method: 'GET',
                 success: function(response) {
                     if (response && response.data) {
-                        geocodeAddress(response.data[0], response.data[1]);
+                        geocodeAddress(response.data.address, response.data.apiKey);
                     } else {
                         console.error("Invalid response format for location address data.");
                     }
@@ -157,8 +157,8 @@
                 method: 'GET',
                 success: function(response) {
                     if (response && response.results && response.results.length > 0 && response.results[0].type === "Point Address") {
-                        var latitude = response.results[0].position.lat;
-                        var longitude = response.results[0].position.lon;
+                        const latitude = response.results[0].position.lat;
+                        const longitude = response.results[0].position.lon;
                         displayLocationOnMap(latitude, longitude);
                     } else {
                         console.error('No coordinates found for the address:', address);
@@ -191,7 +191,7 @@
             if (!map) {
                 initMap();
             }
-            var marker = new tt.Marker().setLngLat([longitude, latitude]).addTo(map);
+            new tt.Marker().setLngLat([longitude, latitude]).addTo(map);
         }
 
         $('#displayLostObjects').on('click', function() {
@@ -202,6 +202,7 @@
             fetchAllFoundObjects();
         });
 
+        // Initialize charts and map
         updateGraphs();
         initMap();
     </script>
