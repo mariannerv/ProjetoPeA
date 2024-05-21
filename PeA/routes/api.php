@@ -86,7 +86,6 @@ Route::post("registerFoundObject", [foundObjectController::class, "registerFound
 Route::get("viewFoundObject", [foundObjectController::class, "viewFoundObject"]);
 Route::put("updateFoundObject", [foundObjectController::class, "updateFoundObject"]);
 Route::delete('deleteFoundObject', [foundObjectController::class, "deleteFoundObject"]);
-Route::get('getFoundObjectsStatistics', [FoundObjectController::class, 'getStatistics']);
 
 //APIs PoliceStation
 Route::post("registerPost", [PoliceStationController::class, "registerPost"]);
@@ -127,8 +126,6 @@ Route::put("updateLostObject", [LostObjectController::class, "updateLostObject"]
 Route::delete("deleteLostObject", [LostObjectController::class, "deleteLostObject"]);
 Route::post("crossCheck", [LostObjectController::class, "crossCheck"]);
 Route::get("getLostObject", [LostObjectController::class, "getLostObject"]);
-Route::get('getLostObjectsStatistics', [LostObjectController::class, 'getStatistics']);
-
 
 Route::post("createCode", [verificationCodeController::class, "createCode"]);
 
@@ -192,7 +189,9 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 
 
-
+//estatisticas
+Route::get('/getLostObjectsStatistics', [ApiController::class, 'getLostObjectsStatistics']);
+Route::get('/getFoundObjectsStatistics', [ApiController::class, 'getFoundObjectsStatistics']);
 
 
 

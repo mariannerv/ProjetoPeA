@@ -392,6 +392,23 @@ public function myBids(Request $request){
     }
 }
 
+public function getLostObjectsStatistics()
+{
+    $lostObjectsData = LostObject::select('category', DB::raw('COUNT(*) as count'))
+        ->groupBy('category')
+        ->get();
+
+    return response()->json(['data' => $lostObjectsData]);
+}
+
+public function getFoundObjectsStatistics()
+{
+    $foundObjectsData = FoundObject::select('category', DB::raw('COUNT(*) as count'))
+        ->groupBy('category')
+        ->get();
+
+    return response()->json(['data' => $foundObjectsData]);
+}
 
 
 // Verify email method
