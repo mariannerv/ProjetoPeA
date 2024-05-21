@@ -140,34 +140,6 @@ class LostObjectController extends Controller
         }
     }
     
-
-    public function getStatistics()
-    {
-        try {
-            // Group lost objects by category and date found
-            $statistics = DB::table('LostObject')
-                ->select('categoryId', DB::raw('count(*) as count'))
-                ->groupBy('categoryId')
-                ->get();
-
-            $data = [
-                'categories' => $statistics->pluck('categoryId'),
-                'counts' => $statistics->pluck('count')
-            ];
-
-            return response()->json([
-                "status" => true,
-                "data" => $data,
-                "code" => 200,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                "status" => false,
-                "message" => "An error occurred while fetching statistics for lost objects.",
-                "code" => 500,
-            ], 500);
-        }
-    }
     public function updateLostObject(Request $request){
         $object = LostObject::where('lostObjectId', $request->lostObjectId)->first();
 

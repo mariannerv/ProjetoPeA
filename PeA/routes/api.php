@@ -186,19 +186,6 @@ Route::post('/email/verification-notification', function (Request $request) {
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 
-
-
-
-//estatisticas
-Route::get('/getLostObjectsStatistics', [ApiController::class, 'getLostObjectsStatistics']);
-Route::get('/getFoundObjectsStatistics', [ApiController::class, 'getFoundObjectsStatistics']);
-
-
-
-
-
-
-
 //OWNER
 Route::post('/Owner', [OwnerController::class, 'store']);
 
