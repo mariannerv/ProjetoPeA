@@ -103,4 +103,10 @@ class User extends Authenticatable implements MustVerifyEmail
         $token->token = \Illuminate\Support\Str::random(60); 
         $token->save();
     }
+
+
+    public function auctions(): BelongsToMany
+    {
+        return $this->belongsToMany(Auction::class, 'auction_user');
+    }
 }
