@@ -17,7 +17,7 @@ use App\Http\Controllers\Api\LostObjectController;
 use App\Http\Controllers\Api\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\DB;
-
+use App\Http\Controllers\Api\NotificationsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -193,4 +193,11 @@ Route::get('/Owner/{civilId}', [OwnerController::class, 'getUserByCivilId']);
 
 //Route::post('login', [AuthController::class, 'login']);
 
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/notifications', [NotificationsController::class, 'index']);
+    Route::post('/notifications/read', [NotificationsController::class, 'markAsRead']);
+    Route::post('/notifications/unread', [NotificationsController::class, 'markAsUnread']);
+});
 
