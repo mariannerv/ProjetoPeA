@@ -96,6 +96,12 @@ Route::get('/objects/register', function () {
 
 Route::post('/objects/register', [ApiController::class, 'lostObjects'])->name('objects.register');
 
+Route::get('/objects/registerfoundobject', function () {
+    return view('foundobjectregister');
+})->name('foundobjects.register');
+
+Route::post('/objects/registerfoundobject', [ApiController::class, 'foundObjects'])->name('foundobjects.register');
+
 // Email routes
 Route::get('/send-mail', [SendMailController::class, 'sendWelcomeEmail']);
 Route::get('send-mail',[EmailController::class, 'sendWelcomeEmail']);

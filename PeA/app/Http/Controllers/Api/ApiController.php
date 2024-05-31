@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\LostObject;
+use App\Models\foundObjects;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
@@ -337,6 +338,43 @@ public function lostObjects(Request $request){
         $lostObjectIds = $user->lost_objects;
 
         $lostObjects = LostObject::whereIn('lostObjectId', $lostObjectIds)->get();
+
+        $response = [
+            "status" => true,
+            "message" => "Lost objects retrieved successfully.",
+            "lost_objects" => $lostObjects,
+        ];
+
+        return response()->json($response, 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            "status" => false,
+            "message" => "An error occurred while retrieving lost objects.",
+            "code" => 500,
+        ], 500);
+    }
+}
+
+public function foundObjects(Request $request){
+    try {
+        $request->validate([
+            'date_found' => 'required|string',
+        ]);
+
+        $user = User::where('_id', $request->id)->first();
+
+        if (!$user) {
+            return response()->json([
+                "status" => false,
+                "message" => "User not found.",
+                "code" => 404,
+            ], 404);
+        }
+
+        $foundObjectIds = $user->found_objects;
+
+        $lfoundObjects = LostObject::whereIn('foundObjectId', $found_objects)->get();
 
         $response = [
             "status" => true,
