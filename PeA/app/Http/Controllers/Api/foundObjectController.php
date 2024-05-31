@@ -1,11 +1,10 @@
 <?php
 
-
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\foundObject;
+use App\Models\FoundObject;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
@@ -15,72 +14,68 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Models\User;
 
-class foundObjectController extends Controller
+class FoundObjectController extends Controller
 {
-public function registerFoundObject(Request $request)
-{
-    try {
-        $request->validate([
-            'category' => 'required|string',
-            'brand' => 'nullable|string',
-            'color' => 'nullable|string',
-            'size' => 'nullable|string',
-            'description' => 'required|string',
-            'location' => 'required|string',
-            'location_coords' => [
-                'nullable',
-                'regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),\s*[-]?((([1]?[0-7]?[0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?$/'
-            ],
-            'date_found' => 'required|date',
-            'estacao_policia' => 'required|string|exists:police_station,sigla',
-        ]);
-            
+    public function registerFoundObject(Request $request)
+    {
+        try {
+            $request->validate([
+                'categoryId' => 'required|string',
+                'brand' => 'nullable|string',
+                'color' => 'nullable|string',
+                'size' => 'nullable|string',
+                'description' => 'required|string',
+                'location_id' => 'required|string',
+                'location_coords' => [
+                    'nullable',
+                    'regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),\s*[-]?((([1]?[0-7]?[0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?$/'
+                ],
+                'date_found' => 'required|date',
+                'police_station' => 'required|string|exists:police_station,sigla',
+            ]);
 
-        $dateRegistered = new UTCDateTime(now()->timestamp * 1000);
-        $deadlineForAuction = new UTCDateTime(now()->addMonth()->timestamp * 1000);
-        $uuid = (string) Str::uuid();
+            $dateRegistered = now();
+            $deadlineForAuction = now()->addMonth();
+            $uuid = (string) Str::uuid();
 
-        foundObject::create([
-            "objectId" => $uuid,
-            "possible_owner" => [],
-            "brand" => $request->brand,
-            "color" => $request->color,
-            "size" => $request->size,
-            "category" => $request->category,
-            "description" => $request->description,
-            "location" => $request->location,
-            "location_coords" => $request->location_coords,
-            "value" => 0,
-            "date_found" => $request->date_found,
-            "date_registered" => $dateRegistered,
-            "deadlineForAuction" => $deadlineForAuction,
-            "estacao_policia" => $request->estacao_policia,
-        ]);
+            FoundObject::create([
+                "categoryId" => $request->categoryId,
+                "brand" => $request->brand,
+                "color" => $request->color,
+                "size" => $request->size,
+                "description" => $request->description,
+                "location_id" => $request->location_id,
+                "location_coords" => $request->location_coords,
+                "date_found" => $request->date_found,
+                "date_registered" => $dateRegistered,
+                "deadlineForAuction" => $deadlineForAuction,
+                "police_station" => $request->police_station,
+            ]);
 
-        return response()->json([
-            "status" => true,
-            "message" => "Objeto encontrado registado com sucesso",
-            "code" => "200",
-        ]);
-    } catch (ValidationException $e) {
-        return response()->json([
-            "status" => false,
-            "message" => "Algo correu mal ao registar o objeto.",
-            "code" => "404",
-        ]);
+            return response()->json([
+                "status" => true,
+                "message" => "Objeto encontrado registado com sucesso",
+                "code" => "200",
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "Algo correu mal ao registar o objeto.",
+                "code" => "404",
+            ]);
+        }
     }
-}
 
-public function viewFoundObject(Request $request){
+    public function getFoundObject(Request $request)
+    {
         try {
             $request->validate([
                 'objectId' => 'required|string',
             ]);
 
-            $object = foundObject::where('objectId', $request->objectId)->first();
+            $object = FoundObject::where('objectId', $request->objectId)->first();
 
             if ($object) {
-              
                 return response()->json([
                     "status" => true,
                     "data" => $object,
@@ -102,87 +97,110 @@ public function viewFoundObject(Request $request){
         }
     }
 
-   public function updateFoundObject(Request $request)
+    public function updateFoundObject(Request $request)
     {
-    $object = foundObject::where('objectId', $request->objectId)->first();
-    
-    if ($object) {
-        $request->validate([
-            'possible_owner' => [
-                'string',
-                Rule::exists(User::class, 'email'), //Para ter a certeza que o possible_owner existe na bd
-            ],
-            'category' => 'string',
-            'brand' => 'string',
-            'color' => 'string',
-            'size' => 'string',
-            'description' => 'string',
-            'location' => 'string',
-            'location_coords' => [
-                'regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),\s*[-]?((([1]?[0-7]?[0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?$/'
-            ],
-            'value' => 'numeric|min:0',
-            'date_found' => 'date',
-            'deadlineForAuction' => 'date',
-            'estacao_policia' => 'string|exists:police_station,sigla',
-        ]);
-
-        $object->update($request->all());
-
-        return response()->json([
-            "status" => true,
-            "code" => 200,
-            "message" => "Objeto atualizado com sucesso.",
-        ]);
-    } else {
-        return response()->json([
-            "status" => false,
-            "code" => 404,
-            "message" => "Objeto não encontrado.",
-        ], 404);
-    }
-}
-
-public function deleteFoundObject(Request $request){
-        try {
-            $objectId = $request->objectId;
-            $object = foundObject::where('objectId', $objectId)->first();
+        $object = FoundObject::where('objectId', $request->objectId)->first();
 
         if ($object) {
-            $object->delete();
+            $request->validate([
+                'categoryId' => 'string',
+                'brand' => 'string',
+                'color' => 'string',
+                'size' => 'string',
+                'description' => 'string',
+                'location_id' => 'string',
+                'location_coords' => [
+                    'regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),\s*[-]?((([1]?[0-7]?[0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?$/'
+                ],
+                'date_found' => 'date',
+                'deadlineForAuction' => 'date',
+                'police_station' => 'string|exists:police_station,sigla',
+            ]);
+
+            $object->update($request->all());
+
             return response()->json([
                 "status" => true,
-                "message" => "Objeto apagado com sucesso.",
-                "code" => "200",
+                "code" => 200,
+                "message" => "Objeto atualizado com sucesso.",
             ]);
         } else {
             return response()->json([
                 "status" => false,
+                "code" => 404,
                 "message" => "Objeto não encontrado.",
-                "code" => "404",
             ], 404);
         }
-    } catch (\Exception $e) {
-        return response()->json([
-            "status" => false,
-            "message" => "Oops! Algo correu mal ao tentar apagar o objeto.",
-            "code" => "500",
-        ], 500);
+    }
+
+    public function deleteFoundObject(Request $request)
+    {
+        try {
+            $objectId = $request->objectId;
+            $object = FoundObject::where('objectId', $objectId)->first();
+
+            if ($object) {
+                $object->delete();
+                return response()->json([
+                    "status" => true,
+                    "message" => "Objeto apagado com sucesso.",
+                    "code" => "200",
+                ]);
+            } else {
+                return response()->json([
+                    "status" => false,
+                    "message" => "Objeto não encontrado.",
+                    "code" => "404",
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "Oops! Algo correu mal ao tentar apagar o objeto.",
+                "code" => "500",
+            ], 500);
+        }
+    }
+
+    public function getAllFoundObjects()
+    {
+        try {
+            $foundObjects = FoundObject::all();
+
+            return response()->json([
+                "status" => true,
+                "data" => $foundObjects,
+                "code" => 200,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "An error occurred while fetching all found objects.",
+                "code" => 500,
+            ], 500);
+        }
+    }
+
+    public function searchByDescription(Request $request)
+    {
+        try {
+            $request->validate([
+                'description' => 'required|string',
+            ]);
+
+            $objects = FoundObject::where('description', 'like', '%' . $request->description . '%')->get();
+
+            return response()->json([
+                "status" => true,
+                "data" => $objects,
+                "code" => 200,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "An error occurred while searching for found objects.",
+                "code" => 500,
+            ], 500);
+        }
     }
 }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

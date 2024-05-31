@@ -38,10 +38,20 @@ Route::put('/user/{user}', [ApiController::class, 'update'])->name('user.update'
 Route::get('/users/{user}/confirm-delete', [ApiController::class, 'confirmDelete'])->name('user.confirm-delete');
 Route::post('/userdeactive/{user}', [ApiController::class, 'deactivateacount'])->name('user.desactive');
 Route::post('/useractive/{user}', [ApiController::class, 'activeacount'])->name('user.useractive');
-
+Route::get('/report', function(){
+    return view('profile.users.report');
+})->name("user.showrepot");
+Route::post('/userreport', [ApiController::class, 'report'])->name('user.userreport');
 // Police Routes
 Route::get('/polices', [PoliceController::class, 'index'])->name('polices.store');
 Route::get('/police/{user}/edit', [PoliceController::class, 'edit'])->name('police.edit');
+
+Route::post('/policedeactive/{user}', [PoliceController::class, 'deactivateacount'])->name('police.desactive');
+Route::post('/policeactive/{user}', [PoliceController::class, 'activeacount'])->name('police.useractive');
+
+Route::get('/policesactive', [PoliceController::class, 'showactive'])->name('policesactive.store'); 
+Route::get('/policesdeactivated.', [PoliceController::class, 'showdeactivated'])->name('policesdeactivated.store');
+
 Route::delete('/police/{police}', [PoliceController::class, 'destroy'])->name("police.destroy");
 Route::put('/police/{police}', [PoliceController::class, 'update'])->name('police.update');
 Route::post('/Policecreate', [PoliceController::class, 'registerPolicia'])->name('police.register');
@@ -73,9 +83,14 @@ Route::get('/logout' ,[ApiController::class, 'logout'])->name('user.logout');
 Route::get('/chooseaccounttype',function(){
     return view('register.chooseaccounttype');
 });
-// Route::get('/registerSuccess', function () {
-//     return view('registerSuccess');
-// })->name('registerSuccess');
+
+Route::get('/registerSuccess', function () {
+     return view('register.registerSuccess');
+ })->name('register.registerSuccess');
+
+
+
+
 Route::get('/stationsform', function () {
     return view('register.stationsform');
 });

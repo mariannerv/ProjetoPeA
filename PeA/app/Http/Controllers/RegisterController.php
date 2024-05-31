@@ -30,14 +30,15 @@ namespace App\Http\Controllers;
                     'taxId' => 'required|string',
                     'contactNumber' => 'required|string',
                     'email' => 'required|string|email',
-                    'password' => 'required|string',
+                    'password' => 'required|confirmed|string|min:6',
                     'c_password' => 'required|same:password',
                 ]);
 
                 
  
                 if($validator->fails()){
-                    return $this->sendError('Validation Error.', $validator->errors());       
+                    $message = $this->sendError('Validation Error.', $validator->errors());
+                    return $message;
                 }
  
                 $input = $request->all();

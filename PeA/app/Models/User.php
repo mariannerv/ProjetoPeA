@@ -38,8 +38,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'account_status',
         'token',
         'email_verified_at',
+        'email_verified', 
         'bid_history',
         'lost_objects',
+        'admin',
     ];
 
     /**

@@ -39,8 +39,8 @@ class AuctionController extends Controller
                 ]);
             }
 
-            $dateRegistered = new UTCDateTime(now()->timestamp * 1000);
-            $endAuctionTime = new UTCDateTime(now()->addWeek()->timestamp * 1000);
+            $dateRegistered = $date = date("Y-m-d H:i:s");
+            $endAuctionTime = date("Y-m-d H:i:s", strtotime($date . "1 week"));
 
             $request->validate([
                 'objectId' => 'required|string',
