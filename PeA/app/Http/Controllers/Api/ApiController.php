@@ -46,9 +46,9 @@ public function register(Request $request){
             'gender' => 'required|string',
             'birthdate' => 'required|date',
             'address' => 'required|string',
-            'codigo_postal' => 'required|string',
+            'codigo_postal' => ['required', 'string', 'regex:/^\d{4}-\d{3}$/'],
             'localidade' => 'required|string',
-            'civilId' => 'required|string|unique:users',
+            'civilId' => 'required|integer|unique:users',
             'taxId' => 'required|string|unique:users',
             'contactNumber' => 'required|string',
             'email' => 'required|email|unique:users',
@@ -145,49 +145,23 @@ public function register(Request $request){
             "email" => "required|email",
             "password" => "required",
         ]);
+        
         $email = $request->input('email');
         $user = User::where("email", $email)->first();
         
-      if (!empty($user)) {  
+        if (!empty($user)) {  
             if ($user->account_status == 'active') {
                 if (Hash::check($request->input('password'), $user->password)) {
-                    
-                    $expirationTime = now()->addHours(24);
-    
-                   # $token = $user->createToken(name: 'personal-token', expiresAt: now()->addMinutes(30))->plainTextToken;
-    
-                    #$user->update(['token' => explode('|', $token)[1]]);
-    
-                    $expirationTime = now()->addHours(24)->format('Y-m-d H:i:s');
-                    
-                  
-                    
                     Auth::loginUsingId($user->_id);
-
-                    return view('home');
-    
-                   # return redirect()->route('userhome')->with('success' , 'Login');
-                
+                    return redirect()->route('home')->with('success', 'Login realizado com sucesso!');
                 } else {
-                    return response()->json([
-                        "status" => false,
-                        "code" => 401,
-                        "message" => "Credenciais inválidas",
-                    ], 401);
+                    return redirect()->back()->withErrors(['password' => 'Credenciais inválidas'])->withInput();
                 }
             } else {
-                return response()->json([
-                    "status" => false,
-                    "code" => 403,
-                    "message" => "Esta conta está desativada.",
-                ], 403);
+                return redirect()->back()->withErrors(['account_status' => 'Esta conta está desativada.'])->withInput();
             }
         } else {
-            return response()->json([
-                "status" => false,
-                "code" => 404,
-                "message" => "Utilizador não encontrado",
-            ], 404);
+            return redirect()->back()->withErrors(['email' => 'Utilizador não encontrado'])->withInput();
         }
     }
 
@@ -265,6 +239,29 @@ public function register(Request $request){
         Auth::logout();
 
         return view('home');
+    }
+
+    public function report(Request $request) {
+          // Validar que o campo textreport não está vazio
+          $request->validate([
+            'textreport' => 'required|string',
+        ], [
+            'textreport.required' => 'Insira o seu report', // Mensagem personalizada
+        ]);
+
+    // Se a validação passar, envie o e-mail
+    if ($request->input('textreport') != "") {
+        app(SendMailController::class)->sendWelcomeEmail(
+            'projetopea1@gmail.com',
+            $request->input('textreport'),
+            'Bog na aplicação'
+        );
+    }
+
+    // Redirecionar de volta com uma mensagem de sucesso
+    return redirect()->back()->with('success', 'E-mail enviado com sucesso!');        
+
+
     }
 
     public function update2(Request $request)
