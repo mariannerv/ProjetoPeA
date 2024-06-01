@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -14,162 +13,137 @@ use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
-use PeA\database\factories\UserFactory;
-use PHPUnit\Metadata\Uses;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Emails\SendMailController;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rules;
-use Illuminate\View\View;
-use App\Http\Controllers\verificationCodeController;
-
-
+use App\Http\Controllers\VerificationCodeController;
 
 class ApiController extends Controller
 {
+    public function index() {
+        $users = User::all();
+        $numberUsers = User::count();
+        $numberActive = User::where('account_status', 'active')->count();
+        $deactivated = User::where('account_status', 'deactivated')->count();
 
-public function index() {
-    $user =  User::all();
-<<<<<<< HEAD
-    return view('admin.users' ,['users' => $user]);
-=======
-    $numberUsers = User::count();
-    $numberactive = User::where('account_status', 'active')->count();
-    $deactivated = User::where('account_status', 'deactivated')->count();
-    return view('admin.users' ,['users' => $user , 'numberusers' => $numberUsers , 
-    'numberactive' => $numberactive , 'deactivated' => $deactivated]);
->>>>>>> fc56948-gabriel
-}
-
-public function register(Request $request){
-
-    try {
-        $val = Validator::make($request->all(),[
-            'name' => ['required', 'string', 'max:255'],
-            'gender' => 'required|string',
-            'birthdate' => 'required|date',
-            'address' => 'required|string',
-            'codigo_postal' => ['required', 'string', 'regex:/^\d{4}-\d{3}$/'],
-            'localidade' => 'required|string',
-            'civilId' => 'required|integer|unique:users',
-            'taxId' => 'required|string|unique:users',
-            'contactNumber' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => ['required', Rules\Password::defaults()],
+        return view('admin.users', [
+            'users' => $users,
+            'numberusers' => $numberUsers,
+            'numberactive' => $numberActive,
+            'deactivated' => $deactivated
         ]);
-        
-        if ($val->fails()){
-            return redirect()
-            ->back()
-            ->withErrors($val)
-            ->withInput();
-        }
-
-        $uuid = (string) Str::uuid();
-
-        $user = User::create([
-            "account_id" => $uuid,
-            "name" => $request-> input('name'),
-            "gender" => $request->input('gender'),
-            "birthdate" => $request->input('birthdate'),
-            "address" => $request->input('address'),
-            "codigo_postal" => $request->input('codigo_postal'),
-            "localidade" => $request->input('localidade'),
-            "civilId" => $request->input('civilId'),
-            "taxId" => $request->input('taxId'),
-            "contactNumber" => $request->input('contactNumber'),
-            "email" => $request->input('email') ,
-            "password" => Hash::make($request->input('password')),
-            "account_status" => 'active',
-            "token" => '',
-            "email_verified" => "false",
-            "email_verified_at" => '',
-            "bid_history" => [],
-            "lost_objects" => [],
-            "admin" => false,
-        ]);
-     
-        event(new Registered($user));
-
-        
-
-        app(SendMailController::class)->sendWelcomeEmail(
-            $request->input('email'),
-            "Bem vindo ao PeA!",
-            "Bem vindo!"
-        );
-        
-        //cria logo um token pra verificar o email
-        app(verificationCodeController::class)->createCode($request->input('email'));
-        
-<<<<<<< HEAD
-        return redirect()->route('register.success');
-=======
-        return redirect()->route('register.registerSuccess');
->>>>>>> fc56948-gabriel
-
-    } catch (ValidationException $e) {
-        if ($e->errors()['taxId'] && $e->errors()['taxId'][0] === 'Número de contribuinte já associado a outra conta.') {
-            return response()->json([
-                "status" => false,
-                "message" => "Número de contribuinte já associado a outra conta.",
-                "code" => "400",
-            ], 400);
-        }
-        if ($e->errors()['email'] && $e->errors()['email'][0] === 'Email já associado a outra conta.') {
-            return response()->json([
-                "status" => false,
-                "message" => "Email já associado a outra conta.",
-                "code" => "400",
-            ], 400);
-        }
-
-        if ($e->errors()['civilId'] && $e->errors()['civilId'][0] === 'Cartão de cidadão já associado a outra conta.') {
-            return response()->json([
-                "status" => false,
-                "message" => "Cartão de cidadão já associado a outra conta.",
-                "code" => "400",
-            ], 400);
-        }
-   
-        if ($e->errors()['password']) {
-            return response()->json([
-                "status" => false,
-                "message" => "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.",
-                "code" => "400",
-            ], 400);
-        }
-        
-        throw $e;
     }
-}
 
-    //Login API (POST, formdata)
+    public function register(Request $request) {
+        try {
+            $val = Validator::make($request->all(), [
+                'name' => ['required', 'string', 'max:255'],
+                'gender' => 'required|string',
+                'birthdate' => 'required|date',
+                'address' => 'required|string',
+                'codigo_postal' => ['required', 'string', 'regex:/^\d{4}-\d{3}$/'],
+                'localidade' => 'required|string',
+                'civilId' => 'required|integer|unique:users',
+                'taxId' => 'required|string|unique:users',
+                'contactNumber' => 'required|string',
+                'email' => 'required|email|unique:users',
+                'password' => ['required', Rules\Password::defaults()],
+            ]);
 
-    public function login(Request $request)
-    {
+            if ($val->fails()) {
+                return redirect()
+                    ->back()
+                    ->withErrors($val)
+                    ->withInput();
+            }
+
+            $uuid = (string) Str::uuid();
+
+            $user = User::create([
+                "account_id" => $uuid,
+                "name" => $request->input('name'),
+                "gender" => $request->input('gender'),
+                "birthdate" => $request->input('birthdate'),
+                "address" => $request->input('address'),
+                "codigo_postal" => $request->input('codigo_postal'),
+                "localidade" => $request->input('localidade'),
+                "civilId" => $request->input('civilId'),
+                "taxId" => $request->input('taxId'),
+                "contactNumber" => $request->input('contactNumber'),
+                "email" => $request->input('email'),
+                "password" => Hash::make($request->input('password')),
+                "account_status" => 'active',
+                "token" => '',
+                "email_verified" => false,
+                "email_verified_at" => null,
+                "bid_history" => [],
+                "lost_objects" => [],
+                "admin" => false,
+            ]);
+
+            event(new Registered($user));
+
+            app(SendMailController::class)->sendWelcomeEmail(
+                $request->input('email'),
+                "Bem vindo ao PeA!",
+                "Bem vindo!"
+            );
+
+            app(VerificationCodeController::class)->createCode($request->input('email'));
+
+            return redirect()->route('register.registerSuccess');
+
+        } catch (ValidationException $e) {
+            if ($e->errors()['taxId'] && $e->errors()['taxId'][0] === 'Número de contribuinte já associado a outra conta.') {
+                return response()->json([
+                    "status" => false,
+                    "message" => "Número de contribuinte já associado a outra conta.",
+                    "code" => "400",
+                ], 400);
+            }
+            if ($e->errors()['email'] && $e->errors()['email'][0] === 'Email já associado a outra conta.') {
+                return response()->json([
+                    "status" => false,
+                    "message" => "Email já associado a outra conta.",
+                    "code" => "400",
+                ], 400);
+            }
+
+            if ($e->errors()['civilId'] && $e->errors()['civilId'][0] === 'Cartão de cidadão já associado a outra conta.') {
+                return response()->json([
+                    "status" => false,
+                    "message" => "Cartão de cidadão já associado a outra conta.",
+                    "code" => "400",
+                ], 400);
+            }
+
+            if ($e->errors()['password']) {
+                return response()->json([
+                    "status" => false,
+                    "message" => "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.",
+                    "code" => "400",
+                ], 400);
+            }
+
+            throw $e;
+        }
+    }
+
+    public function login(Request $request) {
         $request->validate([
             "email" => "required|email",
             "password" => "required",
         ]);
-        
+
         $email = $request->input('email');
         $user = User::where("email", $email)->first();
-        
-        if (!empty($user)) {  
+
+        if ($user) {  
             if ($user->account_status == 'active') {
                 if (Hash::check($request->input('password'), $user->password)) {
                     Auth::loginUsingId($user->_id);
-<<<<<<< HEAD
-
-                    return view('home');
-    
-                   # return redirect()->route('userhome')->with('success' , 'Login');
-                
-=======
                     return redirect()->route('home')->with('success', 'Login realizado com sucesso!');
->>>>>>> fc56948-gabriel
                 } else {
                     return redirect()->back()->withErrors(['password' => 'Credenciais inválidas'])->withInput();
                 }
@@ -181,9 +155,7 @@ public function register(Request $request){
         }
     }
 
-    //Deactivate account 
-    public function deactivate(Request $request)
-    {
+    public function deactivate(Request $request) {
         $request->validate([
             "email" => "required|email",
             "password" => "required",
@@ -209,9 +181,7 @@ public function register(Request $request){
         }
     }
 
-        //activate account 
-    public function activate(Request $request)
-    {
+    public function activate(Request $request) {
         $request->validate([
             "email" => "required|email",
             "password" => "required",
@@ -237,10 +207,8 @@ public function register(Request $request){
         }
     }
 
-    // Profile API (GET)
-
-    public function profile(){
-        $data = auth()->user(); 
+    public function profile() {
+        $data = auth()->user();
 
         return response()->json([
             "status" => true,
@@ -249,81 +217,52 @@ public function register(Request $request){
         ]);
     }
 
-    // Logout API (GET)
-
-    public function logout(){
+    public function logout() {
         Auth::logout();
 
         return view('home');
     }
 
     public function report(Request $request) {
-          // Validar que o campo textreport não está vazio
-          $request->validate([
+        $request->validate([
             'textreport' => 'required|string',
         ], [
-            'textreport.required' => 'Insira o seu report', // Mensagem personalizada
+            'textreport.required' => 'Insira o seu report',
         ]);
 
-    // Se a validação passar, envie o e-mail
-    if ($request->input('textreport') != "") {
-        app(SendMailController::class)->sendWelcomeEmail(
-            'projetopea1@gmail.com',
-            $request->input('textreport'),
-            'Bog na aplicação'
-        );
+        if ($request->input('textreport') != "") {
+            app(SendMailController::class)->sendWelcomeEmail(
+                'projetopea1@gmail.com',
+                $request->input('textreport'),
+                'Bog na aplicação'
+            );
+        }
+
+        return redirect()->back()->with('success', 'E-mail enviado com sucesso!');
     }
 
-    // Redirecionar de volta com uma mensagem de sucesso
-    return redirect()->back()->with('success', 'E-mail enviado com sucesso!');        
+    public function update2(Request $request) {
+        $user = auth()->user();
+        
+        if ($user) {
+            $request->validate([
+                'name' => 'string',
+                'gender' => 'string',
+                'birthdate' => 'date',
+                'address' => 'string',
+                'civilId' => 'string',
+                'taxId' => 'string',
+                'contactNumber' => 'string',
+                'email' => 'email|unique:users',
+                'password' => 'confirmed',
+            ]);
 
-
-    }
-
-    public function update2(Request $request)
-    {
-    $user = auth()->user();
-    
-    if ($user) {
-        $request->validate([
-            'name' => 'string',
-            'gender' => 'string',
-            'birthdate' => 'date',
-            'address' => 'string',
-            'civilId' => 'string',
-            'taxId' => 'string',
-            'contactNumber' => 'string',
-            'email' => 'email|unique:users',
-            'password' => 'confirmed',
-        ]);
-
-        $user->update($request->all());
-
-        return response()->json([
-            "status" => true,
-            "code" => 200,
-            "message" => "Perfil atualizado com sucesso.",
-        ]);
-    } else {
-        return response()->json([
-            "status" => false,
-            "code" => 404,
-            "message" => "Utilizador não encontrado.",
-        ], 404);
-    }
-}
-
-
-    //delete account
-    public function delete(){
-            $user = auth()->user();
-                if ($user) {
-            $user->delete();
+            $user->update($request->all());
 
             return response()->json([
                 "status" => true,
                 "code" => 200,
-                "message" => "Utilizador apagado com sucesso.",
+                "message" => "Perfil atualizado com sucesso.",
             ]);
         } else {
             return response()->json([
@@ -334,215 +273,74 @@ public function register(Request $request){
         }
     }
 
+    public function delete() {
+        $user = auth()->user();
 
-public function lostObjects(Request $request){
-    try {
-        $request->validate([
-            'email' => 'required|string',
-        ]);
+        if ($user) {
+            $user->delete();
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
+            return response()->json([
+                "status" => true,
+                "code" => 200,
+                "message" => "Conta eliminada com sucesso",
+            ]);
+        } else {
             return response()->json([
                 "status" => false,
-                "message" => "User not found.",
                 "code" => 404,
-            ], 404);
-        }
-
-        $lostObjectIds = $user->lost_objects;
-
-        $lostObjects = LostObject::whereIn('lostObjectId', $lostObjectIds)->get();
-
-        $response = [
-            "status" => true,
-            "message" => "Lost objects retrieved successfully.",
-            "lost_objects" => $lostObjects,
-        ];
-
-        return response()->json($response, 200);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            "status" => false,
-            "message" => "An error occurred while retrieving lost objects.",
-            "code" => 500,
-        ], 500);
-    }
-}
-
-public function myBids(Request $request){
-    try {
-        $request->validate([
-            'email' => 'required|string',
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return response()->json([
-                "status" => false,
                 "message" => "Utilizador não encontrado.",
+            ], 404);
+        }
+    }
+
+    public function uploadImage(Request $request) {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $imageName = time() . '.' . $request->image->extension();
+        $request->image->move(public_path('images'), $imageName);
+
+        return response()->json([
+            "status" => true,
+            "message" => "Imagem carregada com sucesso",
+            "path" => '/images/' . $imageName,
+        ]);
+    }
+
+    public function updateLostObjects(Request $request) {
+        $data = auth()->user();
+        $lostObject = LostObject::find($request->lost_object_id);
+
+        if (!$lostObject) {
+            return response()->json([
+                "status" => false,
                 "code" => 404,
+                "message" => "Objeto não encontrado.",
             ], 404);
         }
 
-        $bidIds = $user->bid_history;
+        if ($lostObject->user_id != $data->_id) {
+            return response()->json([
+                "status" => false,
+                "code" => 403,
+                "message" => "Permissão negada.",
+            ], 403);
+        }
 
-        $bids = Bid::whereIn('bidId', $bidIds)->get();
+        $request->validate([
+            'description' => 'string|nullable',
+            'location' => 'string|nullable',
+            'status' => 'string|nullable',
+        ]);
 
-        $response = [
-            "status" => true,
-            "message" => "Licitações retornadas.",
-            "lost_objects" => $bids,
-        ];
+        $lostObject->update($request->all());
 
-        return response()->json($response, 200);
-
-    } catch (\Exception $e) {
         return response()->json([
-            "status" => false,
-            "message" => "Ocorreu um erro ao tentar recuperar a lista de licitações.",
-            "code" => 500,
-        ], 500);
+            "status" => true,
+            "code" => 200,
+            "message" => "Objeto atualizado com sucesso.",
+        ]);
     }
 }
-
-<<<<<<< HEAD
-public function getLostObjectsStatistics()
-{
-    $lostObjectsData = LostObject::select('category', DB::raw('COUNT(*) as count'))
-        ->groupBy('category')
-        ->get();
-
-    return response()->json(['data' => $lostObjectsData]);
-}
-
-public function getFoundObjectsStatistics()
-{
-    $foundObjectsData = FoundObject::select('category', DB::raw('COUNT(*) as count'))
-        ->groupBy('category')
-        ->get();
-
-    return response()->json(['data' => $foundObjectsData]);
-}
-
-
-// Verify email method
-=======
-public function showactive() {
-    $user = User::where('account_status', 'active')->get();
-    $numberUsers = User::count();
-    $numberactive = User::where('account_status', 'active')->count();
-    $deactivated = User::where('account_status', 'deactivated')->count();
-    return view('admin.users' ,['users' => $user , 'numberusers' => $numberUsers , 
-    'numberactive' => $numberactive , 'deactivated' => $deactivated]);
-}
-public function showdeactivated() {
-    $user = User::where('account_status', 'deactivated')->get();
-    $numberUsers = User::count();
-    $numberactive = User::where('account_status', 'active')->count();
-    $deactivated = User::where('account_status', 'deactivated')->count();
-    return view('admin.users' ,['users' => $user , 'numberusers' => $numberUsers , 
-    'numberactive' => $numberactive , 'deactivated' => $deactivated]);
-}
-public function deactivateacount($id) {
-    //$userd = User::where('_id', $id)->get();
-    $user = User::find($id);
-    $user->account_status = 'deactivated';
-    $user->save();
-
-    app(SendMailController::class)->sendWelcomeEmail(
-        $user->email,
-        "Conta Destivada",
-        "Sua conta foi destivada."
-    );
-
-}
->>>>>>> fc56948-gabriel
-
-public function activeacount($id) {
-    //$userd = User::where('_id', $id)->get();
-    $user = User::find($id);
-    $user->account_status = 'active';
-    $user->save();
-
-    app(SendMailController::class)->sendWelcomeEmail(
-        $user->email,
-        "Conta Ativada",
-        "Sua conta foi Ativada."
-    );
-
-<<<<<<< HEAD
-=======
-}
-
-// Verify email method
-
-
-
->>>>>>> fc56948-gabriel
-
-//___---------------------------------------------------------------
-
-/* old destroy
-
-public function destroy(string $id) {
-    User::where('_id' ,$id )->delete();
-    return redirect()->route('users.store');
-}
-*/
-//confirm destroy method
-
-
-public function confirmDelete(User $user)
-{
-    return view('profile.users.partials.confirm-deletion', compact('user'));
-}
-
-
-public function destroy(Request $request, $id)
-{
-    $user = User::findOrFail($id);
-    
-    if (Hash::check($request->password, $user->password)) {
-        $user->delete();
-        return redirect()->route('users.store')->with('success', 'User deleted successfully.');
-    } else {
-        return redirect()->route('users.store')->with('error', 'Incorrect password. User not deleted.');
-    }
-}
-//___---------------------------------------------------------------
-//___---------------------------------------------------------------
-
-
-public function edit(User $user) {
-    return view('profile.users.partials.usereditform' , ['user' => $user]);
-}
-
-
-public function update(Request $request, string $id) {
-    $update = User::where('_id' , $id)->update(
-        ["name" => $request-> input('name'),
-            "gender" => $request->input('gender'),
-            "birthdate" => $request->input('birthdate'),
-            "address" => $request->input('address'),
-            "codigo_postal" => $request->input('codigo_postal'),
-            "localidade" => $request->input('localidade'),
-            "civilId" => $request->input('civilId'),
-            "taxId" => $request->input('taxId'),
-            "contactNumber" => $request->input('contactNumber'),
-            "email" => $request->input('email') ,
-            "password" => Hash::make($request->input('password')),
-            ]
-
-    );
-    
-    if ($update) {
-        return view('home');
-    }
-}
-
-
-}
+?>

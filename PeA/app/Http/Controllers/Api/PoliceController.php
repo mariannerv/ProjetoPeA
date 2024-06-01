@@ -16,9 +16,6 @@ class PoliceController extends Controller
 {
     public function index() {
         $user =  Police::all();
-<<<<<<< HEAD
-        return view('admin.polices' ,['users' => $user]);
-=======
         $numberUsers = Police::count();
          $numberactive = Police::where('account_status', 'active')->count();
         $deactivated = Police::where('account_status', 'deactivated')->count();
@@ -26,7 +23,6 @@ class PoliceController extends Controller
     'numberactive' => $numberactive , 'deactivated' => $deactivated]);
         
     
->>>>>>> fc56948-gabriel
     }
 
 
@@ -61,11 +57,7 @@ class PoliceController extends Controller
                 "email_verified_at" => '',
             ]);
 
-<<<<<<< HEAD
-            return redirect()->route('register.success');
-=======
             return redirect()->route('register.registerSuccess');
->>>>>>> fc56948-gabriel
 
         } catch (ValidationException $e){
             if ($e->errors()['internalId'] && $e->erros()['internalId'][0] === "Policia com este Id já associado a outra conta.");
