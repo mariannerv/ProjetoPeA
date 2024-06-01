@@ -112,12 +112,26 @@ class LostObjectController extends Controller
     }
 }
 
+<<<<<<< HEAD
     public function getLostObject(String $id){
         try {
             $object = LostObject::where('_id', $id)->first();
 
             if ($object) {
                 return view('objects.lost-object', ['object' => $object]);
+=======
+    public function getLostObject(Request $request, String $id){
+        try {
+            echo($request); 
+            $request->validate([
+                '_id' => 'required|string',
+            ]);
+
+            $object = LostObject::where('_id', $id)->first();
+
+            if ($object) {
+                return view('objects.lost-object',$object->_id);
+>>>>>>> fc56948-gabriel
             } else {
                 return response()->json([
                     "status" => false,
@@ -125,7 +139,11 @@ class LostObjectController extends Controller
                     "code" => 404,
                 ], 404);
             }
+<<<<<<< HEAD
         } catch (Exception $e) {
+=======
+        } catch (\Exception $e) {
+>>>>>>> fc56948-gabriel
             $exceptionInfo = [
                 'message' => $e->getMessage(),
                 
@@ -140,6 +158,11 @@ class LostObjectController extends Controller
         }
     }
     
+<<<<<<< HEAD
+=======
+
+    
+>>>>>>> fc56948-gabriel
     public function updateLostObject(Request $request){
         $object = LostObject::where('lostObjectId', $request->lostObjectId)->first();
 

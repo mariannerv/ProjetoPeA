@@ -64,6 +64,14 @@
         <div class="col-md-auto">
           <div class="text-center">
             <a role="button" href="http://localhost:8000/login" class="btn btn-secondary btn-lg btn-block mb-3">Iniciar sessão como utilizador</a>
+<<<<<<< HEAD
+=======
+          </div>
+        </div>
+        <div class="col-md-auto">
+          <div class="text-center">
+            <a role="button" href="http://localhost:8000/loginpolice" class="btn btn-secondary btn-lg btn-block mb-3">Iniciar sessão como policia</a>
+>>>>>>> fc56948-gabriel
           </div>
         </div>
       </div>

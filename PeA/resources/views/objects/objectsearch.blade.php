@@ -12,7 +12,11 @@
 </style>
 </head>
 <body>
+<<<<<<< HEAD
 @if {{auth()->check()}}
+=======
+
+>>>>>>> fc56948-gabriel
 <div class="container">
   <h1>Lost and Found Objects Search</h1>
   <div class="input-group mb-3">
@@ -36,9 +40,12 @@
 </div>
 <div id= "allLocationsTable"></div>
 <div id="map" style="height: 400px;"></div>
+<<<<<<< HEAD
 @else
     @include('auth.noaccess')
     @endif
+=======
+>>>>>>> fc56948-gabriel
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
