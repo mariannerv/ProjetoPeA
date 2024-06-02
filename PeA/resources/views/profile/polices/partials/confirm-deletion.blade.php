@@ -1,4 +1,10 @@
 <!-- resources/views/confirm_deletion.blade.php -->
+<?php
+if (!Auth::guard('police')->check()) {
+    header('Location: ' . route('home'));
+    exit;
+}
+?>
 
 <!DOCTYPE html>
 <html>
@@ -16,11 +22,9 @@
     />
 </head>
 <body>
-    @if (auth()->check())
-    @include('components.navbar')
-  @else
-    @include('components.navbar-guest')
-  @endif 
+
+    @include('components.navbar-police')
+
     <main class="my-5">
         <div class="container">
           <div class="container mt-auto">
@@ -29,8 +33,8 @@
                   <div class="card">
                       <div class="card-header text-left">Tem a certeza que quer eliminar o perfil?</div>
                       <div class="card-body text-center">
-                            <p>Por favor confirme a eliminação de '{{ auth()->user()->name }}' ao introduzir a sua password:</p>
-                            <form class="row g-3 needs-validation" method="post" action="{{ route('user.destroy', auth()->user()->id) }}">
+                            <p>Por favor confirme a eliminação de '{{ Auth::guard('police')->user()->name }}' ao introduzir a sua password:</p>
+                            <form class="row g-3 needs-validation" method="post" action="{{ route('police.destroy', Auth::guard('police')->user()->id) }}">
                                 @csrf
                                 @method('DELETE')
                                 <div class="row">

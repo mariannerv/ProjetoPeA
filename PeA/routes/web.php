@@ -52,6 +52,9 @@ Route::post('/policeactive/{user}', [PoliceController::class, 'activeacount'])->
 Route::get('/policesactive', [PoliceController::class, 'showactive'])->name('policesactive.store'); 
 Route::get('/policesdeactivated.', [PoliceController::class, 'showdeactivated'])->name('policesdeactivated.store');
 
+
+Route::get('/police/{user}/confirm-delete', [PoliceController::class, 'confirmDelete'])->name('police.confirm-delete');
+
 Route::delete('/police/{police}', [PoliceController::class, 'destroy'])->name("police.destroy");
 Route::put('/police/{police}', [PoliceController::class, 'update'])->name('police.update');
 Route::post('/Policecreate', [PoliceController::class, 'registerPolicia'])->name('police.register');
