@@ -26,30 +26,55 @@ use App\Http\Controllers\verificationCodeController;
 Route::get('/', function () {
         return view('home');
     })->name('home');
+    })->name('home');
 
 // User Routes
 Route::get('/users', [ApiController::class, 'index'])->name('users.store');
+Route::get('/usersactive', [ApiController::class, 'showactive'])->name('usersactive.store'); 
+Route::get('/usersdeactivated.', [ApiController::class, 'showdeactivated'])->name('usersdeactivated.store');
 Route::post('/create', [ApiController::class, 'register'])->name('user.register');
 Route::delete('/users/{user}', [ApiController::class, 'destroy'])->name("user.destroy");
 Route::get('/user{user}/edit', [ApiController::class, 'edit'])->name('user.edit');
 Route::put('/user/{user}', [ApiController::class, 'update'])->name('user.update');
 Route::get('/users/{user}/confirm-delete', [ApiController::class, 'confirmDelete'])->name('user.confirm-delete');
-
+Route::post('/userdeactive/{user}', [ApiController::class, 'deactivateacount'])->name('user.desactive');
+Route::post('/useractive/{user}', [ApiController::class, 'activeacount'])->name('user.useractive');
+Route::get('/report', function(){
+    return view('profile.users.report');
+})->name("user.showrepot");
+Route::post('/userreport', [ApiController::class, 'report'])->name('user.userreport');
 // Police Routes
 Route::get('/polices', [PoliceController::class, 'index'])->name('polices.store');
 Route::get('/police/{user}/edit', [PoliceController::class, 'edit'])->name('police.edit');
+
+Route::post('/policedeactive/{user}', [PoliceController::class, 'deactivateacount'])->name('police.desactive');
+Route::post('/policeactive/{user}', [PoliceController::class, 'activeacount'])->name('police.useractive');
+
+Route::get('/policesactive', [PoliceController::class, 'showactive'])->name('policesactive.store'); 
+Route::get('/policesdeactivated.', [PoliceController::class, 'showdeactivated'])->name('policesdeactivated.store');
+
+
+Route::get('/police/{user}/confirm-delete', [PoliceController::class, 'confirmDelete'])->name('police.confirm-delete');
+
 Route::delete('/police/{police}', [PoliceController::class, 'destroy'])->name("police.destroy");
 Route::put('/police/{police}', [PoliceController::class, 'update'])->name('police.update');
 Route::post('/police-create', [PoliceController::class, 'registerPolicia'])->name('police.register');
 Route::get('/policesform', [PoliceStationController::class, 'sigla'])->name('policesform.store');
+Route::get('/loginpolice', function(){
+    return view('auth.policelogin');
+});
+Route::post('/policelogin' , [PoliceController::class, 'loginPolice'])->name('polices.login');
 
+Route::get('/logoutpolice' ,[PoliceController::class, 'logout'])->name('polices.logout');
 // Station routes
 Route::get('/stations', [PoliceStationController::class, 'index'])->name('stations.store');
 Route::post('/stationcreate', [PoliceStationController::class, 'registerPost'])->name('station.register');
 Route::delete('/policestation/{station}', [PoliceStationController::class, 'destroy'])->name("policestation.destroy");
 Route::get('/station/{user}/edit', [PoliceStationController::class, 'edit'])->name('station.edit');
 Route::put('/station/{station}', [PoliceStationController::class, 'update'])->name('station.update');
-
+Route::get('/testeauth', function(){
+    return view('auth.testeauth');
+});
 // Login views/routes
 Route::get('/login', function(){
     return view('auth.login');
@@ -73,6 +98,7 @@ Route::get('/usersform', function () {
 });
 
 // Profile views
+Route::view('/users/{user}','profile.users.user')->name('user.profile');
 Route::view('/users/{user}','profile.users.user')->name('user.profile');
 /*
 Route::get('/{police}', function () {
@@ -123,3 +149,4 @@ Route::view('/tokenexpirou/{uuid}', 'tokenexpirou')->name('tokenexpirou');
 // Auction views/routes
 Route::get('/auctions',[AuctionController::class,'viewAllAuctions'])->name('auctions.get');
 Route::get('/auctions/{auction}', [AuctionController::class,'viewAuction'])->name('auction.get');
+?>
