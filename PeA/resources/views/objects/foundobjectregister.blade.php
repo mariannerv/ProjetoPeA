@@ -22,9 +22,9 @@
                 <div class="row justify-content-center">
                     <div class="col-md-8">
                         <div class="card">
-                            <div class="card-header">Registar Objeto Perdido</div>
+                            <div class="card-header">Registar Objeto Encontrado</div>
                             <div class="card-body">
-                                <form class="row g-3 needs-validation" novalidate action="{{ route('objects.register') }}" method="post">
+                                <form class="row g-3 needs-validation" novalidate action="{{ route('foundobjects.register') }}" method="post">
                                     @csrf
                                     @method('POST')
                                     <div class="col-md-6">
