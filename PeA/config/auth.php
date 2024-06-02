@@ -8,23 +8,34 @@ return [
     ],
 
     'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
-        ],
-
-        'api' => [
-            'driver' => 'passport',
-            'provider' => 'users',
-        ],
+    'web' => [
+        'driver' => 'session',
+        'provider' => 'users',
     ],
 
-    'providers' => [
-        'users' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\User::class,
-        ],
+    'api' => [
+        'driver' => 'passport',
+        'provider' => 'users',
     ],
+
+    'police' => [
+        'driver' => 'session',
+        'provider' => 'police',
+    ],
+],
+
+
+   'providers' => [
+    'users' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\User::class,
+    ],
+
+    'police' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\Police::class,
+    ],
+],
 
     'passwords' => [
         'users' => [

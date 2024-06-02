@@ -1,10 +1,11 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title> {{ $subject }} </title>
+    <title>{{ $subject }}</title>
 </head>
 <body>
-    <h4> {{ $subject }} </h4>
-    <p> {{ $mailMessage }} </p>
+    <h4>{{ $subject }}</h4>
+    {!! $mailMessage !!}
 </body>
 </html>

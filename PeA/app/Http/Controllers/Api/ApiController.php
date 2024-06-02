@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\LostObject;
-use App\Models\foundObjects;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
@@ -32,7 +31,11 @@ class ApiController extends Controller
 
 public function index() {
     $user =  User::all();
-    return view('admin.users' ,['users' => $user]);
+    $numberUsers = User::count();
+    $numberactive = User::where('account_status', 'active')->count();
+    $deactivated = User::where('account_status', 'deactivated')->count();
+    return view('admin.users' ,['users' => $user , 'numberusers' => $numberUsers , 
+    'numberactive' => $numberactive , 'deactivated' => $deactivated]);
 }
 
 public function register(Request $request){
@@ -43,9 +46,9 @@ public function register(Request $request){
             'gender' => 'required|string',
             'birthdate' => 'required|date',
             'address' => 'required|string',
-            'codigo_postal' => 'required|string',
+            'codigo_postal' => ['required', 'string', 'regex:/^\d{4}-\d{3}$/'],
             'localidade' => 'required|string',
-            'civilId' => 'required|string|unique:users',
+            'civilId' => 'required|integer|unique:users',
             'taxId' => 'required|string|unique:users',
             'contactNumber' => 'required|string',
             'email' => 'required|email|unique:users',
@@ -142,49 +145,23 @@ public function register(Request $request){
             "email" => "required|email",
             "password" => "required",
         ]);
+        
         $email = $request->input('email');
         $user = User::where("email", $email)->first();
         
-      if (!empty($user)) {  
+        if (!empty($user)) {  
             if ($user->account_status == 'active') {
                 if (Hash::check($request->input('password'), $user->password)) {
-                    
-                    $expirationTime = now()->addHours(24);
-    
-                   # $token = $user->createToken(name: 'personal-token', expiresAt: now()->addMinutes(30))->plainTextToken;
-    
-                    #$user->update(['token' => explode('|', $token)[1]]);
-    
-                    $expirationTime = now()->addHours(24)->format('Y-m-d H:i:s');
-                    
-                  
-                    
                     Auth::loginUsingId($user->_id);
-
-                    return view('home');
-    
-                   # return redirect()->route('userhome')->with('success' , 'Login');
-                
+                    return redirect()->route('home')->with('success', 'Login realizado com sucesso!');
                 } else {
-                    return response()->json([
-                        "status" => false,
-                        "code" => 401,
-                        "message" => "Credenciais inválidas",
-                    ], 401);
+                    return redirect()->back()->withErrors(['password' => 'Credenciais inválidas'])->withInput();
                 }
             } else {
-                return response()->json([
-                    "status" => false,
-                    "code" => 403,
-                    "message" => "Esta conta está desativada.",
-                ], 403);
+                return redirect()->back()->withErrors(['account_status' => 'Esta conta está desativada.'])->withInput();
             }
         } else {
-            return response()->json([
-                "status" => false,
-                "code" => 404,
-                "message" => "Utilizador não encontrado",
-            ], 404);
+            return redirect()->back()->withErrors(['email' => 'Utilizador não encontrado'])->withInput();
         }
     }
 
@@ -262,6 +239,29 @@ public function register(Request $request){
         Auth::logout();
 
         return view('home');
+    }
+
+    public function report(Request $request) {
+          // Validar que o campo textreport não está vazio
+          $request->validate([
+            'textreport' => 'required|string',
+        ], [
+            'textreport.required' => 'Insira o seu report', // Mensagem personalizada
+        ]);
+
+    // Se a validação passar, envie o e-mail
+    if ($request->input('textreport') != "") {
+        app(SendMailController::class)->sendWelcomeEmail(
+            'projetopea1@gmail.com',
+            $request->input('textreport'),
+            'Bog na aplicação'
+        );
+    }
+
+    // Redirecionar de volta com uma mensagem de sucesso
+    return redirect()->back()->with('success', 'E-mail enviado com sucesso!');        
+
+
     }
 
     public function update2(Request $request)
@@ -356,43 +356,6 @@ public function lostObjects(Request $request){
     }
 }
 
-public function foundObjects(Request $request){
-    try {
-        $request->validate([
-            'date_found' => 'required|string',
-        ]);
-
-        $user = User::where('_id', $request->internalId)->first();
-
-        if (!$user) {
-            return response()->json([
-                "status" => false,
-                "message" => "User not found.",
-                "code" => 404,
-            ], 404);
-        }
-
-        $foundObjectIds = $user->found_objects;
-
-        $lfoundObjects = LostObject::whereIn('foundObjectId', $found_objects)->get();
-
-        $response = [
-            "status" => true,
-            "message" => "Lost objects retrieved successfully.",
-            "lost_objects" => $lostObjects,
-        ];
-
-        return response()->json($response, 200);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            "status" => false,
-            "message" => "An error occurred while retrieving lost objects.",
-            "code" => 500,
-        ], 500);
-    }
-}
-
 public function myBids(Request $request){
     try {
         $request->validate([
@@ -430,7 +393,49 @@ public function myBids(Request $request){
     }
 }
 
+public function showactive() {
+    $user = User::where('account_status', 'active')->get();
+    $numberUsers = User::count();
+    $numberactive = User::where('account_status', 'active')->count();
+    $deactivated = User::where('account_status', 'deactivated')->count();
+    return view('admin.users' ,['users' => $user , 'numberusers' => $numberUsers , 
+    'numberactive' => $numberactive , 'deactivated' => $deactivated]);
+}
+public function showdeactivated() {
+    $user = User::where('account_status', 'deactivated')->get();
+    $numberUsers = User::count();
+    $numberactive = User::where('account_status', 'active')->count();
+    $deactivated = User::where('account_status', 'deactivated')->count();
+    return view('admin.users' ,['users' => $user , 'numberusers' => $numberUsers , 
+    'numberactive' => $numberactive , 'deactivated' => $deactivated]);
+}
+public function deactivateacount($id) {
+    //$userd = User::where('_id', $id)->get();
+    $user = User::find($id);
+    $user->account_status = 'deactivated';
+    $user->save();
 
+    app(SendMailController::class)->sendWelcomeEmail(
+        $user->email,
+        "Conta Destivada",
+        "Sua conta foi destivada."
+    );
+
+}
+
+public function activeacount($id) {
+    //$userd = User::where('_id', $id)->get();
+    $user = User::find($id);
+    $user->account_status = 'active';
+    $user->save();
+
+    app(SendMailController::class)->sendWelcomeEmail(
+        $user->email,
+        "Conta Ativada",
+        "Sua conta foi Ativada."
+    );
+
+}
 
 // Verify email method
 

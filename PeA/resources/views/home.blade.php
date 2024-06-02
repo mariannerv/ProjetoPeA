@@ -18,32 +18,45 @@
       @if (auth()->check())
         @include('components.navbar')
       @else
+        @if(Auth::guard('police')->check())
+        @include('components.navbar-police')
+      
+        @else
         @include('components.navbar-guest')
       @endif 
-      
+      @endif
     </header>
-    @if (auth()->check())
+    @if (auth()->check() || Auth::guard('police')->check() )
     <div class="container d-flex justify-content-center align-items-center vh-100">
       <div class="row justify-content-center">
         <div class="col-md-auto">
+          
           <div class="text-center">
+            @if (Auth::guard('police')->check() )
+            <h2>Bem vindo, {{Auth::guard('police')->user()->name}}!</h2>
+            @endif
+            @if(auth()->check()) 
             <h2>Bem vindo, {{auth()->user()->name}}!</h2>
+            @endif
             <p>Por favor escolhe uma opção:</p>
           </div>
+          
         </div>
       </div>
+      @if (auth()->check())
       <div class="row justify-content-center">
         <div class="col-md-auto">
           <div class="text-center">
-            <a role="button" href="http://localhost:8000/" class="btn btn-primary btn-lg btn-block mb-3">Registar um objeto</a>
+            <a role="button" href="{{ route('objects.register-form') }}" class="btn btn-primary btn-lg btn-block mb-3">Registar um objeto</a>
           </div>
         </div>
         <div class="col-md-auto">
           <div class="text-center">
-            <a role="button" href="http://localhost:8000/" class="btn btn-secondary btn-lg btn-block mb-3">Ver os seus objetos</a>
+            <a role="button" href="{{ route('user.profile', auth()->user()->id) }}" class="btn btn-secondary btn-lg btn-block mb-3">Ver os seus objetos</a>
           </div>
         </div>
       </div>
+      @endif
     </div>
     @else
     <div class="container d-flex justify-content-center align-items-center vh-100">
@@ -64,6 +77,11 @@
         <div class="col-md-auto">
           <div class="text-center">
             <a role="button" href="http://localhost:8000/login" class="btn btn-secondary btn-lg btn-block mb-3">Iniciar sessão como utilizador</a>
+          </div>
+        </div>
+        <div class="col-md-auto">
+          <div class="text-center">
+            <a role="button" href="http://localhost:8000/loginpolice" class="btn btn-secondary btn-lg btn-block mb-3">Iniciar sessão como policia</a>
           </div>
         </div>
       </div>

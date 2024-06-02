@@ -27,12 +27,12 @@ class PoliceStationController extends Controller
     try {
         $val = Validator::make($request->all(),[
         'morada' => 'required|string',
-        'codigo_postal' => 'required|string',
+        'codigo_postal' => ['required', 'string', 'regex:/^\d{4}-\d{3}$/'],
         'localidade' => 'required|string',
         'unidade' => 'required|string|unique:police_station',
         'sigla' => 'required|string|unique:police_station',
-        'telefone' => 'required|string',
-        'fax' => 'required|string',
+        'telefone' => 'required|integer',
+        'fax' => 'required|integer',
         'email' => 'required|email',
     ]);
 
