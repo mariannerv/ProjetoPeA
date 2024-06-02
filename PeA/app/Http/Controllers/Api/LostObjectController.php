@@ -117,7 +117,7 @@ class LostObjectController extends Controller
             $object = LostObject::where('_id', $id)->first();
 
             if ($object) {
-                return view('objects.lost-object', ['object' => $object]);
+                return view('objects.lost-objects.lost-object', ['object' => $object]);
             } else {
                 return response()->json([
                     "status" => false,
@@ -377,8 +377,17 @@ private function calculateMatchPercentage($foundObject, $lostObject)
     return $matchPercentage;
 }
 
-public function editLostObject(LostObject $lostObject) {
-    return view('profile.users.partials.usereditform' , ['user' => $lostObject]);
+public function editLostObject($objectId) {
+    $lostObject = LostObject::findOrFail($objectId);
+    if ($lostObject){
+        return view('objects.lost-objects.partials.lost-object-editform' , ['lostObject' => $lostObject]);
+    } else {
+        return response()->json([
+            "status" => false,
+            "message" => "Objeto não encontrado.",
+            "code" => "404",
+        ], 404);
+    }
 }
 
 }

@@ -35,7 +35,7 @@
       <div class="row justify-content-center">
         <div class="col-md-auto">
           <div class="text-center">
-            <a role="button" href="{{ route('objects.register-form') }}" class="btn btn-primary btn-lg btn-block mb-3">Registar um objeto</a>
+            <a role="button" href="{{ route('lost-objects.register-form') }}" class="btn btn-primary btn-lg btn-block mb-3">Registar um objeto</a>
           </div>
         </div>
         <div class="col-md-auto">

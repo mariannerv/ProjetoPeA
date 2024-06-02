@@ -62,7 +62,7 @@ Route::get('/logout' ,[ApiController::class, 'logout'])->name('user.logout');
 Route::get('/chooseaccounttype',function(){
     return view('register.chooseaccounttype');
 });
-Route::get('/registerSuccess', function () {
+Route::get('/register-success', function () {
     return view('register.registerSuccess');
 })->name('register.success');
 Route::get('/stationsform', function () {
@@ -87,8 +87,8 @@ Route::get('/{station}', function () {
 // })->name('user.delete.account');
 
 // Object views
-Route::view('/objects/register-form', 'objects.objectregister')->name('objects.register-form');
-Route::post('/objects/register', [LostObjectController::class, 'registerLostObject'])->name('objects.register');
+Route::view('/lost-objects/register-form', 'objects.lost-objects.lost-object-register')->name('lost-objects.register-form');
+Route::post('/lost-objects/register', [LostObjectController::class, 'registerLostObject'])->name('lost-objects.register');
 Route::get('/lost-objects', [LostObjectController::class, 'getAllLostObjects'])->name('lost-objects.get');
 Route::get('/lost-objects/{object}', [LostObjectController::class,'getLostObject'])->name('lost-object.get');
 Route::delete('lost-objects/delete/{object}', [LostObjectController::class,'deleteLostObject'])->name('lost-object.delete');
