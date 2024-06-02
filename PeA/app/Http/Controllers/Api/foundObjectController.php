@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\FoundObject;
@@ -66,7 +66,7 @@ class FoundObjectController extends Controller
         }
     }
 
-    public function viewFoundObject(Request $request)
+    public function getFoundObject(Request $request)
     {
         try {
             $request->validate([
@@ -181,6 +181,35 @@ class FoundObjectController extends Controller
         }
     }
 
+    public function getStatistics()
+    {
+        try {
+            // Group found objects by category and date found
+            $statistics = DB::table('FoundObject')
+                ->select('categoryId', DB::raw('count(*) as count'))
+                ->groupBy('categoryId')
+                ->get();
+
+            $data = [
+                'categories' => $statistics->pluck('categoryId'),
+                'counts' => $statistics->pluck('count')
+            ];
+
+            return response()->json([
+                "status" => true,
+                "data" => $data,
+                "code" => 200,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "An error occurred while fetching statistics for found objects.",
+                "code" => 500,
+            ], 500);
+        }
+    }
+
+
     public function searchByDescription(Request $request)
     {
         try {
@@ -203,4 +232,5 @@ class FoundObjectController extends Controller
             ], 500);
         }
     }
+    
 }
