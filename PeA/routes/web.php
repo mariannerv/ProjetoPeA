@@ -26,7 +26,6 @@ use App\Http\Controllers\verificationCodeController;
 Route::get('/', function () {
         return view('home');
     })->name('home');
-    })->name('home');
 
 // User Routes
 Route::get('/users', [ApiController::class, 'index'])->name('users.store');
