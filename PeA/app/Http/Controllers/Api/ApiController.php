@@ -362,7 +362,7 @@ public function foundObjects(Request $request){
             'date_found' => 'required|string',
         ]);
 
-        $user = User::where('_id', $request->id)->first();
+        $user = User::where('_id', $request->internalId)->first();
 
         if (!$user) {
             return response()->json([
