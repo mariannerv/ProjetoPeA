@@ -141,3 +141,4 @@ Route::view('/tokenexpirou/{uuid}', 'tokenexpirou')->name('tokenexpirou');
 // Auction views/routes
 Route::get('/auctions',[AuctionController::class,'viewAllAuctions'])->name('auctions.get');
 Route::get('/auctions/{auction}', [AuctionController::class,'viewAuction'])->name('auction.get');
+?>
