@@ -185,7 +185,7 @@ public function register(Request $request){
                 "message" => "Conta desativada com sucesso",
             ]);
         } else {
-            return response()->json([
+            return response()->json([ //projetopea1 ProjetoPea!
                 "status" => false,
                 "code" => 404,
                 "message" => "Conta inválida.",
@@ -252,7 +252,7 @@ public function register(Request $request){
     // Se a validação passar, envie o e-mail
     if ($request->input('textreport') != "") {
         app(SendMailController::class)->sendWelcomeEmail(
-            'projetopea1@gmail.com',
+            'projetopea1@outlook.com',
             $request->input('textreport'),
             'Bog na aplicação'
         );
@@ -420,7 +420,7 @@ public function deactivateacount($id) {
         "Conta Destivada",
         "Sua conta foi destivada."
     );
-
+    return redirect()->route("usersdeactivated.store");
 }
 
 public function activeacount($id) {
@@ -434,7 +434,7 @@ public function activeacount($id) {
         "Conta Ativada",
         "Sua conta foi Ativada."
     );
-
+    return redirect()->route("usersactive.store");
 }
 
 // Verify email method
