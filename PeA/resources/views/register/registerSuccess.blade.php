@@ -14,10 +14,7 @@
     />
   </head>
   <body>
-<<<<<<< HEAD
     @include('components.navbar-guest')
-=======
->>>>>>> fc56948-gabriel
     <main class="my-5">
       <div class="container">
         <div class="container mt-auto">

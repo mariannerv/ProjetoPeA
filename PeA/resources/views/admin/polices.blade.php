@@ -1,74 +1,59 @@
-<<<<<<< HEAD
-=======
 @if (auth()->check())
 
 @if(auth()->user()->admin == "true")
->>>>>>> fc56948-gabriel
 <!-- resources/views/users.blade.php -->
 
+
 <!DOCTYPE html>
-<html>
-<<<<<<< HEAD
-<head>
-    <title>Tabela de Utilizadores</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-        }
-    </style>
-</head>
-<body>
-    <h2>Tabela de Policias</h2>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>ID Interno</th>
-                <th>Estação</th>
-                <th>Eliminar</th>
-
-=======
-
-<link href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.0.7/datatables.min.css" rel="stylesheet">
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    <title>Perdidos&Achados</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    /> 
+    <link href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.0.7/datatables.min.css" rel="stylesheet">
  
 <script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.0.7/datatables.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+
+  </head>
+<body>
+    <header>
+  
+        @include('components.navbar')
+      
+    </header>
 <head>
-    <title>Tabela de Utilizadores</title>
+    <title>Tabela de policias</title>
 </head>
+<br>
 
 <body>
-    <h2>Numero de Utilizadores: {{$numberusers}} </h2>
-    <h2>Numero de Utilizadores ativos {{$numberactive}} </h2>
-    <h2>Numero de Utilizadores Desativos: {{$deactivated}} </h2>
+    
+    <h2>Numero de policias: {{$numberusers}} </h2>
+    <h2>Numero de policias ativos {{$numberactive}} </h2>
+    <h2>Numero de policias Desativos: {{$deactivated}} </h2>
+    <a href="{{route('polices.store')}}"><button>Mostrar todos os policias </button></a>
     <a href="{{route('policesactive.store')}}"><button>Mostrar policias Ativos</button></a>
     <a href="{{route('policesdeactivated.store')}}"><button>Mostrar policias Destivos</button></a>
     <h2>Tabela de policias</h2>
 
-    <table id="usertabel">
+    <table id="usertabel" class="table table-striped" style="width:100%">
         <thead>
             <tr>
                 <th>Nome</th>
                 <th>Id internoi</th>
                 <th>Estação</th>
                 <th>Ação</th>   
->>>>>>> fc56948-gabriel
             </tr>
         </thead>
         <tbody>
@@ -77,23 +62,6 @@
                 <td>{{ $user->name }}</td>
                 <td>{{ $user->internalId }}</td>
                 <td>{{ $user->policeStationId }}</td>
-<<<<<<< HEAD
-                
-                <td class="action-buttons">
-                    <form method="post" action="{{ route('police.destroy', $user->id) }}" style="display: inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit">Eliminar</button>
-                    </form>
-                    <form method="get" action="{{ route('police.edit', ['user' => $user->_id]) }}" style="display: inline;">
-                      @csrf
-                      
-                      <button type="submit">Editar</button>
-                  </form>
-                </td>
-
-                
-=======
                 <td class="action-buttons">
                     @if($user->account_status == 'active')
                     <form method="post" action="{{ route('police.desactive', $user->id) }}" id="form-desactive-{{ $user->id }}" style="display: inline;">
@@ -107,15 +75,10 @@
                     </form>
                     @endif
                 </td>
->>>>>>> fc56948-gabriel
             </tr>
             @endforeach
         </tbody>
     </table>
-<<<<<<< HEAD
-</body>
-</html>
-=======
 
     <script>
         let table = new DataTable('#usertabel');
@@ -194,6 +157,19 @@
             });
         }
     </script>
+
+@include('components.footer')
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
+      integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
+      integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
+      crossorigin="anonymous"
+    ></script>
+
 </body>
 </html>
 @else
@@ -203,4 +179,3 @@
 @else
 <h1>Area Administrativa</h1>
 @endif
->>>>>>> fc56948-gabriel

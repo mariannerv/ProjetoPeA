@@ -131,8 +131,7 @@ class FoundObjectController extends Controller
                 "message" => "Objeto não encontrado.",
             ], 404);
         }
-<<<<<<< HEAD
-=======
+
     }
 
     public function deleteFoundObject(Request $request)
@@ -204,85 +203,10 @@ class FoundObjectController extends Controller
                 "code" => 500,
             ], 500);
         }
->>>>>>> fc56948-gabriel
+
     }
 
-    public function deleteFoundObject(Request $request)
-    {
-        try {
-            $objectId = $request->objectId;
-            $object = FoundObject::where('objectId', $objectId)->first();
+   
 
-            if ($object) {
-                $object->delete();
-                return response()->json([
-                    "status" => true,
-                    "message" => "Objeto apagado com sucesso.",
-                    "code" => "200",
-                ]);
-            } else {
-                return response()->json([
-                    "status" => false,
-                    "message" => "Objeto não encontrado.",
-                    "code" => "404",
-                ], 404);
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                "status" => false,
-                "message" => "Oops! Algo correu mal ao tentar apagar o objeto.",
-                "code" => "500",
-            ], 500);
-        }
-    }
-
-    public function getAllFoundObjects()
-    {
-        try {
-            $foundObjects = FoundObject::all();
-
-            return response()->json([
-                "status" => true,
-                "data" => $foundObjects,
-                "code" => 200,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                "status" => false,
-                "message" => "An error occurred while fetching all found objects.",
-                "code" => 500,
-            ], 500);
-        }
-    }
-
-    
-
-
-    public function searchByDescription(Request $request)
-    {
-        try {
-            $request->validate([
-                'description' => 'required|string',
-            ]);
-
-            $objects = FoundObject::where('description', 'like', '%' . $request->description . '%')->get();
-
-            return response()->json([
-                "status" => true,
-                "data" => $objects,
-                "code" => 200,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                "status" => false,
-                "message" => "An error occurred while searching for found objects.",
-                "code" => 500,
-            ], 500);
-        }
-    }
     
 }
-<<<<<<< HEAD
-##ccccc changeess
-=======
->>>>>>> fc56948-gabriel

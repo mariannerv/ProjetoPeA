@@ -31,15 +31,15 @@ class ApiController extends Controller
 
 public function index() {
     $user =  User::all();
-<<<<<<< HEAD
+
     return view('admin.users' ,['users' => $user]);
-=======
+
     $numberUsers = User::count();
     $numberactive = User::where('account_status', 'active')->count();
     $deactivated = User::where('account_status', 'deactivated')->count();
     return view('admin.users' ,['users' => $user , 'numberusers' => $numberUsers , 
     'numberactive' => $numberactive , 'deactivated' => $deactivated]);
->>>>>>> fc56948-gabriel
+
 }
 
 public function register(Request $request){
@@ -103,11 +103,9 @@ public function register(Request $request){
         //cria logo um token pra verificar o email
         app(verificationCodeController::class)->createCode($request->input('email'));
         
-<<<<<<< HEAD
-        return redirect()->route('register.success');
-=======
+
         return redirect()->route('register.registerSuccess');
->>>>>>> fc56948-gabriel
+
 
     } catch (ValidationException $e) {
         if ($e->errors()['taxId'] && $e->errors()['taxId'][0] === 'Número de contribuinte já associado a outra conta.') {
@@ -161,15 +159,13 @@ public function register(Request $request){
             if ($user->account_status == 'active') {
                 if (Hash::check($request->input('password'), $user->password)) {
                     Auth::loginUsingId($user->_id);
-<<<<<<< HEAD
 
                     return view('home');
     
-                   # return redirect()->route('userhome')->with('success' , 'Login');
+                 
                 
-=======
                     return redirect()->route('home')->with('success', 'Login realizado com sucesso!');
->>>>>>> fc56948-gabriel
+
                 } else {
                     return redirect()->back()->withErrors(['password' => 'Credenciais inválidas'])->withInput();
                 }
@@ -201,7 +197,7 @@ public function register(Request $request){
                 "message" => "Conta desativada com sucesso",
             ]);
         } else {
-            return response()->json([
+            return response()->json([ //projetopea1 ProjetoPea!
                 "status" => false,
                 "code" => 404,
                 "message" => "Conta inválida.",
@@ -268,7 +264,7 @@ public function register(Request $request){
     // Se a validação passar, envie o e-mail
     if ($request->input('textreport') != "") {
         app(SendMailController::class)->sendWelcomeEmail(
-            'projetopea1@gmail.com',
+            'projetopea1@outlook.com',
             $request->input('textreport'),
             'Bog na aplicação'
         );
@@ -409,7 +405,7 @@ public function myBids(Request $request){
     }
 }
 
-<<<<<<< HEAD
+
 public function getLostObjectsStatistics()
 {
     $lostObjectsData = LostObject::select('category', DB::raw('COUNT(*) as count'))
@@ -430,7 +426,7 @@ public function getFoundObjectsStatistics()
 
 
 // Verify email method
-=======
+
 public function showactive() {
     $user = User::where('account_status', 'active')->get();
     $numberUsers = User::count();
@@ -458,9 +454,9 @@ public function deactivateacount($id) {
         "Conta Destivada",
         "Sua conta foi destivada."
     );
-
+    return redirect()->route("usersdeactivated.store");
 }
->>>>>>> fc56948-gabriel
+
 
 public function activeacount($id) {
     //$userd = User::where('_id', $id)->get();
@@ -474,15 +470,48 @@ public function activeacount($id) {
         "Sua conta foi Ativada."
     );
 
-<<<<<<< HEAD
-=======
+    return redirect()->route("usersactive.store");
+
 }
 
+
+public function showprofile($id) {
+    $user = User::find($id);
+    return view("admin.showprofile" , [ 'users' => $user]);
+}
+
+
+public function showreportadmin($id) {
+    $user = User::find($id);
+    return view("admin.admin-report" , [ 'users' => $user]);
+}
+
+
+public function reportadmin(Request $request , $email) {
+      // Validar que o campo textreport não está vazio
+      $request->validate([
+        'textreport' => 'required|string',
+    ], [
+        'textreport.required' => 'Insira o seu report', // Mensagem personalizada
+    ]);
+
+// Se a validação passar, envie o e-mail
+if ($request->input('textreport') != "") {
+    app(SendMailController::class)->sendWelcomeEmail(
+        $email,
+        $request->input('textreport'),
+        $request->input('assunto')
+    );
+}
+
+// Redirecionar de volta com uma mensagem de sucesso
+return redirect()->back()->with('success', 'E-mail enviado com sucesso!');        
+
+}
 // Verify email method
 
 
 
->>>>>>> fc56948-gabriel
 
 //___---------------------------------------------------------------
 

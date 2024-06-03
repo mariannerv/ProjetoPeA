@@ -1,12 +1,9 @@
-<<<<<<< HEAD
-=======
 <?php
 if (Auth::guard('police')->check() || Auth::check()) {
     header('Location: ' . route('home'));
     exit;
 }
 ?>
->>>>>>> fc56948-gabriel
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -32,11 +29,7 @@ if (Auth::guard('police')->check() || Auth::check()) {
           <div class="row justify-content-center">
               <div class="col-8">
                   <div class="card">
-<<<<<<< HEAD
-                      <div class="card-header">Login</div>
-=======
                       <div class="card-header">Iniciar sessão como utilizador</div>
->>>>>>> fc56948-gabriel
                       <div class="card-body">
 
                         @if ($errors->any())
@@ -53,11 +46,7 @@ if (Auth::guard('police')->check() || Auth::check()) {
                       @csrf
                       <div class="row">
                         <label for="validationCustom09" class="form-label">Email</label>
-<<<<<<< HEAD
-                        <input type="email" class="form-control" id="validationCustom09" name="email" required>
-=======
                         <input type="email" class="form-control" id="validationCustom09" name="email" value="{{ old('email') }}" required>
->>>>>>> fc56948-gabriel
                         <div class="invalid-feedback">
                             Please provide a valid email address.
                         </div>

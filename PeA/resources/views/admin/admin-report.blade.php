@@ -1,5 +1,5 @@
 <?php
-if (!(Auth::guard('police')->check() || auth()->check())) {
+if (!auth()->user()->admin == "true") {
     header('Location: ' . route('home'));
     exit;
 }
@@ -109,13 +109,15 @@ if (!(Auth::guard('police')->check() || auth()->check())) {
       {{ session('success') }}
   </div>
 @endif
-
-<form method="POST" action="{{route('user.userreport')}}">
-  @csrf 
+enviar email para: {{$users->email}}
+<form method="POST" action="{{route('reportadmin.admin' , $users->email)}}">
+  @csrf
+assunto:
+<input type="text" name="assunto">
 <textarea name="textreport"></textarea>
 <button>Enviar</button>
 </form>
-<a href="{{route('home')}}"><button>Voltar</button></a>
+<a href="{{route('useradm.profile' , $users->id)}}"><button>Voltar</button></a>
 
 
 @include('components.footer')

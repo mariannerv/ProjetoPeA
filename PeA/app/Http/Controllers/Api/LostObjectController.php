@@ -112,14 +112,6 @@ class LostObjectController extends Controller
     }
 }
 
-<<<<<<< HEAD
-    public function getLostObject(String $id){
-        try {
-            $object = LostObject::where('_id', $id)->first();
-
-            if ($object) {
-                return view('objects.lost-object', ['object' => $object]);
-=======
     public function getLostObject(Request $request, String $id){
         try {
             echo($request); 
@@ -131,7 +123,9 @@ class LostObjectController extends Controller
 
             if ($object) {
                 return view('objects.lost-object',$object->_id);
->>>>>>> fc56948-gabriel
+
+
+                return view('objects.lost-objects.lost-object', ['object' => $object]);
             } else {
                 return response()->json([
                     "status" => false,
@@ -139,11 +133,9 @@ class LostObjectController extends Controller
                     "code" => 404,
                 ], 404);
             }
-<<<<<<< HEAD
+
         } catch (Exception $e) {
-=======
-        } catch (\Exception $e) {
->>>>>>> fc56948-gabriel
+
             $exceptionInfo = [
                 'message' => $e->getMessage(),
                 
@@ -158,11 +150,35 @@ class LostObjectController extends Controller
         }
     }
     
-<<<<<<< HEAD
-=======
 
-    
->>>>>>> fc56948-gabriel
+    public function getStatistics()
+    {
+        try {
+            // Group lost objects by category and date found
+            $statistics = DB::table('LostObject')
+                ->select('categoryId', DB::raw('count(*) as count'))
+                ->groupBy('categoryId')
+                ->get();
+
+            $data = [
+                'categories' => $statistics->pluck('categoryId'),
+                'counts' => $statistics->pluck('count')
+            ];
+
+            return response()->json([
+                "status" => true,
+                "data" => $data,
+                "code" => 200,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "An error occurred while fetching statistics for lost objects.",
+                "code" => 500,
+            ], 500);
+        }
+    }
+
     public function updateLostObject(Request $request){
         $object = LostObject::where('lostObjectId', $request->lostObjectId)->first();
 
@@ -372,8 +388,17 @@ private function calculateMatchPercentage($foundObject, $lostObject)
     return $matchPercentage;
 }
 
-public function editLostObject(LostObject $lostObject) {
-    return view('profile.users.partials.usereditform' , ['user' => $lostObject]);
+public function editLostObject($objectId) {
+    $lostObject = LostObject::findOrFail($objectId);
+    if ($lostObject){
+        return view('objects.lost-objects.partials.lost-object-editform' , ['lostObject' => $lostObject]);
+    } else {
+        return response()->json([
+            "status" => false,
+            "message" => "Objeto não encontrado.",
+            "code" => "404",
+        ], 404);
+    }
 }
 
 }

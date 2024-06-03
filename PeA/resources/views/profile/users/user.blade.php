@@ -16,13 +16,9 @@
       integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
       crossorigin="anonymous"
     />
-<<<<<<< HEAD
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-=======
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
->>>>>>> fc56948-gabriel
   </head>
   <body>
     <header>
@@ -135,47 +131,31 @@
               </div>
         </div>
     </div>
-<<<<<<< HEAD
     @include('components.modal-lost-object-delete')
-=======
->>>>>>> fc56948-gabriel
     @else
     @include('auth.noaccess')
     @endif
     {{-- @include('components.footer') --}}
-<<<<<<< HEAD
 
     {{-- JQuery --}}
-=======
->>>>>>> fc56948-gabriel
     <script 
       src="https://code.jquery.com/jquery-3.6.0.min.js" 
       integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" 
       crossorigin="anonymous"
     ></script>
-<<<<<<< HEAD
     {{-- Popper --}}
-=======
-
->>>>>>> fc56948-gabriel
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
       integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
       crossorigin="anonymous"
     ></script>
-<<<<<<< HEAD
     {{-- Bootstrap --}}
-=======
->>>>>>> fc56948-gabriel
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
       integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
       crossorigin="anonymous"
     ></script>
-<<<<<<< HEAD
     {{-- Filtro --}}
-=======
->>>>>>> fc56948-gabriel
     <script>
         $(document).ready(function(){
           $("#myInput").on("keyup", function() {
@@ -186,7 +166,6 @@
           });
         });
     </script>
-<<<<<<< HEAD
     {{-- Objetos perdidos --}}
     <script >
       $.ajax({
@@ -244,8 +223,6 @@
       });
     </script>
     {{-- Objetos encontrados --}}
-=======
->>>>>>> fc56948-gabriel
     <script>
       $.ajax({
         url: '{{ route("lost-objects.get") }}',
@@ -253,7 +230,6 @@
         dataType: 'json',
         success: function(response) {
             let html = '';
-<<<<<<< HEAD
             let counter = 0;
             for (let i = 0; i < response.data.length; i++) {
               const item = response.data[i];
@@ -292,57 +268,6 @@
                 }
                 
               } // Add a horizontal line between each object
-=======
-            for (let i = 0; i < response.data.length; i++) {
-              const item = response.data[i];
-              // if ( item.ownerEmail === {{auth()->user()->email}}){
-              if (i+1 % 3 === 0 || i === 0){
-              html += "<div class = 'row'>";
-              }
-              html += "<div class = 'col-4 border'>";
-              html += "<p>Brand: " + item.brand + "</p>";
-              html += "<p>Category: " + item.category + "</p>";
-              html += "<p>Color: " + item.color + "</p>";
-              html += "<p>Date Lost: " + item.date_lost + "</p>";~
-              console.log(item._id)
-              html += "<a class='btn' href={{ route('lost-object.get', '') }}/" + item._id + ">Ver Objeto </a> "
-              if (i+1 % 3 === 0){
-              html += "</div>";
-              }
-              html += "</div>"; // Add a horizontal line between each object
-          }
-            $('#lost_objects').html(html); // Insert the generated HTML into the DOM
-        },
-        error: function(xhr, status, error) {
-            console.error(xhr.responseText);
-        }
-     });
-    </script>
-    <script>
-      $.ajax({
-        url: '{{ route("found-objects.get") }}',
-        method: 'GET',
-        dataType: 'json',
-        success: function(response) {
-            let html = '';
-            for (let i = 0; i < response.data.length; i++) {
-              const item = response.data[i];
-              // if ( item.ownerEmail === {{auth()->user()->email}}){
-              if (i+1 % 3 === 0 || i === 0){
-              html += "<div class = 'row'>";
-              }
-              html += "<div class = 'col-4 border'>";
-              html += "<p>Brand: " + item.brand + "</p>";
-              html += "<p>Category: " + item.category + "</p>";
-              html += "<p>Color: " + item.color + "</p>";
-              html += "<p>Date Found: " + item.date_found + "</p>";~
-              console.log(item._id)
-              html += "<a class='btn' href={{ route('found-object.get', '') }}/" + item._id + ">Ver Objeto </a> "
-              if (i+1 % 3 === 0){
-              html += "</div>";
-              }
-              html += "</div>"; // Add a horizontal line between each object
->>>>>>> fc56948-gabriel
           }
             $('#found_objects').html(html); // Insert the generated HTML into the DOM
         },
@@ -351,10 +276,7 @@
         }
      });
     </script>
-<<<<<<< HEAD
     {{-- Leilões --}}
-=======
->>>>>>> fc56948-gabriel
     <script>
       $.ajax({
         url: '{{ route("auctions.get") }}',
@@ -369,20 +291,11 @@
               html += "<div class = 'row'>";
               }
               html += "<div class = 'col-4 border'>";
-<<<<<<< HEAD
               html += "<p>Objeto: " + item.objectId + "</p>";
               html += "<p>Licitação mais alta: " + item.highestBid + "</p>";
               html += "<p>Acaba em: " + item.end_date + "</p>";
               html += "<p>Status: " + item.status + "</p>";
               html += "<a class='btn btn-secondary' href={{ route('auction.get', '') }}/" + item._id + ">Ver Leilao </a> "
-=======
-              html += "<p>Object: " + item.objectId + "</p>";
-              html += "<p>Highest Bid: " + item.highestBid + "</p>";
-              html += "<p>Ending on: " + item.end_date + "</p>";
-              html += "<p>Status: " + item.status + "</p>";~
-              console.log(item._id)
-              html += "<a class='btn' href={{ route('auction.get', '') }}/" + item._id + ">Ver Objeto </a> "
->>>>>>> fc56948-gabriel
               if (i+1 % 3 === 0){
               html += "</div>";
               }
@@ -395,7 +308,6 @@
         }
      });
     </script>
-<<<<<<< HEAD
     {{-- Inserir ID --}}
     <script>
       function setID(id){
@@ -479,7 +391,4 @@
       });
     </script>
 </body>
-=======
-  </body>
->>>>>>> fc56948-gabriel
 </html>
