@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Str;
-use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Validator;
@@ -21,8 +20,10 @@ use App\Http\Controllers\VerificationCodeController;
 
 class ApiController extends Controller
 {
-    public function index() {
+    public function index()
+    {
         $users = User::all();
+
         $numberUsers = User::count();
         $numberActive = User::where('account_status', 'active')->count();
         $deactivated = User::where('account_status', 'deactivated')->count();
@@ -35,7 +36,8 @@ class ApiController extends Controller
         ]);
     }
 
-    public function register(Request $request) {
+    public function register(Request $request)
+    {
         try {
             $val = Validator::make($request->all(), [
                 'name' => ['required', 'string', 'max:255'],
@@ -93,44 +95,43 @@ class ApiController extends Controller
             app(VerificationCodeController::class)->createCode($request->input('email'));
 
             return redirect()->route('register.registerSuccess');
-
         } catch (ValidationException $e) {
-            if ($e->errors()['taxId'] && $e->errors()['taxId'][0] === 'Número de contribuinte já associado a outra conta.') {
-                return response()->json([
-                    "status" => false,
-                    "message" => "Número de contribuinte já associado a outra conta.",
-                    "code" => "400",
-                ], 400);
+            $errors = $e->errors();
+            foreach ($errors as $field => $messages) {
+                foreach ($messages as $message) {
+                    if ($message === 'Número de contribuinte já associado a outra conta.') {
+                        return response()->json([
+                            "status" => false,
+                            "message" => "Número de contribuinte já associado a outra conta.",
+                            "code" => 400,
+                        ], 400);
+                    } elseif ($message === 'Email já associado a outra conta.') {
+                        return response()->json([
+                            "status" => false,
+                            "message" => "Email já associado a outra conta.",
+                            "code" => 400,
+                        ], 400);
+                    } elseif ($message === 'Cartão de cidadão já associado a outra conta.') {
+                        return response()->json([
+                            "status" => false,
+                            "message" => "Cartão de cidadão já associado a outra conta.",
+                            "code" => 400,
+                        ], 400);
+                    } elseif ($message === 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.') {
+                        return response()->json([
+                            "status" => false,
+                            "message" => $message,
+                            "code" => 400,
+                        ], 400);
+                    }
+                }
             }
-            if ($e->errors()['email'] && $e->errors()['email'][0] === 'Email já associado a outra conta.') {
-                return response()->json([
-                    "status" => false,
-                    "message" => "Email já associado a outra conta.",
-                    "code" => "400",
-                ], 400);
-            }
-
-            if ($e->errors()['civilId'] && $e->errors()['civilId'][0] === 'Cartão de cidadão já associado a outra conta.') {
-                return response()->json([
-                    "status" => false,
-                    "message" => "Cartão de cidadão já associado a outra conta.",
-                    "code" => "400",
-                ], 400);
-            }
-
-            if ($e->errors()['password']) {
-                return response()->json([
-                    "status" => false,
-                    "message" => "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.",
-                    "code" => "400",
-                ], 400);
-            }
-
             throw $e;
         }
     }
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         $request->validate([
             "email" => "required|email",
             "password" => "required",
@@ -139,10 +140,11 @@ class ApiController extends Controller
         $email = $request->input('email');
         $user = User::where("email", $email)->first();
 
-        if ($user) {  
+        if ($user) {
             if ($user->account_status == 'active') {
                 if (Hash::check($request->input('password'), $user->password)) {
-                    Auth::loginUsingId($user->_id);
+                    Auth::loginUsingId($user->id);
+
                     return redirect()->route('home')->with('success', 'Login realizado com sucesso!');
                 } else {
                     return redirect()->back()->withErrors(['password' => 'Credenciais inválidas'])->withInput();
@@ -155,7 +157,8 @@ class ApiController extends Controller
         }
     }
 
-    public function deactivate(Request $request) {
+    public function deactivate(Request $request)
+    {
         $request->validate([
             "email" => "required|email",
             "password" => "required",
@@ -181,7 +184,8 @@ class ApiController extends Controller
         }
     }
 
-    public function activate(Request $request) {
+    public function activate(Request $request)
+    {
         $request->validate([
             "email" => "required|email",
             "password" => "required",
@@ -207,7 +211,8 @@ class ApiController extends Controller
         }
     }
 
-    public function profile() {
+    public function profile()
+    {
         $data = auth()->user();
 
         return response()->json([
@@ -217,13 +222,15 @@ class ApiController extends Controller
         ]);
     }
 
-    public function logout() {
+    public function logout()
+    {
         Auth::logout();
 
         return view('home');
     }
 
-    public function report(Request $request) {
+    public function report(Request $request)
+    {
         $request->validate([
             'textreport' => 'required|string',
         ], [
@@ -234,16 +241,17 @@ class ApiController extends Controller
             app(SendMailController::class)->sendWelcomeEmail(
                 'projetopea1@gmail.com',
                 $request->input('textreport'),
-                'Bog na aplicação'
+                'Bug na aplicação'
             );
         }
 
         return redirect()->back()->with('success', 'E-mail enviado com sucesso!');
     }
 
-    public function update2(Request $request) {
+    public function update2(Request $request)
+    {
         $user = auth()->user();
-        
+
         if ($user) {
             $request->validate([
                 'name' => 'string',
@@ -261,86 +269,31 @@ class ApiController extends Controller
 
             return response()->json([
                 "status" => true,
-                "code" => 200,
-                "message" => "Perfil atualizado com sucesso.",
+                "message" => "Dados atualizados com sucesso",
             ]);
         } else {
             return response()->json([
                 "status" => false,
-                "code" => 404,
-                "message" => "Utilizador não encontrado.",
-            ], 404);
+                "message" => "Utilizador não encontrado",
+            ]);
         }
     }
 
-    public function delete() {
+    public function update(Request $request)
+    {
         $user = auth()->user();
 
-        if ($user) {
-            $user->delete();
+        $user->name = $request->name;
+        $user->gender = $request->gender;
+        $user->birthdate = $request->birthdate;
+        $user->address = $request->address;
+        $user->codigo_postal = $request->codigo_postal;
+        $user->localidade = $request->localidade;
+        $user->civilId = $request->civilId;
+        $user->taxId = $request->taxId;
+        $user->contactNumber = $request->contactNumber;
+        $user->save();
 
-            return response()->json([
-                "status" => true,
-                "code" => 200,
-                "message" => "Conta eliminada com sucesso",
-            ]);
-        } else {
-            return response()->json([
-                "status" => false,
-                "code" => 404,
-                "message" => "Utilizador não encontrado.",
-            ], 404);
-        }
-    }
-
-    public function uploadImage(Request $request) {
-        $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
-
-        $imageName = time() . '.' . $request->image->extension();
-        $request->image->move(public_path('images'), $imageName);
-
-        return response()->json([
-            "status" => true,
-            "message" => "Imagem carregada com sucesso",
-            "path" => '/images/' . $imageName,
-        ]);
-    }
-
-    public function updateLostObjects(Request $request) {
-        $data = auth()->user();
-        $lostObject = LostObject::find($request->lost_object_id);
-
-        if (!$lostObject) {
-            return response()->json([
-                "status" => false,
-                "code" => 404,
-                "message" => "Objeto não encontrado.",
-            ], 404);
-        }
-
-        if ($lostObject->user_id != $data->_id) {
-            return response()->json([
-                "status" => false,
-                "code" => 403,
-                "message" => "Permissão negada.",
-            ], 403);
-        }
-
-        $request->validate([
-            'description' => 'string|nullable',
-            'location' => 'string|nullable',
-            'status' => 'string|nullable',
-        ]);
-
-        $lostObject->update($request->all());
-
-        return response()->json([
-            "status" => true,
-            "code" => 200,
-            "message" => "Objeto atualizado com sucesso.",
-        ]);
+        return redirect()->route('profile.index')->with('success', 'Dados atualizados com sucesso');
     }
 }
-?>

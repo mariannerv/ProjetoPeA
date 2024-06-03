@@ -37,44 +37,44 @@
                             </ul>
                         </div>
                     @endif
-                                <form class="row g-3 needs-validation" novalidate action="{{ route('objects.register') }}" method="post">
+                                <form class="row g-3 needs-validation" novalidate action="{{ route('lost-object.update', ['object' => $lostObject->_id]) }}" method="post">
                                     @csrf
                                     @method('POST')
                                     <div class="col-6">
                                         <label for="description" class="form-label">Descrição</label>
-                                        <input type="text" class="form-control" id="description" name="description" required>
+                                        <input type="text" class="form-control" id="description" value="{{$lostObject->description}}" name="description"  required>
                                     </div>
                                     <div class="col-6">
                                         <label for="date_lost" class="form-label">Data de Perda</label>
-                                        <input type="date" class="form-control" id="date_lost" name="date_lost" required>
+                                        <input type="date" class="form-control" id="date_lost" value="{{$lostObject->date_lost}}" name="date_lost" required>
                                     </div>
                                     <div class="col-6">
                                         <label for="category" class="form-label">Categoria</label>
-                                        <input type="text" class="form-control" id="category" name="category" required>
+                                        <input type="text" class="form-control" id="category" value="{{$lostObject->category}}" name="category" required>
                                     </div>
                                     <div class="col-6">
                                         <label for="brand" class="form-label">Marca</label>
-                                        <input type="text" class="form-control" id="brand" name="brand">
+                                        <input type="text" class="form-control" id="brand" value="{{$lostObject->brand}}" name="brand" required>
                                     </div>
                                     <div class="col-6">
                                         <label for="color" class="form-label">Cor</label>
-                                        <input type="text" class="form-control" id="color" name="color">
+                                        <input type="text" class="form-control" id="color" value="{{$lostObject->color}}" name="color" required>
                                     </div>
                                     <div class="col-6">
                                         <label for="size" class="form-label">Tamanho</label>
-                                        <input type="text" class="form-control" id="size" name="size">
+                                        <input type="text" class="form-control" id="size" value="{{$lostObject->size}}" name="size" required>
                                     </div>
                                     <div class="col-*">
                                         <label for="size" class="form-label">Morada</label>
-                                        <input type="text" class="form-control" id="address" name="address">
+                                        <input type="text" class="form-control" id="address" value="{{$lostObject->address}}" name="address" required>
                                     </div>
                                     <div class="col-6">
                                         <label for="size" class="form-label">Código Postal</label>
-                                        <input type="text" class="form-control" id="postalcode" name="postalcode">
+                                        <input type="text" class="form-control" id="postalcode" value="{{$lostObject->postalcode}}" name="postalcode" required>
                                     </div>
                                     <div class="col-6">
                                         <label for="size" class="form-label">Localidade</label>
-                                        <input type="text" class="form-control" id="city" name="city">
+                                        <input type="text" class="form-control" id="city" value="{{$lostObject->city}}" name="city" required>
                                     </div>
                                     <input type="hidden" name="ownerEmail" value="{{ auth()->user()->email }}">
                                     <div class="col-12">
@@ -89,25 +89,6 @@
             </div>
         </div>
     </main>
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLongTitle">Adicionar mais objetos?</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              Tem a certeza que quer continuar e alterar este objeto?
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Continuar</button>
-              <button type="button" class="btn btn-primary">Retroceder</button>
-            </div>
-          </div>
-        </div>
-      </div>
     @else
     @include('auth.noaccess')
     @endif
@@ -171,7 +152,6 @@
                     dataType: 'json',
                     success: function(response) {
                         toastr.success(response.message, 'Success', { closeButton: true });
-                        // $('#myModal').modal('show');
                     },
                     error: function(xhr, status, error) {
                         console.error(xhr.responseText);

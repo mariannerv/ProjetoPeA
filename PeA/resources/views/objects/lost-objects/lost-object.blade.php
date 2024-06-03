@@ -64,7 +64,9 @@
                 <div class="row">
                     <div class="col">
                         @if (auth()->user()->email === $object->ownerEmail )
-                        <button class="btn btn-primary">Editar objeto</button>
+                        <form class="row g-3 needs-validation" novalidate action="{{ route('lost-object.edit', ['object' => $object->_id, 'lostObject' => $object]) }}" method="get">
+                        <button  type="submit" class="btn btn-primary">Editar objeto</button>
+                        </form>
                         <button class="btn btn-danger">Eliminar objeto</button>
                         @else
                         <button class="btn btn-primary">Encontrei</button> 

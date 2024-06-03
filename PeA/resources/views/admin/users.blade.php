@@ -1,64 +1,46 @@
 @if (auth()->check())
 
-<<<<<<< HEAD
-@if(auth()->user()->email == "admin@teste.pt")
-=======
 @if(auth()->user()->admin == "true")
->>>>>>> fc56948-gabriel
 <!-- resources/views/users.blade.php -->
 
+
 <!DOCTYPE html>
-<html>
-<<<<<<< HEAD
-<head>
-    <title>Tabela de Utilizadores</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-        }
-    </style>
-</head>
-<body>
-    <h2>Tabela de Utilizadores</h2>
-
-    <table>
-=======
-
-<link href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.0.7/datatables.min.css" rel="stylesheet">
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    <title>Perdidos&Achados</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    /> 
+    <link href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.0.7/datatables.min.css" rel="stylesheet">
  
 <script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.0.7/datatables.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<head>
-    <title>Tabela de Utilizadores</title>
-</head>
 
+  </head>
 <body>
-
+    <header>
+  
+        @include('components.navbar')
+      
+    </header>
     <h2>Numero de Utilizadores: {{$numberusers}} </h2>
     <h2>Numero de Utilizadores ativos {{$numberactive}} </h2>
     <h2>Numero de Utilizadores Desativos: {{$deactivated}} </h2>
-    <button id="test">teste</button>
+    <a href="{{route('users.store')}}"><button>Mostrar todos os  Utilizadores </button></a>
     <a href="{{route('usersactive.store')}}"><button>Mostrar Utilizadores Ativos</button></a>
     <a href="{{route('usersdeactivated.store')}}"><button>Mostrar Utilizadores Destivos</button></a>
     <h2>Tabela de Utilizadores</h2>
 
-    <table id="usertabel">
->>>>>>> fc56948-gabriel
+    <table id="usertabel" class="table table-striped" style="width:100%">
         <thead>
             <tr>
                 <th>Nome</th>
@@ -76,18 +58,9 @@
                 <td>{{ $user->contactNumber }}</td>
                 <td>{{ $user->email }}</td>
                 <td class="action-buttons">
-<<<<<<< HEAD
-                    <form method="post" action="{{ route('user.confirm-delete', $user->id) }}" style="display: inline;">
-                        @csrf
-                        <button type="submit">Eliminar</button>
-                    </form>
-                    
-                    <form method="get" action="{{ route('user.edit', $user->id) }}" style="display: inline;">
-                        @csrf
-    
-                        <button type="submit">Editar</button>
-                    </form>
-=======
+                    @if($user->admin == "true")
+                    Adminstrador
+                    @else
                     @if($user->account_status == 'active')
                     <form method="post" action="{{ route('user.desactive', $user->id) }}" id="form-desactive-{{ $user->id }}" style="display: inline;">
                         @csrf
@@ -99,14 +72,12 @@
                         <button type="button" onclick="confirmActivation('{{ $user->id }}')">Ativar</button>               
                     </form>
                     @endif
->>>>>>> fc56948-gabriel
+                    @endif
                 </td>
             </tr>
             @endforeach
         </tbody>
     </table>
-<<<<<<< HEAD
-=======
 
     <script>
         let table = new DataTable('#usertabel');
@@ -185,7 +156,20 @@
             });
         }
     </script>
->>>>>>> fc56948-gabriel
+
+
+@include('components.footer')
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
+      integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
+      integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
+      crossorigin="anonymous"
+    ></script>
+
 </body>
 </html>
 @else
@@ -195,8 +179,3 @@
 @else
 <h1>Area Administrativa</h1>
 @endif
-<<<<<<< HEAD
-
-
-=======
->>>>>>> fc56948-gabriel
