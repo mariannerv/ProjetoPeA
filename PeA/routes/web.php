@@ -99,6 +99,14 @@ Route::get('/usersform', function () {
 // Profile views
 Route::view('/users/{user}','profile.users.user')->name('user.profile');
 Route::view('/users/{user}','profile.users.user')->name('user.profile');
+
+#showprofile
+Route::get('/usersadmin/{user}', [ApiController::class, 'showprofile'])->name('useradm.profile');
+
+Route::get('/showreportadmin/{user}', [ApiController::class, 'showreportadmin'])->name('showreport.admin');
+
+Route::post('/reportadmin/{email}', [ApiController::class, 'reportadmin'])->name('reportadmin.admin');
+
 /*
 Route::get('/{police}', function () {
     return view('');
@@ -148,4 +156,5 @@ Route::view('/tokenexpirou/{uuid}', 'tokenexpirou')->name('tokenexpirou');
 // Auction views/routes
 Route::get('/auctions',[AuctionController::class,'viewAllAuctions'])->name('auctions.get');
 Route::get('/auctions/{auction}', [AuctionController::class,'viewAuction'])->name('auction.get');
+
 ?>
