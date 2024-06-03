@@ -49,7 +49,7 @@ class FoundObjectController extends Controller
                 "date_found" => $request->date_found,
                 "date_registered" => $dateRegistered,
                 "deadlineForAuction" => $deadlineForAuction,
-                "policeStationId" => $request->policeStationId,
+                "estacao_policia" => $request->policeStationId,
             ]);
 
             return response()->json([
