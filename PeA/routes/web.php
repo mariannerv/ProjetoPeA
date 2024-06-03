@@ -148,3 +148,9 @@ Route::prefix('auctions')->group(function () {
     Route::get('/', [AuctionController::class, 'viewAllAuctions'])->name('auctions.get');
     Route::get('/{auction}', [AuctionController::class, 'viewAuction'])->name('auction.get');
 });
+// notif test routes
+
+use App\Http\Controllers\NotificationController;
+
+Route::post('/subscribe-to-auction', [NotificationController::class, 'subscribeToAuction'])->name('subscribe.to.auction');
+Route::post('/send-test-notification', [NotificationController::class, 'sendTestNotification'])->name('send.test.notification');

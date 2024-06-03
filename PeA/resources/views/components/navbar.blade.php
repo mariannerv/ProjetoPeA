@@ -52,12 +52,29 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{route('user.showrepot')}}">
+                        <a class="nav-link" href="{{ route('user.showreport') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
                                 <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
                                 <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
                             </svg>
-                            Reportar bug    
+                            Reportar bug
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="subscribe-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bell-plus" viewBox="0 0 16 16">
+                                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm0-14a5 5 0 0 0-5 5v4a1 1 0 0 1-.292.707l-.354.353H14.646l-.354-.353A1 1 0 0 1 14 11V7a5 5 0 0 0-5-5zm0 1a4 4 0 0 1 4 4v4H4V7a4 4 0 0 1 4-4z"/>
+                                <path d="M8.5 4.5v2h2a.5.5 0 0 1 0 1h-2v2a.5.5 0 0 1-1 0v-2h-2a.5.5 0 0 1 0-1h2v-2a.5.5 0 0 1 1 0z"/>
+                            </svg>
+                            Subscribe to Bid Notifications
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="test-notification-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+                                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm0-14a5 5 0 0 0-5 5v4a1 1 0 0 1-.292.707l-.354.353H14.646l-.354-.353A1 1 0 0 1 14 11V7a5 5 0 0 0-5-5z"/>
+                            </svg>
+                            Create Test Notification
                         </a>
                     </li>
                     <li class="nav-item dropdown">
@@ -65,7 +82,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
                                 <path d="M13.468 12.37C12.758 11.226 11.59 10.5 10 10.5s-2.758.726-3.468 1.87C5.392 13.54 4.702 14.5 3.5 14.5a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1c-1.202 0-1.892-.96-2.532-2.13z"/>
                                 <path fill-rule="evenodd" d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zM8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1z"/>
-                                <path d="M8 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM4.5 6a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                                <path d="M8 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM4.5 6a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
                             </svg>
                             {{ Auth::user()->name }}
                         </a>
@@ -88,3 +105,35 @@
         </div>
     </div>
 </nav>
+
+<script>
+    document.getElementById('subscribe-button').addEventListener('click', function() {
+        const auctionId = prompt("Enter Auction ID to subscribe:");
+        if (auctionId) {
+            fetch('{{ route("subscribe.to.auction") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ auction_id: auctionId })
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error('Error:', error));
+        }
+    });
+
+    document.getElementById('test-notification-button').addEventListener('click', function() {
+        fetch('{{ route("send.test.notification") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => alert(data.message))
+        .catch(error => console.error('Error:', error));
+    });
+</script>

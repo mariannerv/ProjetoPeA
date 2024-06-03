@@ -62,4 +62,25 @@ class NotificationsController extends Controller
             'message' => 'Notification not found.',
         ], 404);
     }
+
+    public function subscribeToAuction(Request $request)
+    {
+        $user = Auth::user();
+        $auctionId = $request->input('auction_id');
+
+        // Logic to subscribe the user to the auction notifications.
+        // This could be saving the subscription to the database or adding a record.
+        // Example:
+        $user->auctions()->attach($auctionId);
+
+        return response()->json(['message' => 'Subscribed successfully!']);
+    }
+
+    public function sendTestNotification()
+    {
+        $user = Auth::user();
+        $user->notify(new BidOvertakenNotification("Test Bidder"));
+
+        return response()->json(['message' => 'Test notification sent!']);
+    }
 }
