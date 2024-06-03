@@ -1,5 +1,5 @@
 <?php
-if (!auth()->user()->admin == "true") {
+if (!auth()->user()->admin == true) {
     header('Location: ' . route('home'));
     exit;
 }
@@ -54,12 +54,22 @@ if (!auth()->user()->admin == "true") {
                 <h4 >{{$users->email}}</h4>
             </div>
             <div class="col-auto align-self-end">
-          
+
               @if($users->account_status == 'active')
+              @if($users->admin == true)
+              @if(auth()->user()->email == "projetopea1@gmail.com")
               <form method="post" action="{{ route('user.desactive', $users->id) }}" id="form-desactive-{{ $users->id }}" style="display: inline;">
                   @csrf
                   <button class="btn btn-danger" type="button" onclick="confirmDeactivation('{{ $users->id }}')">Desativar</button>               
               </form>
+              @endif
+              @else
+              <form method="post" action="{{ route('user.desactive', $users->id) }}" id="form-desactive-{{ $users->id }}" style="display: inline;">
+                @csrf
+                <button class="btn btn-danger" type="button" onclick="confirmDeactivation('{{ $users->id }}')">Desativar</button>               
+            </form>
+           
+            @endif
               @else
               <form method="post" action="{{ route('user.useractive', $users->id) }}" id="form-active-{{ $users->id }}" style="display: inline;">
                   @csrf
@@ -67,6 +77,19 @@ if (!auth()->user()->admin == "true") {
               </form>
               @endif
               <a href="{{route('showreport.admin' ,$users->id )}}"><button class="btn btn-primary">Notificar Utilizador</button></a>
+              @if (auth()->user()->email == "projetopea1@gmail.com")
+
+        
+              @if($users->admin == false)
+              
+              <a href="{{route('daradmin.admin' ,$users->id )}}"><button class="btn btn-primary">Promover a administrador</button></a>
+              @else
+              <a href="{{route('deladmin.admin' ,$users->id )}}"><button class="btn btn-primary"> retirar administrador</button></a>
+              @endif
+              @endif
+             
+
+
             </div>
         </div>
     </div>
