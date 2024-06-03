@@ -23,6 +23,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 use App\Http\Controllers\verificationCodeController;
+use App\Http\Controllers\Police;
 
 
 
@@ -342,6 +343,43 @@ public function lostObjects(Request $request){
         $response = [
             "status" => true,
             "message" => "Lost objects retrieved successfully.",
+            "lost_objects" => $lostObjects,
+        ];
+
+        return response()->json($response, 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            "status" => false,
+            "message" => "An error occurred while retrieving lost objects.",
+            "code" => 500,
+        ], 500);
+    }
+}
+
+public function foundObjects(Request $request){
+    try {
+        $request->validate([
+            'policeStationId' => 'required|string',
+        ]);
+
+        $user = Police::where('policeStationId', $request->policeStationId)->first();
+
+        if (!$user) {
+            return response()->json([
+                "status" => false,
+                "message" => "Police User not found.",
+                "code" => 404,
+            ], 404);
+        }
+
+        $foundObjectIds = $user->found_objects;
+
+        $foundObjects = foundObject::whereIn('objectId', $foundObjectIds)->get();
+
+        $response = [
+            "status" => true,
+            "message" => "found objects retrieved successfully.",
             "lost_objects" => $lostObjects,
         ];
 

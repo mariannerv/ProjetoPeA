@@ -20,18 +20,18 @@ class FoundObjectController extends Controller
     {
         try {
             $request->validate([
-                'categoryId' => 'required|string',
-                'brand' => 'nullable|string',
-                'color' => 'nullable|string',
-                'size' => 'nullable|string',
+                'category' => 'required|string',
+                'brand' => 'required|string',
+                'color' => 'required|string',
+                'size' => 'required|string',
                 'description' => 'required|string',
-                'location_id' => 'required|string',
+                'location_id' => 'nullable|string',
                 'location_coords' => [
                     'nullable',
                     'regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),\s*[-]?((([1]?[0-7]?[0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?$/'
                 ],
                 'date_found' => 'required|date',
-                'police_station' => 'required|string|exists:police_station,sigla',
+                'policeStationId' => 'required|string|exists:police_station,sigla',
             ]);
 
             $dateRegistered = now();
@@ -39,7 +39,7 @@ class FoundObjectController extends Controller
             $uuid = (string) Str::uuid();
 
             FoundObject::create([
-                "categoryId" => $request->categoryId,
+                "category" => $request->category,
                 "brand" => $request->brand,
                 "color" => $request->color,
                 "size" => $request->size,
@@ -49,7 +49,7 @@ class FoundObjectController extends Controller
                 "date_found" => $request->date_found,
                 "date_registered" => $dateRegistered,
                 "deadlineForAuction" => $deadlineForAuction,
-                "police_station" => $request->police_station,
+                "policeStationId" => $request->policeStationId,
             ]);
 
             return response()->json([
