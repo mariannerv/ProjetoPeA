@@ -103,6 +103,14 @@ Route::get('/usersform', function () {
 
 // Profile views
 Route::view('/users/{user}','profile.users.user')->name('user.profile');
+
+#showprofile
+Route::get('/usersadmin/{user}', [ApiController::class, 'showprofile'])->name('useradm.profile');
+
+Route::get('/showreportadmin/{user}', [ApiController::class, 'showreportadmin'])->name('showreport.admin');
+
+Route::post('/reportadmin/{email}', [ApiController::class, 'reportadmin'])->name('reportadmin.admin');
+
 /*
 Route::get('/{police}', function () {
     return view('');
