@@ -467,10 +467,45 @@ if ($request->input('textreport') != "") {
     );
 }
 
+
+
 // Redirecionar de volta com uma mensagem de sucesso
 return redirect()->back()->with('success', 'E-mail enviado com sucesso!');        
 
 }
+
+public function addadmin($id) {
+
+        //$userd = User::where('_id', $id)->get();
+        $user = User::find($id);
+        $user->admin = 'true';
+        $user->save();
+    
+        app(SendMailController::class)->sendWelcomeEmail(
+            $user->email,
+            "Parabens voce foi promovido a administrador",
+            "Promovido a moderador"
+        );
+        return redirect()->route("usersactive.store");
+
+}
+
+public function deladmin($id) {
+
+    //$userd = User::where('_id', $id)->get();
+    $user = User::find($id);
+    $user->admin = 'true';
+    $user->save();
+
+    app(SendMailController::class)->sendWelcomeEmail(
+        $user->email,
+        "Voce foi despromovido",
+        "Removido da administração"
+    );
+    return redirect()->route("usersactive.store");
+
+}
+
 // Verify email method
 
 

@@ -107,6 +107,9 @@ Route::get('/showreportadmin/{user}', [ApiController::class, 'showreportadmin'])
 
 Route::post('/reportadmin/{email}', [ApiController::class, 'reportadmin'])->name('reportadmin.admin');
 
+
+Route::get('/daradmin/{user}', [ApiController::class, 'addadmin'])->name('daradmin.admin');
+Route::get('/deladmin/{user}', [ApiController::class, 'deladmin'])->name('deladmin.admin');
 /*
 Route::get('/{police}', function () {
     return view('');
