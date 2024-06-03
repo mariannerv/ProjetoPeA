@@ -437,6 +437,40 @@ public function activeacount($id) {
     return redirect()->route("usersactive.store");
 }
 
+
+public function showprofile($id) {
+    $user = User::find($id);
+    return view("admin.showprofile" , [ 'users' => $user]);
+}
+
+
+public function showreportadmin($id) {
+    $user = User::find($id);
+    return view("admin.admin-report" , [ 'users' => $user]);
+}
+
+
+public function reportadmin(Request $request , $email) {
+      // Validar que o campo textreport não está vazio
+      $request->validate([
+        'textreport' => 'required|string',
+    ], [
+        'textreport.required' => 'Insira o seu report', // Mensagem personalizada
+    ]);
+
+// Se a validação passar, envie o e-mail
+if ($request->input('textreport') != "") {
+    app(SendMailController::class)->sendWelcomeEmail(
+        $email,
+        $request->input('textreport'),
+        $request->input('assunto')
+    );
+}
+
+// Redirecionar de volta com uma mensagem de sucesso
+return redirect()->back()->with('success', 'E-mail enviado com sucesso!');        
+
+}
 // Verify email method
 
 
