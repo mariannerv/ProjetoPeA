@@ -128,10 +128,6 @@ Route::delete("deleteLostObject", [LostObjectController::class, "deleteLostObjec
 Route::post("crossCheck", [LostObjectController::class, "crossCheck"]);
 Route::get("getLostObject", [LostObjectController::class, "getLostObject"]);
 
-<<<<<<< HEAD
-=======
-
->>>>>>> fc56948-gabriel
 Route::post("createCode", [verificationCodeController::class, "createCode"]);
 
 // Route::get('/test_mongodb/', function (Illuminate\Http\Request $request) {

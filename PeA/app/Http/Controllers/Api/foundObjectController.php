@@ -131,7 +131,6 @@ class FoundObjectController extends Controller
                 "message" => "Objeto não encontrado.",
             ], 404);
         }
-
     }
 
     public function deleteFoundObject(Request $request)
@@ -203,10 +202,10 @@ class FoundObjectController extends Controller
                 "code" => 500,
             ], 500);
         }
-
     }
 
-   
+    
+
 
     
 }
