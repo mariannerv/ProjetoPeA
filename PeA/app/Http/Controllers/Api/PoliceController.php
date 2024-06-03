@@ -60,14 +60,18 @@ class PoliceController extends Controller
             return redirect()->route('register.success');
 
         } catch (ValidationException $e){
-            if ($e->errors()['internalId'] && $e->erros()['internalId'][0] === "Policia com este Id já associado a outra conta.");
+            if ($e->errors()['internalId'] && $e->erros()['internalId'][0] === "Policia com este Id já associado a outra conta."){
+                
                 return response()->json([
                     "status" => false,
                     "message" => "Policia com este Id já associado a outra conta.",
                     "code" => 400,
                 ]);
+            } else{
+                throw $e;
+            }
             
-            throw $e;
+            
         }
     }
     //Login
