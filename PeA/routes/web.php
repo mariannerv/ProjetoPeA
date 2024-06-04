@@ -99,7 +99,7 @@ Route::get('/usersform', function () {
 // Profile views
 Route::view('/users/{user}','profile.users.user')->name('user.profile');
 
-Route::view('/police/{police}','profile.users.police')->name('police.profile');
+Route::view('/police/{police}','profile.polices.police')->name('police.profile');
 
 #showprofile
 Route::get('/usersadmin/{user}', [ApiController::class, 'showprofile'])->name('useradm.profile');
