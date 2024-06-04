@@ -57,7 +57,9 @@ if (!auth()->user()->admin == true) {
                   @csrf
                   <button class="btn btn-danger" type="button" onclick="confirmActivation('{{ $user->id }}')">Ativar</button>               
               </form>
+             
               @endif
+              <a href="{{route('showreportpolice.admin' ,$user->id )}}"><button class="btn btn-primary">Notificar estação</button></a>
             </div>
         </div>
     </div>

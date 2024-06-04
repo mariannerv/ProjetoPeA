@@ -72,7 +72,7 @@ if (!Auth::guard('police')->check()) {
                                     </div>
                                     <input type="hidden" name="policeStationId" value="{{ Auth::guard('police')->user()->policeStationId }}">
                                     <div class="col-12">
-                                        <button class="btn btn-primary" type="submit">Confirmar alterações</button>
+                                        <button class="btn btn-primary" type="submit">Registar</button>
                                         <button class="btn btn-secondary" onclick="goBack()">Cancelar</button>
                                     </div>
                                 </form>

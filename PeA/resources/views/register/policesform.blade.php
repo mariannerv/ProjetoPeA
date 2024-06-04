@@ -27,7 +27,7 @@
           <div class="row justify-content-center">
               <div class="col-8">
                   <div class="card">
-                      <div class="card-header">Register</div>
+                      <div class="card-header">Registar policia</div>
                       <div class="card-body">
 
                         @if ($errors->any())
