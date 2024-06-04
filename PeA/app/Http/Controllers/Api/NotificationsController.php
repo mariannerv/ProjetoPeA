@@ -1,85 +1,140 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-
+use App\Models\Auction;
+use App\Models\User;
+use App\Notifications\BidUpdatedNotification;
+use App\Notifications\BidOvertakenNotification;
+use App\Notifications\TestNotification;
 class NotificationsController extends Controller
 {
-    public function index()
+    public function sendBidUpdatedNotification(Request $request)
     {
-        $user = Auth::user();
-        $notifications = $user->notifications()->orderBy('created_at', 'desc')->get();
+        $auctionId = $request->input('auctionId');
+        $userEmail = $request->input('userEmail');
+
+        $auction = Auction::where('auctionId', $auctionId)->first();
+
+        if (!$auction) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Auction not found.',
+            ], 404);
+        }
+
+        $user = User::where('email', $userEmail)->first();
+
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'User not found.',
+            ], 404);
+        }
+
+        $user->notify(new BidUpdatedNotification($auction));
 
         return response()->json([
             'status' => true,
-            'notifications' => $notifications,
+            'message' => 'Bid updated notification sent successfully.',
         ]);
     }
 
-    public function markAsRead(Request $request)
+    public function sendBidOvertakenNotification(Request $request)
     {
-        $request->validate([
-            'notification_id' => 'required|string|exists:notifications,id',
-        ]);
+        $auctionId = $request->input('auctionId');
+        $userEmail = $request->input('userEmail');
 
-        $user = Auth::user();
-        $notification = $user->notifications()->find($request->notification_id);
+        $auction = Auction::where('auctionId', $auctionId)->first();
 
-        if ($notification) {
-            $notification->markAsRead();
+        if (!$auction) {
             return response()->json([
-                'status' => true,
-                'message' => 'Notification marked as read.',
-            ]);
+                'status' => false,
+                'message' => 'Auction not found.',
+            ], 404);
         }
 
-        return response()->json([
-            'status' => false,
-            'message' => 'Notification not found.',
-        ], 404);
-    }
+        $user = User::where('email', $userEmail)->first();
 
-    public function markAsUnread(Request $request)
-    {
-        $request->validate([
-            'notification_id' => 'required|string|exists:notifications,id',
-        ]);
-
-        $user = Auth::user();
-        $notification = $user->notifications()->find($request->notification_id);
-
-        if ($notification) {
-            $notification->update(['read_at' => null]);
+        if (!$user) {
             return response()->json([
-                'status' => true,
-                'message' => 'Notification marked as unread.',
-            ]);
+                'status' => false,
+                'message' => 'User not found.',
+            ], 404);
         }
 
+        // Send BidOvertakenNotification
+        $user->notify(new BidOvertakenNotification($auction));
+
         return response()->json([
-            'status' => false,
-            'message' => 'Notification not found.',
-        ], 404);
+            'status' => true,
+            'message' => 'Bid overtaken notification sent successfully.',
+        ]);
     }
 
-    public function subscribeToAuction(Request $request)
+    public function subscribeToAuctionNotifications(Request $request)
     {
-        $user = Auth::user();
-        $auctionId = $request->input('auction_id');
+        $user = auth()->user();
+        $auctionId = $request->input('auctionId');
 
-        $user->auctions()->attach($auctionId);
+        $auction = Auction::where('auctionId', $auctionId)->first();
 
-        return response()->json(['message' => 'Subscribed successfully!']);
+        if (!$auction) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Auction not found.',
+            ], 404);
+        }
+
+        $user->auctions()->attach($auction->id);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Subscribed to auction notifications successfully.',
+        ]);
     }
 
-    public function sendTestNotification()
+    public function unsubscribeFromAuctionNotifications(Request $request)
+    {
+        $user = auth()->user();
+        $auctionId = $request->input('auctionId');
+
+        $auction = Auction::where('auctionId', $auctionId)->first();
+
+        if (!$auction) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Auction not found.',
+            ], 404);
+        }
+
+        $user->auctions()->detach($auction->id);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Unsubscribed from auction notifications successfully.',
+        ]);
+    }
+    public function sendTestNotification(Request $request)
     {
         $user = Auth::user();
-        $user->notify(new BidOvertakenNotification("Test Bidder"));
 
-        return response()->json(['message' => 'Test notification sent!']);
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'User not authenticated.',
+            ], 401);
+        }
+
+        $message = $request->input('message', 'This is a test notification.');
+
+        $user->notify(new TestNotification($message));
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Test notification sent successfully.',
+        ]);
     }
 }
-?>

@@ -13,7 +13,6 @@ use App\Http\Controllers\emailVerificationCodeController;
 use App\Models\PoliceStation;
 use App\Http\Controllers\Emails\SendMailController;
 use App\Http\Controllers\verificationCodeController;
-use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------

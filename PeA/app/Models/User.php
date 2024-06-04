@@ -94,9 +94,9 @@ class User extends Authenticatable implements MustVerifyEmail
         $token->token = Str::random(60); 
         $token->save();
     }
-
     public function auctions(): BelongsToMany
     {
-        return $this->belongsToMany(Auction::class, 'auction_user');
+        return $this->belongsToMany(Auction::class, 'auction_user')
+                    ->where('end_date', '>', Carbon::now());
     }
 }

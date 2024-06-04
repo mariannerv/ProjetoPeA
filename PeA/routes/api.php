@@ -195,12 +195,9 @@ Route::get('/Owner/{civilId}', [OwnerController::class, 'getUserByCivilId']);
 //Route::post('login', [AuthController::class, 'login']);
 
 
-//notifs
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/notifications', [NotificationsController::class, 'index']);
-    Route::post('/notifications/read', [NotificationsController::class, 'markAsRead']);
-    Route::post('/notifications/unread', [NotificationsController::class, 'markAsUnread']);
-});
+//notification routes
+
+
 //sub e unsub notifs de um auction
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auction/subscribe', [AuctionController::class, 'subscribe']);

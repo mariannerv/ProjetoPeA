@@ -1,3 +1,4 @@
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <nav class="navbar navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="http://localhost:8000">PeA</a>
@@ -19,10 +20,15 @@
                       Home
                     </a>
             </li>
-            <a class="nav-link" href="#">
-            <i class="fas fa-bell"></i>
-            <span class="badge badge-danger">{{ $notificationsCount }}</span>
-            </a>
+            <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Notifications
+    </a>
+    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
+        <!-- Notifications will be dynamically loaded here -->
+    </ul>
+    <button onclick="sendTestNotification()">Send Test Notification</button>
+</li>
             <li class="nav-item">
                 <a href="http://localhost:8000/login" class="nav-link active" aria-current="page">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-right" viewBox="0 0 16 16">
@@ -51,3 +57,53 @@
     </div>
     </nav>
     
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fetch notifications when the page loads
+        fetchNotifications();
+
+        // Fetch notifications every 5 seconds
+        setInterval(fetchNotifications, 5000);
+    });
+
+    function fetchNotifications() {
+        axios.get('/notifications')
+            .then(function(response) {
+                var notifications = response.data.notifications;
+                var dropdownMenu = document.querySelector('#navbarDropdown ul');
+
+                // Clear existing notifications
+                dropdownMenu.innerHTML = '';
+
+                // Add new notifications to the dropdown menu
+                notifications.forEach(function(notification) {
+                    var li = document.createElement('li');
+                    li.classList.add('dropdown-item');
+                    li.textContent = notification.message;
+                    dropdownMenu.appendChild(li);
+                });
+            })
+            .catch(function(error) {
+                console.log(error);
+            }); // Added closing curly brace
+    }
+    function sendTestNotification() {
+        fetch('/api/notifications/send-test-notification', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log(data.message);
+        })
+        .catch(function(error) {
+            console.log(error);
+        });
+    }
+</script>

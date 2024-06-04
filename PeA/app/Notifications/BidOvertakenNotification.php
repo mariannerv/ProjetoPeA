@@ -1,3 +1,4 @@
+<?php
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
@@ -43,3 +44,4 @@ class BidOvertakenNotification extends Notification implements ShouldQueue
         ];
     }
 }
+?>
