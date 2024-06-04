@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Api;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\FoundObject;
+use Illuminate\Http\Request;    
+use App\Models\foundObject;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
@@ -19,7 +20,7 @@ class FoundObjectController extends Controller
     public function registerFoundObject(Request $request)
     {
         try {
-            $request->validate([
+            $val = Validator::make($request->all(),[
                 'category' => 'required|string',
                 'brand' => 'required|string',
                 'color' => 'required|string',
@@ -33,6 +34,13 @@ class FoundObjectController extends Controller
                 'date_found' => 'required|date',
                 'policeStationId' => 'required|string|exists:police_station,sigla',
             ]);
+
+            if ($val->fails()){
+                return redirect()
+                ->back()
+                ->withErrors($val)
+                ->withInput();
+            }
 
             $dateRegistered = now();
             $deadlineForAuction = now()->addMonth();
@@ -51,12 +59,8 @@ class FoundObjectController extends Controller
                 "deadlineForAuction" => $deadlineForAuction,
                 "estacao_policia" => $request->policeStationId,
             ]);
-
-            return response()->json([
-                "status" => true,
-                "message" => "Objeto encontrado registado com sucesso",
-                "code" => "200",
-            ]);
+            return redirect()->back()->with('success', 'Objeto encontrado registado com sucesso');
+          
         } catch (\Exception $e) {
             return response()->json([
                 "status" => false,

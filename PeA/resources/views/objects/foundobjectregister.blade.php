@@ -27,6 +27,22 @@ if (!Auth::guard('police')->check()) {
                         <div class="card">
                             <div class="card-header">Registar Objeto Encontrado</div>
                             <div class="card-body">
+
+                                @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <ul>
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                              @endif
+                              
+                              @if (session('success'))
+                                <div class="alert alert-success">
+                                    {{ session('success') }}
+                                </div>
+                              @endif
                                 <form class="row g-3 needs-validation" novalidate action="{{ route('found-objects.register') }}" method="post">
                                     @csrf
                                     @method('POST')
@@ -60,6 +76,7 @@ if (!Auth::guard('police')->check()) {
                                         <button class="btn btn-secondary" onclick="goBack()">Cancelar</button>
                                     </div>
                                 </form>
+                               
                             </div>
                         </div>
                     </div>
