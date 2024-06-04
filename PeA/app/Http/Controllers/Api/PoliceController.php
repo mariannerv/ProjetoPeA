@@ -57,7 +57,7 @@ class PoliceController extends Controller
                 "email_verified_at" => '',
             ]);
 
-            return redirect()->route('register.registerSuccess');
+            return redirect()->route('register.success');
 
         } catch (ValidationException $e){
             if ($e->errors()['internalId'] && $e->erros()['internalId'][0] === "Policia com este Id já associado a outra conta."){
@@ -88,8 +88,7 @@ class PoliceController extends Controller
             if ($user->account_status == 'active') {
                 if (Hash::check($request->password, $user->password)) {
                     auth()->guard('police')->loginUsingId($user->_id);
-    
-                    return redirect()->route('police.home')->with('success', 'Login policial realizado com sucesso!');
+                    return redirect()->route('home')->with('success', 'Login realizado com sucesso!');
                 } else {
                     return redirect()->back()->withErrors(['password' => 'Credenciais inválidas'])->withInput();
                 }
@@ -252,10 +251,31 @@ class PoliceController extends Controller
         }
     }
 
-    public function destroy(string $id) {
-        Police::where('_id' ,$id )->delete();
-        return redirect()->route('polices.store');
+    public function confirmDelete(Police $user)
+{
+    return view('profile.polices.partials.confirm-deletion', compact('user'));
+}
+
+
+public function showprofile($id) {
+    $user = Police::find($id);
+    return view("admin.showpoliceprofile" , [ 'user' => $user]);
+}
+
+
+public function destroy(Request $request, $id)
+{
+    $user = Police::findOrFail($id);
+    
+    if (Hash::check($request->password, $user->password)) {
+        $user->delete();
+        Auth::guard('police')->logout();
+        return view('home');
+    } else {
+        return redirect()->route('users.store')->with('error', 'Incorrect password. User not deleted.');
     }
+}
+
 
     public function update(Request $request, string $id) {
         $update = Police::where('_id' , $id)->update($request->except(['_token' , '_method'])); 

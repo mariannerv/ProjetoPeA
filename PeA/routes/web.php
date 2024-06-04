@@ -100,10 +100,12 @@ Route::get('/usersform', function () {
 // Profile views
 Route::view('/users/{user}','profile.users.user')->name('user.profile');
 
-Route::view('/police/{police}','profile.users.police')->name('police.profile');
+Route::view('/police/{police}','profile.polices.police')->name('police.profile');
 
 #showprofile
 Route::get('/usersadmin/{user}', [ApiController::class, 'showprofile'])->name('useradm.profile');
+
+Route::get('/policeadmin/{user}', [PoliceController::class, 'showprofile'])->name('policeadm.profile');
 
 Route::get('/showreportadmin/{user}', [ApiController::class, 'showreportadmin'])->name('showreport.admin');
 
@@ -129,7 +131,7 @@ Route::view('/lost-objects/register-form', 'objects.lost-objects.lost-object-reg
 Route::post('/lost-objects/register', [LostObjectController::class, 'registerLostObject'])->name('lost-objects.register');
 Route::get('/lost-objects', [LostObjectController::class, 'getAllLostObjects'])->name('lost-objects.get');
 Route::get('/lost-objects/{object}', [LostObjectController::class,'getLostObject'])->name('lost-object.get');
-Route::delete('lost-objects/delete/{object}', [LostObjectController::class,'deleteLostObject'])->name('lost-object.delete');
+Route::delete('lost-objects/{object}', [LostObjectController::class,'deleteLostObject'])->name('lost-object.delete');
 Route::get('/lost-objects/{object}/edit', [LostObjectController::class,'editLostObject'])->name('lost-object.edit');
 Route::put('/lost-objects/{object}', [LostObjectController::class,'upadteLostObject'])->name('lost-object.update');
 
@@ -137,7 +139,12 @@ Route::get('/found-objects', [foundObjectController::class, 'getAllFoundObjects'
 Route::view('/found-objects/register-form', 'objects.foundobjectregister')->name('found-objects.register-form');
 Route::post('/lost-objects/register', [foundObjectController::class, 'registerFoundObject'])->name('found-objects.register');
 Route::get('/found-objects/{object}', [foundObjectController::class,'getFoundObject'])->name('found-object.get');
-Route::delete('found-objects/delete/{object}', [foundObjectController::class,'deleteFoundObject'])->name('found-object.delete');
+Route::post('found-objects/delete/{object}', [foundObjectController::class,'deleteFoundObject'])->name('found-object.delete');
+Route::post('found-objects/delete2/{object}', [foundObjectController::class,'deleteFoundObject2'])->name('found-object2.delete');
+Route::get('/found-objects/edit/{object}', [foundObjectController::class,'edit'])->name('found-object.edit');
+
+Route::get('/found-object/{object}', [foundObjectController::class,'getobject'])->name('found-object.get');
+Route::post('/found-objects/update/{object}', [foundObjectController::class,'update'])->name('found-object.update');
 Route::get('/search',function(){
     return view('objects.objectsearch');
 });
