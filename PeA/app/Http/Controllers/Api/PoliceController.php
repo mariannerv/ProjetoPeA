@@ -262,6 +262,11 @@ public function showprofile($id) {
     return view("admin.showpoliceprofile" , [ 'user' => $user]);
 }
 
+public function showreportadmin($id) {
+    $user = Police::find($id);
+    return view("admin.admin-police-report" , [ 'users' => $user]);
+}
+
 
 public function destroy(Request $request, $id)
 {
