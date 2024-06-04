@@ -1,3 +1,4 @@
+// auth.login.blade.php
 <?php
 if (Auth::guard('police')->check() || Auth::check()) {
     header('Location: ' . route('home'));
