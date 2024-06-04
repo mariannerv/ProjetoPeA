@@ -72,7 +72,14 @@
                       <input class="form-control" id="lostObj" type="text" placeholder="Procurar..">
                     </div>
                     <hr>
+                    <div class="row justify-content-end">
+                      <div class="col-4 justify-content-end">
+                        <a class="btn btn-outline-secondary" href="{{ route('lost-objects.register-form') }}"">Adicionar um objeto</a>
+                      </div>
+                    </div>
+                    <br>
                     <div class="row">
+
                       <div class="col-*" id="lost_objects">
 
                       </div>
