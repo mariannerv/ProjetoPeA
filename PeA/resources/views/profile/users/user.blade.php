@@ -48,7 +48,7 @@
         </div>
     </div>
     <br><br>
-    <div class="container vh-100">
+    <div class="container">
         <div class="row border">
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
@@ -74,7 +74,7 @@
                     <hr>
                     <div class="row justify-content-end">
                       <div class="col-4 justify-content-end">
-                        <a class="btn btn-outline-secondary" href="{{ route('lost-objects.register-form') }}"">Adicionar um objeto</a>
+                        <a class="btn btn-outline-secondary" href="{{ route('lost-objects.register-form') }}">Adicionar um objeto</a>
                       </div>
                     </div>
                     <br>
