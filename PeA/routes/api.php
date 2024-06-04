@@ -196,15 +196,14 @@ Route::post('login', [AuthController::class, 'login']);
 
 
 //notification routes
-Route::prefix('notifications')->group(function () {
-    Route::get('get-all', [NotificationsController::class, 'fetchAllNotifications'])->middleware('web');
-    Route::post('bid-updated-notification', [NotificationsController::class, 'sendBidUpdatedNotification'])->middleware('web');
-    Route::post('bid-overtaken-notification', [NotificationsController::class, 'sendBidOvertakenNotification'])->middleware('web');
-    Route::post('subscribe-to-auction-notifications', [NotificationsController::class, 'subscribeToAuctionNotifications'])->middleware('web');
-    Route::post('unsubscribe-from-auction-notifications', [NotificationsController::class, 'unsubscribeFromAuctionNotifications'])->middleware('web');
-    Route::post('send-test-notification', [NotificationsController::class, 'sendTestNotification'])->middleware('web');
+Route::prefix('notifications')->middleware('web')->group(function () {
+    Route::get('get-all', [NotificationsController::class, 'fetchAllNotifications']);
+    Route::post('bid-updated-notification', [NotificationsController::class, 'sendBidUpdatedNotification']);
+    Route::post('bid-overtaken-notification', [NotificationsController::class, 'sendBidOvertakenNotification']);
+    Route::post('subscribe-to-auction-notifications', [NotificationsController::class, 'subscribeToAuctionNotifications']);
+    Route::post('unsubscribe-from-auction-notifications', [NotificationsController::class, 'unsubscribeFromAuctionNotifications']);
+    Route::post('send-test-notification', [NotificationsController::class, 'sendTestNotification']);
 });
-
 
 
 

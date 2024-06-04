@@ -6,10 +6,12 @@
 
 <script>
 function sendTestNotification() {
+    displayStandardNotification("Test notification sent successfully!");
   axios.post("/api/notifications/send-test-notification")
     .then(response => {
       alert(response.data.message);
       loadNotifications();
+      
     })
     .catch(error => {
       console.error('Error:', error);
@@ -28,6 +30,21 @@ function loadNotifications() {
       console.error('Error:', error);
     });
 }
+
+function displayStandardNotification(message) {
+  if (Notification.permission === "granted") {
+    // If notification permission is already granted, show the notification
+    new Notification(message);
+  } else if (Notification.permission !== "denied") {
+    // If the user hasn't denied permission yet, ask for it
+    Notification.requestPermission().then(function(permission) {
+      if (permission === "granted") {
+        new Notification(message);
+      }
+    });
+  }
+}
+
 
 $(document).ready(function() {
   loadNotifications();
