@@ -186,11 +186,11 @@ Route::prefix('objects')->group(function () {
     Route::get('/search', function () {
         return view('objects.objectsearch');
     });
-    Route::get('/statmap', function () {
-        return view('objectstatmap');
-    });
+    
 });
-
+Route::get('/statmap', function () {
+    return view('objectstatmap');
+});
 // Auction views/routes
 Route::get('/auctions',[AuctionController::class,'viewAllAuctions'])->name('auctions.get');
 Route::get('/auctions/{auction}', [AuctionController::class,'viewAuction'])->name('auction.get');

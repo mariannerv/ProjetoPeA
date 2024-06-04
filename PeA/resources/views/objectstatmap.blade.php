@@ -9,17 +9,26 @@
     <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.14.0/maps/maps-web.min.js"></script>
     <link rel="stylesheet" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.14.0/maps/maps.css">
 </head>
+<style>
+    .chart-container {
+    margin-bottom: 20px;
+}
+</style>
 <body>
     <div class="container">
         <h2>Lost and Found Objects Statistics</h2>
-        <div class="row">
-            <div class="col-md-6">
-                <canvas id="lostObjectsChart"></canvas>
-            </div>
-            <div class="col-md-6">
-                <canvas id="foundObjectsChart"></canvas>
-            </div>
-        </div>
+        <div class="container-fluid">
+  <div class="row">
+    <div class="col-md-8">
+      <!-- Map container -->
+      <div id="map" style="height: 500px;"></div>
+    </div>
+    <div class="col-md-4">
+      <!-- Chart container -->
+      <div id="chart-container"></div>
+    </div>
+  </div>
+</div>
     </div>
 
     <button id="displayLostObjects" class="btn btn-primary mt-3">Display Lost Objects on Map</button>
@@ -28,6 +37,14 @@
     <div id="mapContainer" class="container mt-3">
         <div id="map" style="height: 400px;"></div>
     </div>
+
+    <div class="chart-container">
+    <canvas id="lostObjectsChart"></canvas>
+</div>
+
+<div class="chart-container">
+    <canvas id="foundObjectsChart"></canvas>
+</div>
 
     <script>
         function fetchAllLostObjects() {

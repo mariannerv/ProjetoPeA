@@ -24,9 +24,6 @@ use App\Http\Controllers\Police;
 
 class ApiController extends Controller
 {
-    public function index()
-    {
-        $users = User::all();
 
 public function index() {
     $user =  User::all();
@@ -37,23 +34,7 @@ public function index() {
     'numberactive' => $numberactive , 'deactivated' => $deactivated]);
 }
 
-public function register(Request $request){
 
-    try {
-        $val = Validator::make($request->all(),[
-            'name' => ['required', 'string', 'max:255'],
-            'gender' => 'required|string',
-            'birthdate' => 'required|date',
-            'address' => 'required|string',
-            'codigo_postal' => ['required', 'string', 'regex:/^\d{4}-\d{3}$/'],
-            'localidade' => 'required|string',
-            'civilId' => 'required|integer|unique:users',
-            'taxId' => 'required|string|unique:users',
-            'contactNumber' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => ['required', Rules\Password::defaults()],
-        ]);
-    }
 
     public function register(Request $request)
     {
@@ -318,7 +299,9 @@ public function register(Request $request){
 
         return redirect()->route('profile.index')->with('success', 'Dados atualizados com sucesso');
     }
-}
+
+
+
 
 public function foundObjects(Request $request){
     try {
@@ -343,44 +326,7 @@ public function foundObjects(Request $request){
         $response = [
             "status" => true,
             "message" => "found objects retrieved successfully.",
-            "lost_objects" => $lostObjects,
-        ];
-
-        return response()->json($response, 200);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            "status" => false,
-            "message" => "An error occurred while retrieving lost objects.",
-            "code" => 500,
-        ], 500);
-    }
-}
-
-public function foundObjects(Request $request){
-    try {
-        $request->validate([
-            'policeStationId' => 'required|string',
-        ]);
-
-        $user = Police::where('policeStationId', $request->policeStationId)->first();
-
-        if (!$user) {
-            return response()->json([
-                "status" => false,
-                "message" => "Police User not found.",
-                "code" => 404,
-            ], 404);
-        }
-
-        $foundObjectIds = $user->found_objects;
-
-        $foundObjects = foundObject::whereIn('objectId', $foundObjectIds)->get();
-
-        $response = [
-            "status" => true,
-            "message" => "found objects retrieved successfully.",
-            "lost_objects" => $lostObjects,
+            "found_objects" => $foundObjects,
         ];
 
         return response()->json($response, 200);
@@ -504,9 +450,6 @@ if ($request->input('textreport') != "") {
         $request->input('assunto')
     );
 }
-
-
-
 // Redirecionar de volta com uma mensagem de sucesso
 return redirect()->back()->with('success', 'E-mail enviado com sucesso!');        
 
@@ -586,28 +529,6 @@ public function edit(User $user) {
     return view('profile.users.partials.usereditform' , ['user' => $user]);
 }
 
-
-public function update(Request $request, string $id) {
-    $update = User::where('_id' , $id)->update(
-        ["name" => $request-> input('name'),
-            "gender" => $request->input('gender'),
-            "birthdate" => $request->input('birthdate'),
-            "address" => $request->input('address'),
-            "codigo_postal" => $request->input('codigo_postal'),
-            "localidade" => $request->input('localidade'),
-            "civilId" => $request->input('civilId'),
-            "taxId" => $request->input('taxId'),
-            "contactNumber" => $request->input('contactNumber'),
-            "email" => $request->input('email') ,
-            "password" => Hash::make($request->input('password')),
-            ]
-
-    );
-    
-    if ($update) {
-        return view('home');
-    }
-}
 
 
 }

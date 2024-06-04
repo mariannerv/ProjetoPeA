@@ -1,3 +1,4 @@
+<?php
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -68,9 +69,6 @@ class NotificationsController extends Controller
         $user = Auth::user();
         $auctionId = $request->input('auction_id');
 
-        // Logic to subscribe the user to the auction notifications.
-        // This could be saving the subscription to the database or adding a record.
-        // Example:
         $user->auctions()->attach($auctionId);
 
         return response()->json(['message' => 'Subscribed successfully!']);
@@ -84,3 +82,4 @@ class NotificationsController extends Controller
         return response()->json(['message' => 'Test notification sent!']);
     }
 }
+?>

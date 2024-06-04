@@ -19,6 +19,10 @@
                     Home
                   </a>
           </li>
+          <a class="nav-link" href="#">
+            <i class="fas fa-bell"></i>
+            <span class="badge badge-danger">{{ $notificationsCount }}</span>
+          </a>
           <li class="nav-item">
               <a class="nav-link" href="#">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">

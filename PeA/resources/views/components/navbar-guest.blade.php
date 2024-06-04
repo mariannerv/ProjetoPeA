@@ -19,6 +19,10 @@
                       Home
                     </a>
             </li>
+            <a class="nav-link" href="#">
+            <i class="fas fa-bell"></i>
+            <span class="badge badge-danger">{{ $notificationsCount }}</span>
+            </a>
             <li class="nav-item">
                 <a href="http://localhost:8000/login" class="nav-link active" aria-current="page">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-right" viewBox="0 0 16 16">
@@ -46,34 +50,4 @@
         </div>
     </div>
     </nav>
-    <script>
-    document.getElementById('subscribe-button').addEventListener('click', function() {
-        const auctionId = prompt("Enter Auction ID to subscribe:");
-        if (auctionId) {
-            fetch('{{ route("subscribe.to.auction") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ auction_id: auctionId })
-            })
-            .then(response => response.json())
-            .then(data => alert(data.message))
-            .catch(error => console.error('Error:', error));
-        }
-    });
-
-    document.getElementById('test-notification-button').addEventListener('click', function() {
-        fetch('{{ route("send.test.notification") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        })
-        .then(response => response.json())
-        .then(data => alert(data.message))
-        .catch(error => console.error('Error:', error));
-    });
-</script>
+    
