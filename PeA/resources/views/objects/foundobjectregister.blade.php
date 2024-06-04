@@ -1,3 +1,10 @@
+<?php
+if (!Auth::guard('police')->check()) {
+    header('Location: ' . route('home'));
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,12 +16,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 </head>
 <body>
-    <header>
-        @if (auth()->check())
-            @include('components.navbar')
-        @else
-            @include('components.navbar-guest')
-        @endif 
+<header>
+        @include('components.navbar-police')
     </header>
     <main class="my-5">
         <div class="container">
@@ -24,7 +27,7 @@
                         <div class="card">
                             <div class="card-header">Registar Objeto Encontrado</div>
                             <div class="card-body">
-                                <form class="row g-3 needs-validation" novalidate action="{{ route('foundobjects.register') }}" method="post">
+                                <form class="row g-3 needs-validation" novalidate action="{{ route('found-objects.register') }}" method="post">
                                     @csrf
                                     @method('POST')
                                     <div class="col-md-6">
@@ -36,8 +39,8 @@
                                         <input type="text" class="form-control" id="description" name="description" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="date_lost" class="form-label">Data de Perda</label>
-                                        <input type="date" class="form-control" id="date_lost" name="date_lost" required>
+                                        <label for="date_found" class="form-label">Data de aparecimento</label>
+                                        <input type="date" class="form-control" id="date_found" name="date_found" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="brand" class="form-label">Marca</label>
@@ -51,7 +54,7 @@
                                         <label for="size" class="form-label">Tamanho</label>
                                         <input type="text" class="form-control" id="size" name="size">
                                     </div>
-                                    <input type="hidden" name="ownerEmail" value="{{ auth()->user()->email }}">
+                                    <input type="hidden" name="policeStationId" value="{{ Auth::guard('police')->user()->policeStationId }}">
                                     <div class="col-12">
                                         <button class="btn btn-primary" type="submit">Confirmar alterações</button>
                                         <button class="btn btn-secondary" onclick="goBack()">Cancelar</button>
