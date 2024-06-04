@@ -19,6 +19,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   </head>
   <body>
   <header>
@@ -75,6 +78,7 @@
                   <hr>
                   <div class="row">
                     <div class="col-*" id="found_objects">
+                      <meta name="csrf-token" content="{{ csrf_token() }}">
 
                     </div>
                   </div>
@@ -115,7 +119,7 @@
               </div>
         </div>
     </div>
-    @include('auth.noaccess')
+    
     @endif
     {{-- @include('components.footer') --}}
 
@@ -150,6 +154,8 @@
     </script>
     {{-- Objetos encontrados --}}
     <script>
+      var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
       $.ajax({
         url: '{{ route("found-objects.get") }}',
         method: 'GET',
@@ -169,22 +175,29 @@
                 html += "<p>Categoria: " + item.category + "</p>";
                 html += "</div>";
                 html += "<div class= 'col-auto'>";
-                html += "<button class='btn btn-danger' data-bs-toggle='modal' data-bs-target='#exampleModalCenter'> \
-                          <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-trash2' viewBox='0 0 16 16'>\
-                            <path d='M14 3a.7.7 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225A.7.7 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2M3.215 4.207l1.493 8.957a1 1 0 0 0 .986.836h4.612a1 1 0 0 0 .986-.836l1.493-8.957C11.69 4.689 9.954 5 8 5s-3.69-.311-4.785-.793'/>\
-                          </svg>\
-                         </button>";
+      
+                  html += "<form method='post' action='/found-objects/delete/" + item._id + "' id='form-desactive-" + item._id + "'>\
+        <input type='hidden' name='_token' value='" + csrfToken + "'>\
+        <button class='btn btn-danger' onclick='confirmDeactivation(event, \"" + item._id + "\")' data-bs-toggle='modal' data-bs-target='#exampleModalCenter'>\
+          <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-trash2' viewBox='0 0 16 16'>\
+            <path d='M14 3a.7.7 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225A.7.7 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2M3.215 4.207l1.493 8.957a1 1 0 0 0 .986.836h4.612a1 1 0 0 0 .986-.836l1.493-8.957C11.69 4.689 9.954 5 8 5s-3.69-.311-4.785-.793'/>\
+          </svg>\
+         </button>\
+      </form>";
+
+
+
                 html += "</div>";  
                 html += "</div>";  
                 html += "<p>Marca: " + item.brand + "</p>";
                 html += "<p>Cor: " + item.color + "</p>";
-                html += "<p>Data de devolução: " +/* item.date_found + */"</p>"; // Adicionar BD a data devolução
+                html += "<p>Data de aparecimento: " + item.date_found + "</p>";
                 html += "<div class = 'row justify-content-end'>";
                 html += "<div class = 'col-auto'>";
-                html += "<a class='btn btn-secondary' href={{ route('lost-object.get', '') }}/" + item._id + ">Ver Objeto </a><br><br>";
+                html += "<a class='btn btn-secondary' href={{ route('found-object.get', '') }}/" + item._id + ">Ver Objeto </a><br><br>";
                 html += "</div>";
                 html += "<div class = 'col-auto'>";
-                html += "<a class='btn btn-secondary' href={{ route('lost-object.edit', '') }}/" + item._id + ">Editar Objeto </a><br><br>";
+                html += "<a class='btn btn-secondary' href={{ route('found-object.edit', '') }}/" + item._id + ">Editar Objeto </a><br><br>";
                 html += "</div>";
                 html += "</div>";
                 counter+=1
@@ -314,6 +327,47 @@
             });
         });
       });
+    </script>
+
+    <script>
+      function confirmDeactivation(event, userId) {
+    event.preventDefault(); // Isso vai prevenir o formulário de ser enviado
+    const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-danger"
+        },
+        buttonsStyling: false
+    });
+
+    swalWithBootstrapButtons.fire({
+        title: "Tem a certeza?",
+        text: "Voce tem a certeza que quer eliminar este item",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sim, eliminar",
+        cancelButtonText: "Não, cancelar!",
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            swalWithBootstrapButtons.fire({
+                title: "Eliminado!",
+                text: "Item eliminado.",
+                icon: "success"
+            });
+            setTimeout(() => {
+                document.getElementById('form-desactive-' + userId).submit();
+            }, 3000); // Usar um atraso conforme necessário
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire({
+                title: "Cancelado!",
+                text: "Operação destivada.",
+                icon: "error"
+            });
+        }
+    });
+}
+
     </script>
 </body>
 </html>

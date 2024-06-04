@@ -145,11 +145,7 @@ class FoundObjectController extends Controller
 
             if ($object) {
                 $object->delete();
-                return response()->json([
-                    "status" => true,
-                    "message" => "Objeto apagado com sucesso.",
-                    "code" => "200",
-                ]);
+                return redirect()->back()->with('success', 'Objeto encontrado registado com sucesso');
             } else {
                 return response()->json([
                     "status" => false,
@@ -236,5 +232,92 @@ class FoundObjectController extends Controller
             ], 500);
         }
     }
+
+    public function edit(FoundObject $object) {
+        return view('objects.foundobjectedit' , ['object' => $object]);
+    }
+
+    public function getobject(FoundObject $object) {
+        return view('objects.found-object' , ['object' => $object]);
+    }
     
+    public function update(Request $request, string $id) {
+      //  $update = User::where('_id' , $id)->update(
+
+        try {
+            $val = Validator::make($request->all(),[
+                'category' => 'required|string',
+                'brand' => 'required|string',
+                'color' => 'required|string',
+                'size' => 'required|string',
+                'description' => 'required|string',
+                'location_id' => 'nullable|string',
+                'location_coords' => [
+                    'nullable',
+                    'regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),\s*[-]?((([1]?[0-7]?[0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?$/'
+                ],
+                'date_found' => 'required|date',
+                'policeStationId' => 'required|string|exists:police_station,sigla',
+            ]);
+
+            if ($val->fails()){
+                return redirect()
+                ->back()
+                ->withErrors($val)
+                ->withInput();
+            }
+
+            
+
+            FoundObject::where('_id' , $id)->update([
+                "category" => $request->category,
+                "brand" => $request->brand,
+                "color" => $request->color,
+                "size" => $request->size,
+                "description" => $request->description,
+                "location_id" => $request->location_id,
+                "location_coords" => $request->location_coords,
+                "date_found" => $request->date_found,
+                "estacao_policia" => $request->policeStationId,
+            ]);
+            return redirect()->back()->with('success', 'Objeto encontrado editado com sucesso');
+          
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "Algo correu mal ao registar o objeto.",
+                "code" => "404",
+            ]);
+        }
+      
+    }
+
+
+    public function deleteFoundObject2(Request $request)
+    {
+        try {
+            $objectId = $request->objectId;
+            $object = FoundObject::where('objectId', $objectId)->first();
+
+            if ($object) {
+                $object->delete();
+                return redirect()->route('home');
+            } else {
+                return response()->json([
+                    "status" => false,
+                    "message" => "Objeto não encontrado.",
+                    "code" => "404",
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "Oops! Algo correu mal ao tentar apagar o objeto.",
+                "code" => "500",
+            ], 500);
+        }
+    }
+
 }
+
+
