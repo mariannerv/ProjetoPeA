@@ -59,19 +59,19 @@
         <tbody>
             @foreach ($users as $user)
             <tr>
-                <td>{{ $user->name }}</td>
+                <td><a href="{{route('policeadm.profile', $user->id)}}">{{$user->name}}</a> </td>
                 <td>{{ $user->internalId }}</td>
                 <td>{{ $user->policeStationId }}</td>
                 <td class="action-buttons">
                     @if($user->account_status == 'active')
                     <form method="post" action="{{ route('police.desactive', $user->id) }}" id="form-desactive-{{ $user->id }}" style="display: inline;">
                         @csrf
-                        <button type="button" onclick="confirmDeactivation('{{ $user->id }}')">Desativar</button>               
+                        <button class="btn btn-danger" type="button" onclick="confirmDeactivation('{{ $user->id }}')">Desativar</button>               
                     </form>
                     @else
                     <form method="post" action="{{ route('police.useractive', $user->id) }}" id="form-active-{{ $user->id }}" style="display: inline;">
                         @csrf
-                        <button type="button" onclick="confirmActivation('{{ $user->id }}')">Ativar</button>               
+                        <button class="btn btn-danger" type="button" onclick="confirmActivation('{{ $user->id }}')">Ativar</button>               
                     </form>
                     @endif
                 </td>

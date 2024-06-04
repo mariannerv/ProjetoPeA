@@ -1,3 +1,10 @@
+<?php
+if (!auth()->user()->admin == true) {
+  header('Location: ' . route('home'));
+  exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -5,11 +12,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-    @if( Auth::guard('police')->check())
-    <title>{{Auth::guard('police')->user()->name}}</title>
-    @else
-    <title>Sem acesso</title>
-    @endif
+  
+    <title>{{$user->name}}</title>
+   
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -25,18 +30,11 @@
   </head>
   <body>
   <header>
-      @if (auth()->check())
+ 
         @include('components.navbar')
-      @else
-        @if(Auth::guard('police')->check())
-        @include('components.navbar-police')
-      
-        @else
-        @include('components.navbar-guest')
-      @endif 
-      @endif
+     
     </header>
-    @if( Auth::guard('police')->check())
+
     <br><br>
     <div class="container">
         <div class="row border">
@@ -44,13 +42,22 @@
                   <img src="../images/Sample_User_Icon.png" class="img-fluid" id="prof-pic" alt="User icon">
             </div>
             <div class="col">
-                <h2>{{Auth::guard('police')->user()->name}}</h2>
+                <h2>{{$user->name}}</h2>
                 <br>
-                <h4 >{{Auth::guard('police')->user()->policeStationId}}</h4>
+                <h4 >{{$user->policeStationId}}</h4>
             </div>
             <div class="col-auto align-self-end">
-                <button class="btn btn-primary">Editar perfil</button>
-                <button class="btn btn-danger">Eliminar perfil</button>
+              @if($user->account_status == 'active')
+              <form method="post" action="{{ route('police.desactive', $user->id) }}" id="form-desactive-{{ $user->id }}" style="display: inline;">
+                  @csrf
+                  <button class="btn btn-danger" type="button" onclick="confirmDeactivation('{{ $user->id }}')">Desativar</button>               
+              </form>
+              @else
+              <form method="post" action="{{ route('police.useractive', $user->id) }}" id="form-active-{{ $user->id }}" style="display: inline;">
+                  @csrf
+                  <button class="btn btn-danger" type="button" onclick="confirmActivation('{{ $user->id }}')">Ativar</button>               
+              </form>
+              @endif
             </div>
         </div>
     </div>
@@ -69,7 +76,7 @@
                 <div class="tab-pane fade" id="found-objects-tab-pane" role="tabpanel" aria-labelledby="found-objects-tab" tabindex="0">
                   <div class="container">
                     <div class="row">
-                      <h2>Os meus objetos encontrados</h2>
+                      <h2>Objetos encontrados</h2>
                   </div> 
                   <div class="row">
                     <p>Aqui serão inseridos os objetos que foram encontrados pelo utilizador e pode-se filtrar + pesquisar</p>  
@@ -120,7 +127,7 @@
         </div>
     </div>
     
-    @endif
+    
     {{-- @include('components.footer') --}}
 
     {{-- JQuery --}}
@@ -165,7 +172,7 @@
             let counter = 0;
             for (let i = 0; i < response.data.length; i++) {
               const item = response.data[i];
-              if ( item.estacao_policia == '{{Auth::guard('police')->user()->policeStationId}}'){
+              if ( item.estacao_policia == '{{$user->policeStationId}}'){
                 if (counter % 3 === 0 || counter === 0){
                   html += "<div class = 'row'>";
                 }
@@ -283,7 +290,7 @@
                           for (let i = 0; i < response.data.length; i++) {
                             const item = response.data[i];
                             
-                            if ( item.estacao_policia == '{{Auth::guard('police')->user()->policeStationId}}'){
+                            if ( item.estacao_policia == '{{$user->policeStationId}}'){
                               if (counter % 3 === 0 || counter === 0){
                                 html += "<div class = 'row'>";
                               }
@@ -369,5 +376,81 @@
 }
 
     </script>
+
+<script>
+ function confirmDeactivation(userId) {
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: "btn btn-success",
+                    cancelButton: "btn btn-danger"
+                },
+                buttonsStyling: false
+            });
+
+            swalWithBootstrapButtons.fire({
+                title: "Tem a certeza?",
+                text: "Voce tem a certeza que quer destivar esta conta?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sim, destivar",
+                cancelButtonText: "Não, cancelar!",
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    swalWithBootstrapButtons.fire({
+                        title: "Destivado!",
+                        text: "Utilizador destivado.",
+                        icon: "success"
+                    });
+                    setTimeout(() => {
+                        document.getElementById('form-desactive-' + userId).submit();
+                    }, 2000); // Delay of 5 seconds
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    swalWithBootstrapButtons.fire({
+                        title: "Cancelado!",
+                        text: "Operação destivada.",
+                        icon: "error"
+                    });
+                }
+            });
+        }
+
+        function confirmActivation(userId) {
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: "btn btn-success",
+                    cancelButton: "btn btn-danger"
+                },
+                buttonsStyling: false
+            });
+
+            swalWithBootstrapButtons.fire({
+                title: "Tem a certeza?",
+                text: "Voce quer ativar esta conta?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sim, ativar",
+                cancelButtonText: "Não, cancelar!",
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    swalWithBootstrapButtons.fire({
+                        title: "Conta ativada!",
+                        text: "Conta ativada com suceso.",
+                        icon: "success"
+                    });
+                    setTimeout(() => {
+                        document.getElementById('form-active-' + userId).submit();
+                    }, 2000); // Delay of 5 seconds
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    swalWithBootstrapButtons.fire({
+                        title: "Cancelado!",
+                        text: "Operação cancelada!",
+                        icon: "error"
+                    });
+                }
+            });
+        }
+  </script>
 </body>
 </html>

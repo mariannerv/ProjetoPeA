@@ -25,7 +25,7 @@ if (!Auth::guard('police')->check()) {
                 <div class="row justify-content-center">
                     <div class="col-md-8">
                         <div class="card">
-                            <div class="card-header">Registar Objeto Encontrado</div>
+                            <div class="card-header">Edirar Objeto Encontrado</div>
                             <div class="card-body">
 
                                 @if ($errors->any())
@@ -43,32 +43,32 @@ if (!Auth::guard('police')->check()) {
                                     {{ session('success') }}
                                 </div>
                               @endif
-                                <form class="row g-3 needs-validation" novalidate action="{{ route('found-objects.register') }}" method="post">
+                                <form class="row g-3 needs-validation" novalidate action="{{ route('found-object.update' , $object->_id) }}" method="post">
                                     @csrf
                                     @method('POST')
                                     <div class="col-md-6">
                                         <label for="category" class="form-label">Categoria</label>
-                                        <input type="text" class="form-control" id="category" name="category" required>
+                                        <input type="text" class="form-control" id="category" name="category" value="{{$object->category}}" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="description" class="form-label">Descrição</label>
-                                        <input type="text" class="form-control" id="description" name="description" required>
+                                        <input type="text" class="form-control" id="description" name="description" value="{{$object->description}}" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="date_found" class="form-label">Data de aparecimento</label>
-                                        <input type="date" class="form-control" id="date_found" name="date_found" required>
+                                        <input type="date" class="form-control" id="date_found" name="date_found" value="{{$object->date_found}}"  required>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="brand" class="form-label">Marca</label>
-                                        <input type="text" class="form-control" id="brand" name="brand">
+                                        <input type="text" class="form-control" id="brand" name="brand" value="{{$object->brand}}">
                                     </div>
                                     <div class="col-md-6">
                                         <label for="color" class="form-label">Cor</label>
-                                        <input type="text" class="form-control" id="color" name="color">
+                                        <input type="text" class="form-control" id="color" name="color" value="{{$object->color}}">
                                     </div>
                                     <div class="col-md-6">
                                         <label for="size" class="form-label">Tamanho</label>
-                                        <input type="text" class="form-control" id="size" name="size">
+                                        <input type="text" class="form-control" id="size" name="size" value="{{$object->size}}">
                                     </div>
                                     <input type="hidden" name="policeStationId" value="{{ Auth::guard('police')->user()->policeStationId }}">
                                     <div class="col-12">
