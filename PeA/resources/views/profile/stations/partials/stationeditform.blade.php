@@ -1,3 +1,10 @@
+<?php
+if (!auth()->user()->admin == "true") {
+    header('Location: ' . route('home'));
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -15,12 +22,9 @@
   </head>
   <body>
     <header>
-      @if (auth()->check())
-        @include('components.components.navbar')
-      @else
-        @include('components.components.navbar-guest')
-      @endif 
-      
+
+        @include('components.navbar')
+
   </header>
     <main class="my-5">
       <div class="container">

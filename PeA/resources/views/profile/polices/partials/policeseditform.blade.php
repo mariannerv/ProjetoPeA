@@ -1,3 +1,11 @@
+<?php
+if (!Auth::guard('police')->check()) {
+    header('Location: ' . route('home'));
+    exit;
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -15,11 +23,8 @@
   </head>
   <body>
     <header>
-      @if (auth()->check())
-        @include('navbar')
-      @else
-        @include('navbar-guest')
-      @endif 
+  
+        @include('components.navbar-police')
       
     </header>
     <main class="my-5">

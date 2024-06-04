@@ -35,7 +35,7 @@
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
-                                @print_r($erros)  
+                          
                             </ul>
                         </div>
                     @endif

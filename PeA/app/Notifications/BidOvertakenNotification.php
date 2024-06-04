@@ -1,63 +1,45 @@
-<?php
-
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\URL;
 
-class BidOvertakenNotification extends Notification
+class BidOvertakenNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    /**
-     * Create a new notification instance.
-     */
-    public function __construct()
+    protected $auction;
+    protected $amount;
+
+    public function __construct($auction, $amount)
     {
-        //
-    }
-    public function via(object $notifiable): array
-    {
-        $notifiable->createNotificationToken();
-        
-        return ['bidovertaken'];
+        $this->auction = $auction;
+        $this->amount = $amount;
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
-    public function toMail(object $notifiable): MailMessage
+    public function via($notifiable)
+    {
+        return ['mail', 'database'];
+    }
+
+    public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('bid overtaken')
-                    ;
+            ->line('Sua licitação foi ultrapassada.')
+            ->line('Novo valor mais alto: ' . $this->amount)
+            ->line('ID do leilão: ' . $this->auction->auctionId)
+            ->line('Data de fim: ' . $this->auction->end_date);
     }
 
-    /**
-     * Get the verification URL for the given notifiable.
-     *
-     * @param  mixed  $notifiable
-     * @return string
-     */
-    protected function verificationUrl($notifiable): string
-    {
-        return URL::temporarySignedRoute(
-            'verification.verify',
-            now()->addMinutes(60),
-            ['id' => $notifiable->getKey()]
-        );
-    }
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(object $notifiable): array
+    public function toArray($notifiable)
     {
         return [
-            //
+            'message' => 'Sua licitação foi ultrapassada.',
+            'auction_id' => $this->auction->auctionId,
+            'new_amount' => $this->amount,
+            'end_date' => $this->auction->end_date,
         ];
     }
 }

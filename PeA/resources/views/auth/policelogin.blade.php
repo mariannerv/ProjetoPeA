@@ -1,4 +1,3 @@
-// auth.login.blade.php
 <?php
 if (Auth::guard('police')->check() || Auth::check()) {
     header('Location: ' . route('home'));
@@ -30,7 +29,7 @@ if (Auth::guard('police')->check() || Auth::check()) {
           <div class="row justify-content-center">
               <div class="col-8">
                   <div class="card">
-                      <div class="card-header">Iniciar sessão como utilizador</div>
+                      <div class="card-header">Iniciar sessão como policia</div>
                       <div class="card-body">
 
                         @if ($errors->any())
@@ -39,17 +38,17 @@ if (Auth::guard('police')->check() || Auth::check()) {
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
-
+                               
                             </ul>
                         </div>
                     @endif
-                    <form class="g-3 needs-validation" action="{{route('user.login')}}" method="POST" novalidate>
+                    <form class="g-3 needs-validation" action="{{route('polices.login')}}" method="POST" novalidate>
                       @csrf
                       <div class="row">
-                        <label for="validationCustom09" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="validationCustom09" name="email" value="{{ old('email') }}" required>
+                        <label for="validationCustom09" class="form-label">Internal Id</label>
+                        <input type="text" class="form-control" id="validationCustom09" name="internalId" value="{{ old('internalId') }}" required>
                         <div class="invalid-feedback">
-                            Please provide a valid email address.
+                            Please provide a valid internal Id.
                         </div>
                       </div>
                       <div class="row">

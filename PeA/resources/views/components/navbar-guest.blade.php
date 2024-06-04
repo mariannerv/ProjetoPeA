@@ -46,3 +46,34 @@
         </div>
     </div>
     </nav>
+    <script>
+    document.getElementById('subscribe-button').addEventListener('click', function() {
+        const auctionId = prompt("Enter Auction ID to subscribe:");
+        if (auctionId) {
+            fetch('{{ route("subscribe.to.auction") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ auction_id: auctionId })
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error('Error:', error));
+        }
+    });
+
+    document.getElementById('test-notification-button').addEventListener('click', function() {
+        fetch('{{ route("send.test.notification") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => alert(data.message))
+        .catch(error => console.error('Error:', error));
+    });
+</script>

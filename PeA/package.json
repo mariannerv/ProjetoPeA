@@ -17,7 +17,9 @@
         "vite": "^5.0.0"
     },
     "dependencies": {
+        "auth": "^1.0.2",
         "bootstrap": "^5.3.3",
-        "cors": "^2.8.5"
+        "cors": "^2.8.5",
+        "guard": "^0.1.2"
     }
 }

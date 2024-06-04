@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\LostObjectController;
 use App\Http\Controllers\Api\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Api\NotificationsController;
 
 
 /*
@@ -86,7 +87,6 @@ Route::post("registerFoundObject", [foundObjectController::class, "registerFound
 Route::get("viewFoundObject", [foundObjectController::class, "viewFoundObject"]);
 Route::put("updateFoundObject", [foundObjectController::class, "updateFoundObject"]);
 Route::delete('deleteFoundObject', [foundObjectController::class, "deleteFoundObject"]);
-Route::get('getFoundObjectsStatistics', [FoundObjectController::class, 'getStatistics']);
 
 //APIs PoliceStation
 Route::post("registerPost", [PoliceStationController::class, "registerPost"]);
@@ -127,8 +127,6 @@ Route::put("updateLostObject", [LostObjectController::class, "updateLostObject"]
 Route::delete("deleteLostObject", [LostObjectController::class, "deleteLostObject"]);
 Route::post("crossCheck", [LostObjectController::class, "crossCheck"]);
 Route::get("getLostObject", [LostObjectController::class, "getLostObject"]);
-Route::get('getLostObjectsStatistics', [LostObjectController::class, 'getStatistics']);
-
 
 Route::post("createCode", [verificationCodeController::class, "createCode"]);
 
@@ -189,17 +187,6 @@ Route::post('/email/verification-notification', function (Request $request) {
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 
-
-
-
-
-
-
-
-
-
-
-
 //OWNER
 Route::post('/Owner', [OwnerController::class, 'store']);
 
@@ -208,3 +195,14 @@ Route::get('/Owner/{civilId}', [OwnerController::class, 'getUserByCivilId']);
 //Route::post('login', [AuthController::class, 'login']);
 
 
+//notifs
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/notifications', [NotificationsController::class, 'index']);
+    Route::post('/notifications/read', [NotificationsController::class, 'markAsRead']);
+    Route::post('/notifications/unread', [NotificationsController::class, 'markAsUnread']);
+});
+//sub e unsub notifs de um auction
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/auction/subscribe', [AuctionController::class, 'subscribe']);
+    Route::post('/auction/unsubscribe', [AuctionController::class, 'unsubscribe']);
+});
