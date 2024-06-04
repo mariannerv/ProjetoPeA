@@ -12,7 +12,7 @@
           <p>Depois desta ação, não será possível voltar atrás.</p> 
         </div>
         <div class="modal-footer">
-            <form id="deleteObject" class="row g-3 needs-validation" action="" novalidate method="delete">
+            <form id="deleteObject" class="g-3 needs-validation" action="" novalidate method="delete">
                 @csrf
                 <input type="hidden" id="lostObjectIdInput" name="lostObjectId" value=""></input>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
