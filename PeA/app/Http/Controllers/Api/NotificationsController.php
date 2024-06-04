@@ -6,18 +6,37 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Auction;
 use App\Models\User;
+use App\Models\NotifLog; 
 use App\Notifications\BidUpdatedNotification;
 use App\Notifications\BidOvertakenNotification;
 use App\Notifications\TestNotification;
+
 class NotificationsController extends Controller
 {
+    public function fetchAllNotifications(Request $request)
+{
+    $user = auth()->user();
+
+    if (!$user) {
+        return response()->json([
+            'status' => false,
+            'message' => 'User not authenticated.',
+        ], 401);
+    }
+
+    $notifications = NotifLog::where('user_id', $user->id)->get();
+
+    return response()->json([
+        'status' => true,
+        'notifications' => $notifications,
+    ]);
+}
     public function sendBidUpdatedNotification(Request $request)
     {
         $auctionId = $request->input('auctionId');
         $userEmail = $request->input('userEmail');
 
         $auction = Auction::where('auctionId', $auctionId)->first();
-
         if (!$auction) {
             return response()->json([
                 'status' => false,
@@ -26,7 +45,6 @@ class NotificationsController extends Controller
         }
 
         $user = User::where('email', $userEmail)->first();
-
         if (!$user) {
             return response()->json([
                 'status' => false,
@@ -35,6 +53,12 @@ class NotificationsController extends Controller
         }
 
         $user->notify(new BidUpdatedNotification($auction));
+
+        NotifLog::create([
+            'user_id' => $user->id,
+            'content' => 'Bid updated notification sent for auction: '.$auction->auctionId,
+            'read' => false,
+        ]);
 
         return response()->json([
             'status' => true,
@@ -48,7 +72,6 @@ class NotificationsController extends Controller
         $userEmail = $request->input('userEmail');
 
         $auction = Auction::where('auctionId', $auctionId)->first();
-
         if (!$auction) {
             return response()->json([
                 'status' => false,
@@ -57,7 +80,6 @@ class NotificationsController extends Controller
         }
 
         $user = User::where('email', $userEmail)->first();
-
         if (!$user) {
             return response()->json([
                 'status' => false,
@@ -65,8 +87,13 @@ class NotificationsController extends Controller
             ], 404);
         }
 
-        // Send BidOvertakenNotification
         $user->notify(new BidOvertakenNotification($auction));
+
+        NotifLog::create([
+            'user_id' => $user->id,
+            'content' => 'Bid overtaken notification sent for auction: '.$auction->auctionId,
+            'read' => false,
+        ]);
 
         return response()->json([
             'status' => true,
@@ -117,9 +144,10 @@ class NotificationsController extends Controller
             'message' => 'Unsubscribed from auction notifications successfully.',
         ]);
     }
+
     public function sendTestNotification(Request $request)
     {
-        $user = Auth::user();
+        $user = auth()->user();
 
         if (!$user) {
             return response()->json([
@@ -131,6 +159,12 @@ class NotificationsController extends Controller
         $message = $request->input('message', 'This is a test notification.');
 
         $user->notify(new TestNotification($message));
+
+        NotifLog::create([
+            'user_id' => $user->id,
+            'content' => 'Test notification sent',
+            'read' => false,
+        ]);
 
         return response()->json([
             'status' => true,

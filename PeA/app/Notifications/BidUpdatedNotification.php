@@ -1,47 +1,40 @@
 <?php
+
 namespace App\Notifications;
 
+use App\Models\NotifLog;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\URL;
+use Illuminate\Notifications\Notification;
 
 class BidUpdatedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
     protected $auction;
-    protected $amount;
 
-    public function __construct($auction, $amount)
+    public function __construct($auction)
     {
         $this->auction = $auction;
-        $this->amount = $amount;
     }
 
     public function via($notifiable)
     {
-        return ['mail', 'database'];
+        return ['database'];
     }
 
-    public function toMail($notifiable)
+    public function toDatabase($notifiable)
     {
-        return (new MailMessage)
-            ->line('Sua licitação foi atualizada.')
-            ->line('Novo valor: ' . $this->amount)
-            ->line('ID do leilão: ' . $this->auction->auctionId)
-            ->line('Data de fim: ' . $this->auction->end_date);
+        return [
+            'auction_id' => $this->auction->id,
+            'content' => 'Your bid has been updated for auction ' . $this->auction->id,
+        ];
     }
 
     public function toArray($notifiable)
     {
         return [
-            'message' => 'Sua licitação foi atualizada.',
-            'auction_id' => $this->auction->auctionId,
-            'new_amount' => $this->amount,
-            'end_date' => $this->auction->end_date,
+            // Array representation of the notification, if needed
         ];
     }
 }
-?>

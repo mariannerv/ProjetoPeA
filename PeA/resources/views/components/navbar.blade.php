@@ -1,64 +1,31 @@
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+  function sendTestNotification() {
+    axios.post("/api/notifications/send-test-notification", function(data) {
+      alert(data.message);
+      loadNotifications();
+    });
+  }
+
+  function loadNotifications() {
+    axios.get("/api/notifications/get-all", function(data) {
+      $("#notificationsDropdown").empty();
+      data.forEach(function(notification) {
+        $("#notificationsDropdown").append(`<li>${notification.content}</li>`);
+      });
+    });
+  }
+
+  $(document).ready(function() {
+    loadNotifications();
+  });
+</script>
+
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.12/push.min.js"></script>
-<script>
 
-    // Function to fetch notifications from the backend
-    function fetchNotifications() {
-        // Make a GET request to fetch notifications from the backend
-        axios.get('/notifications')
-            .then(response => {
-                // Extract notifications from the response data
-                const notifications = response.data.notifications;
-                // Call function to populate notifications in the dropdown menu
-                populateNotificationsDropdown(notifications);
-            })
-            .catch(error => {
-                console.error('Error fetching notifications:', error);
-            });
-    }
-
-    // Function to populate notifications in the dropdown menu
-    function populateNotificationsDropdown(notifications) {
-        const dropdownMenu = document.querySelector('#navbarDropdownMenu');
-
-        // Clear existing notifications in the dropdown menu
-        dropdownMenu.innerHTML = '';
-
-        // Check if notifications array is empty
-        if (notifications.length === 0) {
-            // If no notifications, display a message
-            dropdownMenu.innerHTML = '<p class="dropdown-item">No notifications</p>';
-        } else {
-            // Loop through notifications and create HTML elements for each
-            notifications.forEach(notification => {
-                const notificationItem = document.createElement('a');
-                notificationItem.classList.add('dropdown-item');
-                notificationItem.textContent = notification.message;
-                dropdownMenu.appendChild(notificationItem);
-            });
-        }
-    }
-
-    // Function to send a test notification
-    function sendTestNotification() {
-        // Use Push.js to send a test notification
-        Push.create('Test Notification', {
-            body: 'This is a test notification',
-            icon: '/path/to/icon.png',
-            timeout: 4000,
-            onClick: function () {
-                window.focus();
-                this.close();
-            }
-        });
-    }
-
-    // Call the fetchNotifications function when the page loads
-    window.addEventListener('load', function () {
-        fetchNotifications();
-    });
-</script>
 
 
 <nav class="navbar navbar-dark bg-dark">

@@ -197,9 +197,22 @@ Route::get('/Owner/{civilId}', [OwnerController::class, 'getUserByCivilId']);
 
 //notification routes
 
+Route::prefix('notifications')->group(function () {
+    Route::get('get-all', [NotificationsController::class, 'fetchAllNotifications']);
+    Route::post('bid-updated-notification', [NotificationsController::class, 'sendBidUpdatedNotification']);
+    Route::post('bid-overtaken-notification', [NotificationsController::class, 'sendBidOvertakenNotification']);
+    Route::post('subscribe-to-auction-notifications', [NotificationsController::class, 'subscribeToAuctionNotifications']);
+    Route::post('unsubscribe-from-auction-notifications', [NotificationsController::class, 'unsubscribeFromAuctionNotifications']);
+    Route::post('send-test-notification', [NotificationsController::class, 'sendTestNotification']);
+});
 
 //sub e unsub notifs de um auction
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auction/subscribe', [AuctionController::class, 'subscribe']);
     Route::post('/auction/unsubscribe', [AuctionController::class, 'unsubscribe']);
 });
+
+
+/*
+
+ */
