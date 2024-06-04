@@ -257,6 +257,12 @@ class PoliceController extends Controller
 }
 
 
+public function showprofile($id) {
+    $user = Police::find($id);
+    return view("admin.showpoliceprofile" , [ 'user' => $user]);
+}
+
+
 public function destroy(Request $request, $id)
 {
     $user = Police::findOrFail($id);
