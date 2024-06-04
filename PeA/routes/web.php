@@ -98,7 +98,8 @@ Route::get('/usersform', function () {
 
 // Profile views
 Route::view('/users/{user}','profile.users.user')->name('user.profile');
-Route::view('/users/{user}','profile.users.user')->name('user.profile');
+
+Route::view('/police/{police}','profile.users.police')->name('police.profile');
 
 #showprofile
 Route::get('/usersadmin/{user}', [ApiController::class, 'showprofile'])->name('useradm.profile');
@@ -132,6 +133,8 @@ Route::get('/lost-objects/{object}/edit', [LostObjectController::class,'editLost
 Route::put('/lost-objects/{object}', [LostObjectController::class,'upadteLostObject'])->name('lost-object.update');
 
 Route::get('/found-objects', [foundObjectController::class, 'getAllFoundObjects'])->name('found-objects.get');
+Route::view('/found-objects/register-form', 'objects.foundobjectregister')->name('found-objects.register-form');
+Route::post('/lost-objects/register', [foundObjectController::class, 'registerFoundObject'])->name('found-objects.register');
 Route::get('/found-objects/{object}', [foundObjectController::class,'getFoundObject'])->name('found-object.get');
 Route::delete('found-objects/delete/{object}', [foundObjectController::class,'deleteFoundObject'])->name('found-object.delete');
 Route::get('/search',function(){
