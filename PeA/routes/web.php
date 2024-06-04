@@ -101,6 +101,8 @@ Route::view('/users/{user}','profile.users.user')->name('user.profile');
 
 Route::view('/police/{police}','profile.polices.police')->name('police.profile');
 
+Route::view('/users/{user}','found-objects.watch-auctions')->name('user.auctions');
+
 #showprofile
 Route::get('/usersadmin/{user}', [ApiController::class, 'showprofile'])->name('useradm.profile');
 
