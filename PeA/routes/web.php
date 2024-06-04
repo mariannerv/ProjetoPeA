@@ -173,4 +173,6 @@ Route::view('/tokenexpirou/{uuid}', 'tokenexpirou')->name('tokenexpirou');
 Route::get('/auctions',[AuctionController::class,'viewAllAuctions'])->name('auctions.get');
 Route::get('/auctions/{auction}', [AuctionController::class,'viewAuction'])->name('auction.get');
 
+Route::view('/usersauctions/{user}','objects.found-objects.watch-auctions')->name('user.auctions');
+
 ?>
