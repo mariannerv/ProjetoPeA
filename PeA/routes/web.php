@@ -104,6 +104,8 @@ Route::view('/police/{police}','profile.users.police')->name('police.profile');
 #showprofile
 Route::get('/usersadmin/{user}', [ApiController::class, 'showprofile'])->name('useradm.profile');
 
+Route::get('/policeadmin/{user}', [PoliceController::class, 'showprofile'])->name('policeadm.profile');
+
 Route::get('/showreportadmin/{user}', [ApiController::class, 'showreportadmin'])->name('showreport.admin');
 
 Route::post('/reportadmin/{email}', [ApiController::class, 'reportadmin'])->name('reportadmin.admin');
