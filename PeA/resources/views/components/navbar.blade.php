@@ -1,31 +1,39 @@
 
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-<script>
-  function sendTestNotification() {
-    axios.post("/api/notifications/send-test-notification", function(data) {
-      alert(data.message);
-      loadNotifications();
-    });
-  }
-
-  function loadNotifications() {
-    axios.get("/api/notifications/get-all", function(data) {
-      $("#notificationsDropdown").empty();
-      data.forEach(function(notification) {
-        $("#notificationsDropdown").append(`<li>${notification.content}</li>`);
-      });
-    });
-  }
-
-  $(document).ready(function() {
-    loadNotifications();
-  });
-</script>
-
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.12/push.min.js"></script>
 
+<script>
+function sendTestNotification() {
+  axios.post("/api/notifications/send-test-notification")
+    .then(response => {
+      alert(response.data.message);
+      loadNotifications();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
+
+function loadNotifications() {
+  axios.get("/api/notifications/get-all")
+    .then(response => {
+      $("#notificationsDropdown").empty();
+      response.data.notifications.forEach(function(notification) {
+        $("#notificationsDropdown").append(`<li>${notification.content}</li>`);
+      });
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
+
+$(document).ready(function() {
+  loadNotifications();
+});
+
+</script>
 
 
 <nav class="navbar navbar-dark bg-dark">

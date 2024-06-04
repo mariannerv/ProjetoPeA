@@ -87,6 +87,7 @@ class User extends Authenticatable implements MustVerifyEmail
         }
     }
 
+    
     public function createNotificationToken()
     {
         $token = new NotificationToken();

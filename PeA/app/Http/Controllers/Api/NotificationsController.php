@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -13,10 +14,10 @@ use App\Notifications\TestNotification;
 
 class NotificationsController extends Controller
 {
+
     public function fetchAllNotifications(Request $request)
 {
-    $user = auth()->user();
-
+    $user = Auth::user();
     if (!$user) {
         return response()->json([
             'status' => false,
@@ -103,7 +104,7 @@ class NotificationsController extends Controller
 
     public function subscribeToAuctionNotifications(Request $request)
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $auctionId = $request->input('auctionId');
 
         $auction = Auction::where('auctionId', $auctionId)->first();
@@ -125,7 +126,7 @@ class NotificationsController extends Controller
 
     public function unsubscribeFromAuctionNotifications(Request $request)
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $auctionId = $request->input('auctionId');
 
         $auction = Auction::where('auctionId', $auctionId)->first();
@@ -147,7 +148,7 @@ class NotificationsController extends Controller
 
     public function sendTestNotification(Request $request)
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         if (!$user) {
             return response()->json([
