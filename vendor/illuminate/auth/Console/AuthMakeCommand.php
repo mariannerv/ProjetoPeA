@@ -31,13 +31,12 @@ class AuthMakeCommand extends Command
      * @var array
      */
     protected $views = [
-        'auth.login.stub' => 'auth.login.blade.php',
-        'login.stub' => 'login.blade.php',
+        'auth/login.stub' => 'auth.login.blade.php',
         'auth/register.stub' => 'auth/register.blade.php',
         'auth/passwords/email.stub' => 'auth/passwords/email.blade.php',
         'auth/passwords/reset.stub' => 'auth/passwords/reset.blade.php',
         'layouts/app.stub' => 'layouts/app.blade.php',
-        'home.stub' => 'home.blade.php',
+        'home/stub' => 'home.blade.php',
     ];
 
     /**
