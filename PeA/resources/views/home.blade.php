@@ -31,7 +31,7 @@
     </header>
     @if (auth()->check() || Auth::guard('police')->check() )
     <div class="container">
-      <div class="row">
+      <div class="row align-items-end">
         <div class="col-md-auto">
             @if (Auth::guard('police')->check() )
             <h2>Bem vindo, {{Auth::guard('police')->user()->name}}!</h2>
@@ -39,11 +39,12 @@
             @if(auth()->check()) 
             <h2>Bem vindo, {{auth()->user()->name}}!</h2>
             @endif
-            <p>Por favor escolhe uma opção:</p>
         </div>
-      </div>
+        <div class="row">
+          <div class="col">
+            <h4>Por favor escolhe uma opção:</h4>
+          </div>
       @if (auth()->check())
-      <div class="row justify-content-center">
         <div class="col-md-auto">
           <div class="text-center">
             <a role="button" href="{{ route('lost-objects.register-form') }}" class="btn btn-primary btn-lg btn-block mb-3">Registar um objeto</a>
