@@ -130,21 +130,21 @@ Route::get("getLostObject", [LostObjectController::class, "getLostObject"]);
 
 Route::post("createCode", [verificationCodeController::class, "createCode"]);
 
-// Route::get('/test_mongodb/', function (Illuminate\Http\Request $request) {
+ Route::get('/test_mongodb/', function (Illuminate\Http\Request $request) {
 
-//     $connection = DB::connection('mongodb');
-//     $msg = 'MongoDB is accessible!';
-//     try {
-//         $connection->command(['ping' => 1]);
-//         $dbName = $connection->getDatabaseName();
-//         $uri = config('database.connections.mongodb.dsn');
-//         $dbName = config('database.connections.mongodb.database');
-//         return [$msg, 'uri' => $uri, 'dbName' => $dbName];
-//     } catch (\Exception $e) {
-//         return $msg = 'MongoDB is not accessible. Error: ' . $e->getMessage();
-//     }
+     $connection = DB::connection('mongodb');
+     $msg = 'MongoDB is accessible!';
+    try {
+         $connection->command(['ping' => 1]);
+        $dbName = $connection->getDatabaseName();
+        $uri = config('database.connections.mongodb.dsn');
+        $dbName = config('database.connections.mongodb.database');
+         return [$msg, 'uri' => $uri, 'dbName' => $dbName];
+   } catch (\Exception $e) {
+      return $msg = 'MongoDB is not accessible. Error: ' . $e->getMessage();
+   }
     
-// });
+ });
 
 //Para testar se a conexão ao mongo está a funcionar
 

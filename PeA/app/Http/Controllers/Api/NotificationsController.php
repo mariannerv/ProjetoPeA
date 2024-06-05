@@ -13,6 +13,7 @@ use App\Notifications\BidUpdatedNotification;
 use App\Notifications\BidOvertakenNotification;
 use App\Notifications\TestNotification;
 
+
 class NotificationsController extends Controller
 {
     public function fetchAllNotifications(Request $request)
