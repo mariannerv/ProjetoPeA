@@ -14,7 +14,7 @@ namespace Illuminate\Support\Facades;
  * @method static bool attempt(array $credentials = [], bool $remember = false)
  * @method static bool once(array $credentials = [])
  * @method static void login(\Illuminate\Contracts\Auth\Authenticatable $user, bool $remember = false)
- * @method static \Illuminate\Contracts\Auth\Authenticatable loginUsingId(mixed $id, bool $remember = false)
+ * @method static \Illuminate\Contracts\Auth\Authenticatable loginUsingId(mixed $id, bool $remember = true)
  * @method static bool onceUsingId(mixed $id)
  * @method static bool viaRemember()
  * @method static void logout()

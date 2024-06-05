@@ -207,6 +207,7 @@ Route::prefix('notifications')->middleware('web')->group(function () {
 
 
 
+
 //sub e unsub notifs de um auction
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auction/subscribe', [AuctionController::class, 'subscribe']);

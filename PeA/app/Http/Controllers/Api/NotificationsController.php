@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\Auction;
 use App\Models\User;
@@ -12,34 +12,38 @@ use App\Models\NotifLog;
 use App\Notifications\BidUpdatedNotification;
 use App\Notifications\BidOvertakenNotification;
 use App\Notifications\TestNotification;
+
 class NotificationsController extends Controller
 {
-
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
     public function fetchAllNotifications(Request $request)
     {
-        Log::info('fetchAllNotifications method called.');
+        try {
+            if (!Auth::check()) {
+                Log::error('User not authenticated');
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User not authenticated',
+                ], 401);
+            }
 
-        $user = Auth::user();
+            Log::info('fetchAllNotifications method called.');
 
-        if (!$user) {
-            Log::error('User not authenticated');
+            $user = Auth::user();
+            $notifications = $user->notifications;
+
+            return response()->json([
+                'status' => true,
+                'notifications' => $notifications,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching all notifications: ' . $e->getMessage());
             return response()->json([
                 'status' => false,
-                'message' => 'User not authenticated.',
-            ], 401);
+                'message' => 'An error occurred while fetching notifications.',
+            ], 500);
         }
-
-        $notifications = NotifLog::where('user_id', $user->id)->get();
-
-        return response()->json([
-            'status' => true,
-            'notifications' => $notifications,
-        ]);
     }
+
     public function sendBidUpdatedNotification(Request $request)
     {
         $auctionId = $request->input('auctionId');
@@ -64,7 +68,7 @@ class NotificationsController extends Controller
         $user->notify(new BidUpdatedNotification($auction));
 
         NotifLog::create([
-            'user_id' => $user->_id,
+            'user_id' => $user->id,
             'content' => 'Bid updated notification sent for auction: '.$auction->auctionId,
             'read' => false,
         ]);
@@ -112,7 +116,7 @@ class NotificationsController extends Controller
 
     public function subscribeToAuctionNotifications(Request $request)
     {
-        $user = Auth::user();
+        $user = $user = Auth::user();
         $auctionId = $request->input('auctionId');
 
         $auction = Auction::where('auctionId', $auctionId)->first();
@@ -134,7 +138,7 @@ class NotificationsController extends Controller
 
     public function unsubscribeFromAuctionNotifications(Request $request)
     {
-        $user = Auth::user();
+        $user = $user = Auth::user();
         $auctionId = $request->input('auctionId');
 
         $auction = Auction::where('auctionId', $auctionId)->first();
@@ -155,45 +159,39 @@ class NotificationsController extends Controller
     }
 
     public function sendTestNotification(Request $request)
-{
-    try {
-        $user = Auth::user();
+    {
+        try {
+            if (!auth()->check()) {
+                Log::error('User not authenticated');
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User not authenticated',
+                ], 401);
+            }
 
-        if (!$user) {
-            Log::error('User not authenticated');
+            $user = $user = Auth::user();
+
+            $user->notify(new TestNotification('Your test message'));
+
+            NotifLog::create([
+                'user_id' => $user->id,
+                'content' => 'Your test message',
+                'read' => false,
+            ]);
+
+            Log::info('Test notification sent successfully to user: ' . $user->id);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Notification sent successfully',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error sending test notification: ' . $e->getMessage());
             return response()->json([
                 'status' => false,
-                'message' => 'User not authenticated',
-                'code' => 401,
-            ]);
+                'message' => 'An error occurred while sending the notification.',
+            ], 500);
         }
-
-        // Send the notification
-        $user->notify(new TestNotification('Your test message'));
-
-        // Create a NotifLog entry
-        NotifLog::create([
-            'user_id' => $user->id, // Assuming user_id is stored in the NotifLog
-            'content' => 'Your test message', // Assuming content is stored in the NotifLog
-            'read' => false, // Assuming read status is initialized as false
-        ]);
-
-        Log::info('Test notification sent successfully to user: ' . $user->id);
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Notification sent successfully',
-            'code' => 200,
-        ]);
-    } catch (\Exception $e) {
-        Log::error('Error sending test notification: ' . $e->getMessage());
-        return response()->json([
-            'status' => false,
-            'message' => 'An error occurred while sending the notification.',
-            'code' => 500,
-        ]);
     }
 }
 
-
-}
