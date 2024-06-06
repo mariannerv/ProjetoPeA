@@ -96,7 +96,7 @@ class LostObjectController extends Controller
     public function getAllLostObjects()
 {
     try {
-        $lostObjects = LostObject::all();
+        $lostObjects = LostObject::orderBy('created_at', 'desc')->get();
         
         return response()->json([
             "status" => true,
