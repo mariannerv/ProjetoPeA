@@ -66,7 +66,7 @@
                                     </div>
                                     <div class="col-*">
                                         <label for="size" class="form-label">Morada</label>
-                                        <input type="text" class="form-control" id="address" name="address">
+                                        <input type="text" class="form-control" id="adress" name="adress">
                                     </div>
                                     <div class="col-6">
                                         <label for="size" class="form-label">Código Postal</label>
@@ -74,7 +74,7 @@
                                     </div>
                                     <div class="col-6">
                                         <label for="size" class="form-label">Localidade</label>
-                                        <input type="text" class="form-control" id="city" name="city">
+                                        <input type="text" class="form-control" id="location" name="location">
                                     </div>
                                     <input type="hidden" name="ownerEmail" value="{{ auth()->user()->email }}">
                                     <div class="col-12">
