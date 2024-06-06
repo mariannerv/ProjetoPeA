@@ -44,8 +44,8 @@ class FoundObjectController extends Controller
                     ->withInput();
             }
 
-            $dateRegistered = now();
-            $deadlineForAuction = now()->addMonth();
+            $dateRegistered = (string) now();
+            $deadlineForAuction = (string) now()->addMonth();
             $uuid = (string) Str::uuid();
 
             $foundObject = FoundObject::create([

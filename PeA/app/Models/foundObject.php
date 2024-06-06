@@ -38,8 +38,6 @@ class foundObject extends Model
 
     protected $casts = [
         'objectId' => 'string',
-        'date_registered' => 'datetime',
-        'deadlineForAuction' => 'datetime',
     ];
 
 }
