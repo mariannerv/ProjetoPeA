@@ -12,6 +12,9 @@
       integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
   </head>
   <body>
     <header>
@@ -27,24 +30,21 @@
       @endif
     </header>
     @if (auth()->check() || Auth::guard('police')->check() )
-    <div class="container d-flex justify-content-center align-items-center vh-100">
-      <div class="row justify-content-center">
+    <div class="container">
+      <div class="row align-items-end">
         <div class="col-md-auto">
-          
-          <div class="text-center">
             @if (Auth::guard('police')->check() )
             <h2>Bem vindo, {{Auth::guard('police')->user()->name}}!</h2>
             @endif
             @if(auth()->check()) 
             <h2>Bem vindo, {{auth()->user()->name}}!</h2>
             @endif
-            <p>Por favor escolhe uma opção:</p>
-          </div>
-          
         </div>
-      </div>
+        <div class="row">
+          <div class="col">
+            <h4>Por favor escolhe uma opção:</h4>
+          </div>
       @if (auth()->check())
-      <div class="row justify-content-center">
         <div class="col-md-auto">
           <div class="text-center">
             <a role="button" href="{{ route('lost-objects.register-form') }}" class="btn btn-primary btn-lg btn-block mb-3">Registar um objeto</a>
@@ -59,16 +59,16 @@
       @endif
     </div>
     @else
-    <div class="container d-flex justify-content-center align-items-center vh-100">
-      <div class="row justify-content-center">
+    <div class="container">
+      <div class="row align-items-end">
         <div class="col-md-auto">
-          <div class="text-center">
             <h2>Bem vindo!</h2>
-            <p>Por favor escolhe uma opção:</p>
-          </div>
         </div>
       </div>
-      <div class="row justify-content-center">
+        <div class="row">
+          <div class="col">
+            <h4>Por favor escolha uma opção:</h4>
+          </div> 
         <div class="col-md-auto">
           <div class="text-center">
             <a role="button" href="http://localhost:8000/chooseaccounttype" class="btn btn-primary btn-lg btn-block mb-3">Criar nova conta de utilizador</a>
@@ -86,13 +86,23 @@
         </div>
       </div>
     </div>
+    
     @endif
+    @include('content-home')
     @include('components.footer')
+    {{-- JQuery --}}
+    <script 
+      src="https://code.jquery.com/jquery-3.6.0.min.js" 
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" 
+      crossorigin="anonymous"
+    ></script>
+    {{-- Popper --}}
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
       integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
       crossorigin="anonymous"
     ></script>
+    {{-- Bootstrap --}}
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
       integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
@@ -106,3 +116,4 @@
     </script> --}}
   </body>
 </html>
+

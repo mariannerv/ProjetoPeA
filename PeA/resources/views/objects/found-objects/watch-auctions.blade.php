@@ -35,10 +35,10 @@
         <div class="row border">
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                  <button class="nav-link" id="auctions-tab" data-bs-toggle="tab" data-bs-target="#auctions-tab-pane" type="button" role="tab" aria-controls="auctions-tab-pane" aria-selected="false">Leilões</button>
+                  <button class="nav-link active" id="auctions-tab" data-bs-toggle="tab" data-bs-target="#auctions-tab-pane" type="button" role="tab" aria-controls="auctions-tab-pane" aria-selected="false">Leilões</button>
                 </li>
             </ul>
-                <div class="tab-pane fade" id="auctions-tab-pane" role="tabpanel" aria-labelledby="auctions-tab" tabindex="0">
+                <div class="tab-pane fade show active" id="auctions-tab-pane" role="tabpanel" aria-labelledby="auctions-tab" tabindex="0">
                   <div class="container">
                     <div class="row">
                     <div class="col">
@@ -134,6 +134,6 @@
         }
      });
     </script>
-    @endif
+    @endif 
 </body>
 </html>
