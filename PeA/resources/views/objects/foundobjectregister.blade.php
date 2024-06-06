@@ -71,6 +71,18 @@ if (!Auth::guard('police')->check()) {
                                         <input type="text" class="form-control" id="size" name="size">
                                     </div>
                                     <input type="hidden" name="policeStationId" value="{{ Auth::guard('police')->user()->policeStationId }}">
+                                    <div class="col-*">
+                                        <label for="size" class="form-label">Morada</label>
+                                        <input type="text" class="form-control" id="address" name="address">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="size" class="form-label">Código Postal</label>
+                                        <input type="text" class="form-control" id="postalcode" name="postalcode">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="size" class="form-label">Localidade</label>
+                                        <input type="text" class="form-control" id="location" name="location">
+                                    </div>
                                     <p>Informação sobre a pessoa que encontrou o objeto:</p>
                                     <div class="col-md-6">
                                         <label for="size" class="form-label">Nome</label>

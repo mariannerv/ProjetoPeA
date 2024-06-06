@@ -61,7 +61,7 @@ class LostObjectController extends Controller
         "color" => $request->input('color'),
         "size" => $request->input('size'),
         "category" => $request->input('category'),
-        "adress" => $request->input('adress'),
+        "address" => $request->input('address'),
         "location" => $request->input('location'),
         "postalcode" => $request->input('postalcode'),
         "location_id" => $uuid,

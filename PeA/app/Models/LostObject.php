@@ -24,7 +24,7 @@ class LostObject extends Model
             'brand',
             'color',
             'size',
-            'adress',
+            'address',
             'location',
             'status',
             'postalcode',

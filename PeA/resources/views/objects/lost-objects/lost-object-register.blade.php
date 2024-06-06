@@ -66,7 +66,7 @@
                                     </div>
                                     <div class="col-*">
                                         <label for="size" class="form-label">Morada</label>
-                                        <input type="text" class="form-control" id="adress" name="adress">
+                                        <input type="text" class="form-control" id="address" name="address">
                                     </div>
                                     <div class="col-6">
                                         <label for="size" class="form-label">Código Postal</label>
