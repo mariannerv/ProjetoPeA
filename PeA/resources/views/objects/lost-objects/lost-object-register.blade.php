@@ -199,7 +199,7 @@
                         var longitude = position.coords.longitude;
 
                         var map = tt.map({
-                            key: 'YOUR_TOMTOM_API_KEY',
+                            key: 'YaHwXWGyliPES0fF3ymLjwaqwdo2IbZnY',
                             container: 'map',
                             center: [longitude, latitude],
                             zoom: 15
@@ -212,7 +212,7 @@
                             marker.setLngLat(coords);
 
                             // Fetch address details using TomTom's Reverse Geocoding API
-                            $.get(`https://api.tomtom.com/search/2/reverseGeocode/${coords.lat},${coords.lng}.json?key=YOUR_TOMTOM_API_KEY`, function(data) {
+                            $.get(`https://api.tomtom.com/search/2/reverseGeocode/${coords.lat},${coords.lng}.json?key=YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn`, function(data) {
                                 if (data && data.addresses && data.addresses.length > 0) {
                                     var address = data.addresses[0].address;
                                     $('#map-address').val(address.freeformAddress);
