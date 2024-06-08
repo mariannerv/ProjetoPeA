@@ -9,6 +9,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tomtom-international/web-sdk-maps@6.19/dist/maps-web.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@tomtom-international/web-sdk-maps@6.19/dist/maps.css" rel="stylesheet">
+
 </head>
 <body>
     <header>
@@ -28,55 +31,46 @@
                             <div class="card-header">Registar Objeto Perdido</div>
                             <div class="card-body">
                                 @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                               
-                            </ul>
-                        </div>
-                    @endif
+                                    <div class="alert alert-danger">
+                                        <ul>
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
                                 <form class="row g-3 needs-validation" novalidate action="{{ route('lost-objects.register') }}" method="post">
                                     @csrf
                                     @method('POST')
-                                    <div class="col-6">
-                                        <label for="description" class="form-label">Descrição</label>
-                                        <input type="text" class="form-control" id="description" name="description" required>
+                                    <div class="col-12">
+                                        <label for="address-input-method" class="form-label">Método de Entrada de Endereço</label>
+                                        <div>
+                                            <input type="radio" id="manual" name="address-input-method" value="manual" checked>
+                                            <label for="manual">Manual</label>
+                                            <input type="radio" id="map" name="address-input-method" value="map">
+                                            <label for="map">Mapa</label>
+                                        </div>
                                     </div>
-                                    <div class="col-6">
-                                        <label for="date_lost" class="form-label">Data de Perda</label>
-                                        <input type="date" class="form-control" id="date_lost" name="date_lost" required>
+                                    <div id="manual-address-input" class="col-12">
+                                        <div class="col-6">
+                                            <label for="address" class="form-label">Morada</label>
+                                            <input type="text" class="form-control" id="address" name="address">
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="postalcode" class="form-label">Código Postal</label>
+                                            <input type="text" class="form-control" id="postalcode" name="postalcode">
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="city" class="form-label">Localidade</label>
+                                            <input type="text" class="form-control" id="city" name="city">
+                                        </div>
                                     </div>
-                                    <div class="col-6">
-                                        <label for="category" class="form-label">Categoria</label>
-                                        <input type="text" class="form-control" id="category" name="category" required>
+                                    <div id="map-address-input" class="col-12" style="display: none;">
+                                        <div id="map" style="width: 100%; height: 400px;"></div>
+                                        <input type="hidden" id="map-address" name="address">
+                                        <input type="hidden" id="map-postalcode" name="postalcode">
+                                        <input type="hidden" id="map-city" name="city">
                                     </div>
-                                    <div class="col-6">
-                                        <label for="brand" class="form-label">Marca</label>
-                                        <input type="text" class="form-control" id="brand" name="brand">
-                                    </div>
-                                    <div class="col-6">
-                                        <label for="color" class="form-label">Cor</label>
-                                        <input type="text" class="form-control" id="color" name="color">
-                                    </div>
-                                    <div class="col-6">
-                                        <label for="size" class="form-label">Tamanho</label>
-                                        <input type="text" class="form-control" id="size" name="size">
-                                    </div>
-                                    <div class="col-*">
-                                        <label for="size" class="form-label">Morada</label>
-                                        <input type="text" class="form-control" id="address" name="address">
-                                    </div>
-                                    <div class="col-6">
-                                        <label for="size" class="form-label">Código Postal</label>
-                                        <input type="text" class="form-control" id="postalcode" name="postalcode">
-                                    </div>
-                                    <div class="col-6">
-                                        <label for="size" class="form-label">Localidade</label>
-                                        <input type="text" class="form-control" id="city" name="city">
-                                    </div>
-                                    <input type="hidden" name="ownerEmail" value="{{ auth()->user()->email }}">
                                     <div class="col-12">
                                         <button class="btn btn-primary" type="submit">Registar</button>
                                         <button class="btn btn-secondary" onclick="goBack()">Cancelar</button>
@@ -178,6 +172,58 @@
                     }
                 });
             });
+        });
+    </script>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('input[name="address-input-method"]').change(function() {
+                if ($('#map').is(':checked')) {
+                    $('#manual-address-input').hide();
+                    $('#map-address-input').show();
+                    initTomTomMap();
+                } else {
+                    $('#manual-address-input').show();
+                    $('#map-address-input').hide();
+                }
+            });
+
+            function initTomTomMap() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        var latitude = position.coords.latitude;
+                        var longitude = position.coords.longitude;
+
+                        var map = tt.map({
+                            key: 'YOUR_TOMTOM_API_KEY',
+                            container: 'map',
+                            center: [longitude, latitude],
+                            zoom: 15
+                        });
+
+                        var marker = new tt.Marker().setLngLat([longitude, latitude]).addTo(map);
+
+                        map.on('click', function(event) {
+                            var coords = event.lngLat;
+                            marker.setLngLat(coords);
+
+                            // Fetch address details using TomTom's Reverse Geocoding API
+                            $.get(`https://api.tomtom.com/search/2/reverseGeocode/${coords.lat},${coords.lng}.json?key=YOUR_TOMTOM_API_KEY`, function(data) {
+                                if (data && data.addresses && data.addresses.length > 0) {
+                                    var address = data.addresses[0].address;
+                                    $('#map-address').val(address.freeformAddress);
+                                    $('#map-postalcode').val(address.postalCode);
+                                    $('#map-city').val(address.localName);
+                                }
+                            });
+                        });
+                    });
+                }
+            }
         });
     </script>
     
