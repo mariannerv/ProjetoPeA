@@ -38,6 +38,69 @@ class LostObjectController extends Controller
                 "code" => 404,
             ]);
         }
+
+    $lostObject = LostObject::create([
+        "ownerEmail" => $ownerEmail,
+        "description" => $request->input('description'),
+        "date_lost" => $request->input('date_lost'),
+        "brand" => $request->input('brand'),
+        "color" => $request->input('color'),
+        "size" => $request->input('size'),
+        "category" => $request->input('category'),
+        "location" => "12345fsaw1",
+        "status" => "Lost",
+        "lostObjectId" => 0,
+    ]);
+
+    event(new Registered($lostObject));
+
+    // app(SendMailController::class)->sendWelcomeEmail(
+    //     $request->input('email'),
+    //     "Objecto registado com sucesso!",
+    //     "Obrigado por ter registado um objeto, esperamos que o consiga encontrar."
+    // );
+
+    return response()->json([
+        'message' => 'Lost object registered successfully',
+        'lost_object' => $lostObject,
+    ]);
+} catch (Exception $e) {
+    $exceptionInfo = [
+        'message' => $e->getMessage(),
+        
+        // Add more properties as needed
+    ];
+    return response()->json([
+        "status" => false,
+        "message" => "Ocorreu um erro ao recuperar as informações do objeto.",
+        "exception" => $exceptionInfo,
+        "code" => 500,
+    ], 500);
+}
+}
+
+
+
+    public function getAllLostObjects()
+{
+    try {
+        $lostObjects = LostObject::orderBy('created_at', 'desc')->get();
+        
+        return response()->json([
+            "status" => true,
+            "data" => $lostObjects,
+            "code" => 200,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            "status" => false,
+            "message" => "An error occurred while fetching all lost objects.",
+            "code" => 500,
+        ], 500);
+    }
+}
+
+    public function getLostObject(String $id){
         try {
             $val = Validator::make($request->all(), [
                 'ownerEmail' => 'required|email',
