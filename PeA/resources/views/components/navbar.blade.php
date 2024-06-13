@@ -33,10 +33,8 @@ function loadNotifications() {
 
 function displayStandardNotification(message) {
   if (Notification.permission === "granted") {
-    // If notification permission is already granted, show the notification
     new Notification(message);
   } else if (Notification.permission !== "denied") {
-    // If the user hasn't denied permission yet, ask for it
     Notification.requestPermission().then(function(permission) {
       if (permission === "granted") {
         new Notification(message);
