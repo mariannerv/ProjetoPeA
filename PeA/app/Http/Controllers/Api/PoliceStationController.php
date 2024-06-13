@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\PoliceController;
 use App\Models\Police;
-
+use App\Http\Controllers\Emails\SendMailController;
 class PoliceStationController extends Controller
 {
     private $sigla;
@@ -54,7 +54,8 @@ class PoliceStationController extends Controller
         "email" => $request->input('email'),
     ]);
 
-    return  redirect()->route('register.registerSuccess');
+   
+    return redirect()->route('register.success');
 
 } catch (ValidationException $e) {
     if ($e->errors()['unidade'] && $e->errors()['unidade'][0] === 'Unidade já registada.') {
@@ -74,6 +75,37 @@ class PoliceStationController extends Controller
     }
 }
 }
+
+
+    
+
+public function reportadmin(Request $request, $policeStationId) {
+    
+    $validatedData = $request->validate([
+        'textreport' => 'required|string',
+    ], [
+        'textreport.required' => 'Insira o seu report', 
+        
+    ]);
+
+
+    $policeStationEmail = PoliceStation::where('sigla', $policeStationId)->value('email');
+
+  
+    if (!$policeStationEmail) {
+        return back()->withErrors(['error' => 'E-mail da estação de polícia não encontrado.']);
+    }
+
+  
+    app(SendMailController::class)->sendWelcomeEmail(
+        $policeStationEmail,
+        $validatedData['textreport'],
+        $request->input('assunto')
+    );
+
+    return back()->with('success', 'E-mail enviado com sucesso.');
+}
+
 
    public function updatePost(Request $request) {
     try {

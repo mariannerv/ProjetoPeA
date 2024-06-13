@@ -459,7 +459,7 @@ public function addadmin($id) {
 
         //$userd = User::where('_id', $id)->get();
         $user = User::find($id);
-        $user->admin = 'true';
+        $user->admin = true;
         $user->save();
     
         app(SendMailController::class)->sendWelcomeEmail(
@@ -475,7 +475,7 @@ public function deladmin($id) {
 
     //$userd = User::where('_id', $id)->get();
     $user = User::find($id);
-    $user->admin = 'true';
+    $user->admin = false;
     $user->save();
 
     app(SendMailController::class)->sendWelcomeEmail(
