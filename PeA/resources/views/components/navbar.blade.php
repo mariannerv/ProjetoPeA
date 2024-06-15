@@ -3,51 +3,88 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.12/push.min.js"></script>
-
 <script>
-function sendTestNotification() {
-    displayStandardNotification("Test notification sent successfully!");
-  axios.post("/api/notifications/send-test-notification")
-    .then(response => {
-      alert(response.data.message);
-      loadNotifications();
-      
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
-}
-
-function loadNotifications() {
-  axios.get("/api/notifications/get-all")
-    .then(response => {
-      $("#notificationsDropdown").empty();
-      response.data.notifications.forEach(function(notification) {
-        $("#notificationsDropdown").append(`<li>${notification.content}</li>`);
-      });
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
-}
-
-function displayStandardNotification(message) {
-  if (Notification.permission === "granted") {
-    new Notification(message);
-  } else if (Notification.permission !== "denied") {
-    Notification.requestPermission().then(function(permission) {
-      if (permission === "granted") {
-        new Notification(message);
-      }
-    });
-  }
-}
-
-
-$(document).ready(function() {
-  loadNotifications();
+document.addEventListener('DOMContentLoaded', function() {
+    fetchNotifications();
+    setInterval(fetchNotifications, 5000); 
 });
 
+function fetchNotifications() {
+    fetch('/api/notifications/fetch-all', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const dropdown = document.getElementById('notificationsDropdown');
+        dropdown.innerHTML = '';
+
+        if (data.status) {
+            data.data.forEach(notification => {
+                const item = document.createElement('li');
+                item.className = 'dropdown-item';
+                item.innerHTML = `
+                    <div>
+                        <strong>${notification.title}</strong>
+                        <p>${notification.body}</p>
+                        <button onclick="markAsRead('${notification._id}')">Mark as read</button>
+                    </div>
+                `;
+                dropdown.appendChild(item);
+            });
+        } else {
+            const item = document.createElement('li');
+            item.className = 'dropdown-item';
+            item.innerText = 'No new notifications';
+            dropdown.appendChild(item);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function markAsRead(notificationId) {
+    fetch(`/api/notifications/mark-as-read/${notificationId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            fetchNotifications(); 
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function sendTestNotification() {
+    fetch('/api/notifications/send-test', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            alert(data.message);
+            fetchNotifications(); 
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
 </script>
 
 
@@ -102,14 +139,15 @@ $(document).ready(function() {
                   Procurar objetos
                 </a>
         </li>
-        <li class="nav-item dropdown">
+        
+<li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Notifications
+        Notificacoes
     </a>
-    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
-        <!-- Notifications will be dynamically loaded here -->
+    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown" id="notificationsDropdown">
+        <!-- Notification items will be populated here -->
     </ul>
-    <button onclick="sendTestNotification()">Send Test Notification</button>
+    <button onclick="sendTestNotification()">Enviar Notificacao de teste</button>
 </li>
         <li class="nav-item">
             <a class="nav-link" href="{{route('user.auctions', auth()->user()->id) }}">
