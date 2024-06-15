@@ -1,198 +1,109 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Notifications\NavNotification;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use App\Models\Auction;
+use App\Models\Bid;
 use App\Models\User;
-use App\Models\NotifLog;
-use App\Notifications\BidUpdatedNotification;
-use App\Notifications\BidOvertakenNotification;
-use App\Notifications\TestNotification;
-
 
 class NotificationsController extends Controller
 {
     public function fetchAllNotifications(Request $request)
-    {
-        try {
-            if (!Auth::check()) {
-                Log::error('User not authenticated');
-                return response()->json([
-                    'status' => false,
-                    'message' => 'User not authenticated',
-                ], 401);
-            }
+{
+    $user = Auth::user();
 
-            Log::info('fetchAllNotifications method called.');
+    if ($user) {
+        $notifications = NavNotification::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-            $user = Auth::user();
-            $notifications = $user->notifications;
-
+        if ($notifications->isEmpty()) {
             return response()->json([
                 'status' => true,
-                'notifications' => $notifications,
+                'message' => 'No new notifications!',
+                'data' => []
             ]);
-        } catch (\Exception $e) {
-            Log::error('Error fetching all notifications: ' . $e->getMessage());
-            return response()->json([
-                'status' => false,
-                'message' => 'An error occurred while fetching notifications.',
-            ], 500);
         }
-    }
-
-    public function sendBidUpdatedNotification(Request $request)
-    {
-        $auctionId = $request->input('auctionId');
-        $userEmail = $request->input('userEmail');
-
-        $auction = Auction::where('auctionId', $auctionId)->first();
-        if (!$auction) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Auction not found.',
-            ], 404);
-        }
-
-        $user = User::where('email', $userEmail)->first();
-        if (!$user) {
-            return response()->json([
-                'status' => false,
-                'message' => 'User not found.',
-            ], 404);
-        }
-
-        $user->notify(new BidUpdatedNotification($auction));
-
-        NotifLog::create([
-            'user_id' => $user->id,
-            'content' => 'Bid updated notification sent for auction: '.$auction->auctionId,
-            'read' => false,
-        ]);
 
         return response()->json([
             'status' => true,
-            'message' => 'Bid updated notification sent successfully.',
+            'data' => $notifications,
         ]);
+    }
+
+    return response()->json(['status' => false, 'message' => 'User not authenticated.'], 401);
+}
+
+
+    public function sendBidUpdatedNotification(Request $request)
+    {
+        $auctionId = $request->auctionId;
+        $highestBid = $request->highestBid;
+
+        $auction = Auction::where('auctionId', $auctionId)->first();
+        if (!$auction) {
+            return response()->json(['status' => false, 'message' => 'Auction not found.'], 404);
+        }
+
+        // Fetch subscribers of the auction
+        $subscribers = $auction->users;
+
+        foreach ($subscribers as $subscriber) {
+            NavNotification::create([
+                'user_id' => $subscriber->id,
+                'title' => 'Bid Updated',
+                'type' => 'bid_updated',
+                'body' => "The highest bid for auction {$auctionId} is now {$highestBid}.",
+                'is_read' => false,
+                'read_at' => null,
+            ]);
+        }
+
+        return response()->json(['status' => true, 'message' => 'Bid updated notifications sent.']);
     }
 
     public function sendBidOvertakenNotification(Request $request)
     {
-        $auctionId = $request->input('auctionId');
-        $userEmail = $request->input('userEmail');
+        $auctionId = $request->auctionId;
+        $previousBidderEmail = $request->previousBidderEmail;
 
-        $auction = Auction::where('auctionId', $auctionId)->first();
-        if (!$auction) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Auction not found.',
-            ], 404);
+        $previousBidder = User::where('email', $previousBidderEmail)->first();
+        if ($previousBidder) {
+            NavNotification::create([
+                'user_id' => $previousBidder->id,
+                'title' => 'Bid Overtaken',
+                'type' => 'bid_overtaken',
+                'body' => "Your bid for auction {$auctionId} has been overtaken.",
+                'is_read' => false,
+                'read_at' => null,
+            ]);
+
+            return response()->json(['status' => true, 'message' => 'Bid overtaken notification sent.']);
         }
 
-        $user = User::where('email', $userEmail)->first();
-        if (!$user) {
-            return response()->json([
-                'status' => false,
-                'message' => 'User not found.',
-            ], 404);
-        }
-
-        $user->notify(new BidOvertakenNotification($auction));
-
-        NotifLog::create([
-            'user_id' => $user->_id,
-            'content' => 'Bid overtaken notification sent for auction: '.$auction->auctionId,
-            'read' => false,
-        ]);
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Bid overtaken notification sent successfully.',
-        ]);
-    }
-
-    public function subscribeToAuctionNotifications(Request $request)
-    {
-        $user = $user = Auth::user();
-        $auctionId = $request->input('auctionId');
-
-        $auction = Auction::where('auctionId', $auctionId)->first();
-
-        if (!$auction) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Auction not found.',
-            ], 404);
-        }
-
-        $user->auctions()->attach($auction->_id);
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Subscribed to auction notifications successfully.',
-        ]);
-    }
-
-    public function unsubscribeFromAuctionNotifications(Request $request)
-    {
-        $user = $user = Auth::user();
-        $auctionId = $request->input('auctionId');
-
-        $auction = Auction::where('auctionId', $auctionId)->first();
-
-        if (!$auction) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Auction not found.',
-            ], 404);
-        }
-
-        $user->auctions()->detach($auction->_id);
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Unsubscribed from auction notifications successfully.',
-        ]);
+        return response()->json(['status' => false, 'message' => 'Previous bidder not found.'], 404);
     }
 
     public function sendTestNotification(Request $request)
     {
-        try {
-            if (!auth()->check()) {
-                Log::error('User not authenticated');
-                return response()->json([
-                    'status' => false,
-                    'message' => 'User not authenticated',
-                ], 401);
-            }
+        $user = Auth::user();
 
-            $user = $user = Auth::user();
-
-            $user->notify(new TestNotification('Your test message'));
-
-            NotifLog::create([
+        if ($user) {
+            NavNotification::create([
                 'user_id' => $user->id,
-                'content' => 'Your test message',
-                'read' => false,
+                'title' => 'Test Notification',
+                'type' => 'test',
+                'body' => 'This is a test notification.',
+                'is_read' => false,
+                'read_at' => null,
             ]);
 
-            Log::info('Test notification sent successfully to user: ' . $user->id);
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Notification sent successfully',
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Error sending test notification: ' . $e->getMessage());
-            return response()->json([
-                'status' => false,
-                'message' => 'An error occurred while sending the notification.',
-            ], 500);
+            return response()->json(['status' => true, 'message' => 'Test notification sent successfully.']);
         }
+
+        return response()->json(['status' => false, 'message' => 'User not authenticated.'], 401);
     }
 }
-
