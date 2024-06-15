@@ -1,62 +1,55 @@
-
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.12/push.min.js"></script>
 
 <script>
-function sendTestNotification() {
-    displayStandardNotification("Test notification sent successfully!");
-  axios.post("/api/notifications/send-test-notification")
-    .then(response => {
-      alert(response.data.message);
-      loadNotifications();
-      
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+async function sendTestNotification() {
+    try {
+        const response = await axios.post("{{ route('notifications.send-test-notification') }}");
+        alert(response.data.message);
+        loadNotifications();
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while sending the test notification.');
+    }
 }
 
-function loadNotifications() {
-  axios.get("/api/notifications/get-all")
-    .then(response => {
-      $("#notificationsDropdown").empty();
-      response.data.notifications.forEach(function(notification) {
-        $("#notificationsDropdown").append(`<li>${notification.content}</li>`);
-      });
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+async function loadNotifications() {
+    try {
+        const response = await axios.get("{{ route('notifications.fetchAllNotifications') }}");
+        const notificationsDropdown = $("#notificationsDropdown");
+        notificationsDropdown.empty();
+        response.data.notifications.forEach(function(notification) {
+            notificationsDropdown.append(`<li>${notification.data.message}</li>`);
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while loading notifications.');
+    }
 }
-
-function displayStandardNotification(message) {
-  if (Notification.permission === "granted") {
-    // If notification permission is already granted, show the notification
-    new Notification(message);
-  } else if (Notification.permission !== "denied") {
-    // If the user hasn't denied permission yet, ask for it
-    Notification.requestPermission().then(function(permission) {
-      if (permission === "granted") {
-        new Notification(message);
-      }
-    });
-  }
-}
-
 
 $(document).ready(function() {
-  loadNotifications();
+    loadNotifications();
 });
 
+function displayStandardNotification(message) {
+    Push.create("Notification", {
+        body: message,
+        timeout: 4000,
+        onClick: function () {
+            window.focus();
+            this.close();
+        }
+    });
+}
 </script>
+
+
 
 
 <nav class="navbar navbar-dark bg-dark">
 <div class="container-fluid">
     <a class="navbar-brand" href="http://localhost:8000">PeA</a>
-    
         <form class="d-flex" role="search">
     <input class="form-control" type="search" placeholder="Search" aria-label="Search">
     <button class="btn btn-success" type="submit">Search</button>
@@ -106,13 +99,14 @@ $(document).ready(function() {
         </li>
         <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Notifications
+        Notificacoes
     </a>
-    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
-        <!-- Notifications will be dynamically loaded here -->
+    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown" id="notificationsDropdown">
+        <!-- Dynamic notifications will be loaded here -->
     </ul>
     <button onclick="sendTestNotification()">Send Test Notification</button>
 </li>
+
         <li class="nav-item">
             <a class="nav-link" href="{{route('user.auctions', auth()->user()->id) }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
