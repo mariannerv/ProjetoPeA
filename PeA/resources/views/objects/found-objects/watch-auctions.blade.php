@@ -134,6 +134,6 @@
         }
      });
     </script>
-    @endif 
+    @endif
 </body>
 </html>
