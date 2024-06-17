@@ -26,6 +26,8 @@ use Illuminate\Support\Facades\Validator;
 
 class LostObjectController extends Controller
 {
+  
+    
     public function registerLostObject(Request $request)
 {
     $ownerEmail = $request->ownerEmail;
@@ -90,8 +92,57 @@ class LostObjectController extends Controller
     ], 500);
 }
 }
+public function getAllObjects()
+{
+$foundObjects = FoundObject::all();
+$lostObjects = LostObject::all();
+return view('objects.found-objects.all-objects' ,['foundObjects' => $foundObjects , 'lostObjects' => $lostObjects]);
+}
 
+public function getObjects($foundObjectId, $lostObjectId)
+{
+    // Buscar o objeto encontrado pelo ID
+    $foundObject = FoundObject::find($foundObjectId);
 
+    // Buscar o objeto perdido pelo ID
+    $lostObject = LostObject::find($lostObjectId);
+
+    // Verificar se ambos os objetos foram encontrados
+    if (!$foundObject || !$lostObject) {
+        return redirect()->back()->withErrors('One or both objects not found.');
+    }
+    $matchPercentage = $this->calculateMatchPercentage($foundObject, $lostObject);
+    // Passar os objetos para a view
+    return view('objects.found-objects.compare',['foundObjects' => $foundObject , 'lostObjects' => $lostObject , 'compare' => $matchPercentage]);
+}
+
+public function add(FoundObject $foundObject, LostObject $lostObject) {
+    $matchPercentage = $this->calculateMatchPercentage($foundObject, $lostObject);
+
+    $possibleOwner = ['owner' => $lostObject->ownerEmail, 'match' => $matchPercentage];
+
+    $fObject = FoundObject::where('_id', $foundObject->_id)->first();
+
+    if ($fObject) {
+        // Clone a propriedade possible_owner para garantir que a modificação indireta funcione
+        $owners = $fObject->possible_owner ?? [];
+        
+        // Adiciona o novo possível proprietário ao array
+        $owners[] = $possibleOwner;
+        
+        // Reatribui o array modificado de volta à propriedade possible_owner
+        $fObject->possible_owner = $owners;
+
+        // Salva as mudanças no banco de dados
+        $fObject->save();
+        return redirect()->route('getowner.objects' , $foundObject->_id);
+    }
+}
+
+public function ownerbject($foundObjectId) {
+    $object = FoundObject::find($foundObjectId);
+    return view('objects.found-objects.owner-object',['object' => $object]);
+}
 
     public function getAllLostObjects()
 {
