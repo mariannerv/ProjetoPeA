@@ -31,10 +31,11 @@ if (!Auth::guard('police')->check()) {
   </header>
     <br><br>
 
-    <h1>Este objeto tem {{$compare}}%</h1>
-
-    <h2>Ojeto encontado</h2>
+    <h1>Estes objetos têm {{$compare}}% de match</h1>
+  <br>
+    
     <div class="container border">
+        <h4>Ojeto encontado</h4>
         <div class="row">
             <div class="col align-self-center">
                 <img src="../images/Missing-image.png" alt="image representing there is no image" class="img-fluid">
@@ -68,9 +69,10 @@ if (!Auth::guard('police')->check()) {
     </div>
 
 <br>
-<h2>Ojeto perdido</h2>
+
     <div class="container border">
-      <div class="row">
+        <h4>Ojeto perdido</h4>
+        <div class="row">
           <div class="col align-self-center">
               <img src="../images/Missing-image.png" alt="image representing there is no image" class="img-fluid">
           </div>
@@ -100,11 +102,13 @@ if (!Auth::guard('police')->check()) {
           </div>
       </div>
       <br>
-      <form method="POST" action="{{route('addowner.objects' , [$foundObjects ,$lostObjects] )}}">
-        @csrf
-        <button>adicionar possivel owner</button>
-      </form>
+     
   </div>
+  <br>
+  <form method="POST" action="{{route('addowner.objects' , [$foundObjects ,$lostObjects] )}}">
+    @csrf
+    <button class="btn btn-primary" >adicionar possivel owner</button>
+  </form>
     @include('components.footer')
     <script 
       src="https://code.jquery.com/jquery-3.6.0.min.js" 

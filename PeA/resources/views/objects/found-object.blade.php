@@ -21,15 +21,33 @@ if (!Auth::guard('police')->check()) {
       crossorigin="anonymous"
     />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
+    <link href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.0.7/datatables.min.css" rel="stylesheet">
+ 
+    <script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.0.7/datatables.min.js"></script>
+    
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 
   </head>
   <body>
     <header>
       @include('components.navbar-police')
   </header>
-    <br><br>
+    <br>
+    @if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+    <br>
+
     <div class="container border">
         <div class="row">
             <div class="col align-self-center">
@@ -77,6 +95,33 @@ if (!Auth::guard('police')->check()) {
                     </div>
                 </div>
             </div>
+            @if (is_array($object->possible_owner))
+            <table id="usertabel" class="table table-striped" style="width:100%">
+              <thead>
+                  <tr>
+                      <th>Possível dono</th>
+                      <th>Match</th>
+                      <th>Ver detalhes</th>
+                      <th>Notificar</th>
+                      
+                  </tr>
+              </thead>
+              <tbody>
+                   @foreach ($object->possible_owner as $owner)
+                  <tr>
+                      <!-- Acesse os atributos do objeto diretamente -->
+                      <td>{{ $owner['owner'] ?? '' }}</td>
+                      <td>{{ $owner['match'] ?? '' }}%</td>
+                      <td><a href="{{route('compare.objects' , [$object->_id , $owner['lostObjectid']])}}"><button class="btn btn-primary" >Ver detalhes</button></a></td>
+                      <td><a href="{{route('notify.owner' , [$object ,$owner['lostObjectid'], $owner['owner']])}}"><button class="btn btn-primary" >Notificar</button></a></td>
+                     
+                  </tr>
+                  @endforeach
+              </tbody>
+            </table>
+          @endif
+
+
         </div>
         <br>
     </div>
@@ -99,6 +144,7 @@ if (!Auth::guard('police')->check()) {
     ></script>
 
     <script>
+          let table = new DataTable('#usertabel');
        function confirmDeactivation(userId) {
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
