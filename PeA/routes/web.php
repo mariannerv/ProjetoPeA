@@ -177,6 +177,7 @@ Route::get('/auctions/{auction}', [AuctionController::class,'viewAuction'])->nam
 
 Route::view('/usersauctions/{user}','objects.found-objects.watch-auctions')->name('user.auctions');
 
+<<<<<<< HEAD
 Route::get('/allobjects', [LostObjectController::class,'getAllObjects'])->name('allobjects.get');
 
 Route::get('/compare/{foundObject}/{lostObject}', [LostObjectController::class,'getObjects'])->name('compare.objects');
@@ -185,3 +186,6 @@ Route::post('/addowner/{foundObject}/{lostObject}', [LostObjectController::class
 
 Route::get('/ownerobject/{foundObject}/' , [LostObjectController::class,'ownerbject'])->name('getowner.objects')
 ?>
+=======
+?>
+>>>>>>> 290a392bc74501ca6fa1ac1fb6a489ca63fd1238
