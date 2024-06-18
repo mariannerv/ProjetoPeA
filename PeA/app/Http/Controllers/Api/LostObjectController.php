@@ -54,6 +54,8 @@ class LostObjectController extends Controller
             return redirect()->back()->withErrors($val)->withInput();
         }
 
+        $uuid = (string) Str::uuid();
+
     $lostObject = LostObject::create([
         "ownerEmail" => $ownerEmail,
         "description" => $request->input('description'),
@@ -62,7 +64,10 @@ class LostObjectController extends Controller
         "color" => $request->input('color'),
         "size" => $request->input('size'),
         "category" => $request->input('category'),
-        "location" => "12345fsaw1",
+        "address" => $request->input('address'),
+        "location" => $request->input('location'),
+        "postalcode" => $request->input('postalcode'),
+        "location_id" => $uuid,
         "status" => "Lost",
         "lostObjectId" => 0,
     ]);
@@ -190,7 +195,7 @@ public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
     public function getAllLostObjects()
 {
     try {
-        $lostObjects = LostObject::all();
+        $lostObjects = LostObject::orderBy('created_at', 'desc')->get();
         
         return response()->json([
             "status" => true,

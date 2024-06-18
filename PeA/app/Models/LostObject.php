@@ -24,8 +24,11 @@ class LostObject extends Model
             'brand',
             'color',
             'size',
+            'address',
             'location',
             'status',
-            'lostObjectId'
+            'postalcode',
+            'lostObjectId',
+            'location_id',
         ];
 }

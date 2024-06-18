@@ -71,6 +71,31 @@ if (!Auth::guard('police')->check()) {
                                         <input type="text" class="form-control" id="size" name="size">
                                     </div>
                                     <input type="hidden" name="policeStationId" value="{{ Auth::guard('police')->user()->policeStationId }}">
+                                    <div class="col-*">
+                                        <label for="size" class="form-label">Morada</label>
+                                        <input type="text" class="form-control" id="address" name="address">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="size" class="form-label">Código Postal</label>
+                                        <input type="text" class="form-control" id="postalcode" name="postalcode">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="size" class="form-label">Localidade</label>
+                                        <input type="text" class="form-control" id="location" name="location">
+                                    </div>
+                                    <p>Informação sobre a pessoa que encontrou o objeto:</p>
+                                    <div class="col-md-6">
+                                        <label for="size" class="form-label">Nome</label>
+                                        <input type="text" class="form-control" id="name" name="name">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="size" class="form-label">Número</label>
+                                        <input type="text" class="form-control" id="number" name="number">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="size" class="form-label">Email</label>
+                                        <input type="text" class="form-control" id="email" name="email">
+                                    </div>
                                     <div class="col-12">
                                         <button class="btn btn-primary" type="submit">Registar</button>
                                         <button class="btn btn-secondary" onclick="goBack()">Cancelar</button>

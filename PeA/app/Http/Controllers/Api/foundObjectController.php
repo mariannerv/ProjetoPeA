@@ -26,7 +26,12 @@ class FoundObjectController extends Controller
                 'color' => 'required|string',
                 'size' => 'required|string',
                 'description' => 'required|string',
-                'location_id' => 'nullable|string',
+                'address' => 'required|string',
+                'location' => 'required|string',
+                'postalcode' => 'required|string',
+                'name' => 'required|string',
+                'number' => 'required|string',
+                'email' => 'required|string',
                 'location_coords' => [
                     'nullable',
                     'regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),\s*[-]?((([1]?[0-7]?[0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?$/'
@@ -37,30 +42,37 @@ class FoundObjectController extends Controller
 
             if ($val->fails()){
                 return redirect()
-                ->back()
-                ->withErrors($val)
-                ->withInput();
+                    ->back()
+                    ->withErrors($val)
+                    ->withInput();
             }
 
-            $dateRegistered = now();
-            $deadlineForAuction = now()->addMonth();
+            $dateRegistered = (string) now();
+            $deadlineForAuction = (string) now()->addMonth();
             $uuid = (string) Str::uuid();
 
-            FoundObject::create([
+            $foundObject = FoundObject::create([
                 "category" => $request->category,
                 "brand" => $request->brand,
                 "color" => $request->color,
                 "size" => $request->size,
                 "description" => $request->description,
-                "location_id" => $request->location_id,
                 "location_coords" => $request->location_coords,
+                'address' => $request->address,
+                'location' => $request->location,
+                'postalcode' => $request->postalcode,
+                "objectId" => $uuid,
+                "name" => $request->name,
+                "email" => $request->email,
+                "number" => $request->number,
                 "date_found" => $request->date_found,
                 "date_registered" => $dateRegistered,
                 "deadlineForAuction" => $deadlineForAuction,
                 "estacao_policia" => $request->policeStationId,
             ]);
+
             return redirect()->back()->with('success', 'Objeto encontrado registado com sucesso');
-          
+
         } catch (\Exception $e) {
             return response()->json([
                 "status" => false,
