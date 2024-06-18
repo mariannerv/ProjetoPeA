@@ -180,7 +180,7 @@ Route::get('/auctions/{auction}', [AuctionController::class,'viewAuction'])->nam
 Route::view('/usersauctions/{user}','objects.found-objects.watch-auctions')->name('user.auctions');
 
 Route::view('/usersRegisterAuctions/{user}','objects.found-objects.auctions-register')->name('user.registerAuctions');
-Route::get('/RegisterAuctions', [AuctionController::class,'createAuction'])->name('auction.register');
+Route::post('/RegisterAuctions', [AuctionController::class,'createAuction'])->name('auction.register');
 
 Route::get('/allobjects', [LostObjectController::class,'getAllObjects'])->name('allobjects.get');
 
