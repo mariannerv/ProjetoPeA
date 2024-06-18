@@ -51,7 +51,9 @@ if (!Auth::guard('police')->check()) {
                                         <select class="form-select" id="objectId" name="objectId" value="objectId" required>
                                             <option selected disabled value="">Choose...</option>
                                             @foreach ($foundObjects as $objecto)
+                                            @if($objecto->estacao_policia == Auth::guard('police')->user()->policeStationId)
                                             <option>{{$objecto->objectId}}</option>
+                                            @endif
                                             @endforeach
                                         </select>
                                         <div class="invalid-feedback">
