@@ -37,9 +37,8 @@ use App\Http\Controllers\Api\NotificationsController;
 
 
 //APIs User
-
 Route::post("register", [ApiController::class, "register"]);
-Route::post("login", [ApiController::class, "login"]);
+Route::post("login", [ApiController::class, "login"])->name('login');
 
 
 Route::group([
@@ -196,9 +195,12 @@ Route::post('login', [AuthController::class, 'login']);
 
 
 //notification routes
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::group([
+    "middleware" => ["auth:sanctum"]
+], function(){
     Route::get('/notifications/fetch-all', [NotificationsController::class, 'fetchAllNotifications']);
-    Route::post('/notifications/mark-as-read/{id}', [NotificationsController::class, 'markNotificationAsRead']);
+    Route::post('/notifications/send-overtaken', [NotificationsController::class, 'sendBidOvertakenNotification']);
+    Route::post('/notifications/send-updated', [NotificationsController::class, 'sendBidUpdatedNotification']);
     Route::post('/notifications/send-test', [NotificationsController::class, 'sendTestNotification']);
 });
 

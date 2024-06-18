@@ -3,91 +3,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.12/push.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    fetchNotifications();
-    setInterval(fetchNotifications, 5000); 
-});
-
-function fetchNotifications() {
-    fetch('/api/notifications/fetch-all', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        const dropdown = document.getElementById('notificationsDropdown');
-        dropdown.innerHTML = '';
-
-        if (data.status) {
-            data.data.forEach(notification => {
-                const item = document.createElement('li');
-                item.className = 'dropdown-item';
-                item.innerHTML = `
-                    <div>
-                        <strong>${notification.title}</strong>
-                        <p>${notification.body}</p>
-                        <button onclick="markAsRead('${notification._id}')">Mark as read</button>
-                    </div>
-                `;
-                dropdown.appendChild(item);
-            });
-        } else {
-            const item = document.createElement('li');
-            item.className = 'dropdown-item';
-            item.innerText = 'No new notifications';
-            dropdown.appendChild(item);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
-function markAsRead(notificationId) {
-    fetch(`/api/notifications/mark-as-read/${notificationId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status) {
-            fetchNotifications(); 
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
-function sendTestNotification() {
-    fetch('/api/notifications/send-test', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message) {
-            alert(data.message);
-            fetchNotifications(); 
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-</script>
-
-
 <nav class="navbar navbar-dark bg-dark">
 <div class="container-fluid">
     <a class="navbar-brand" href="http://localhost:8000">PeA</a>
@@ -140,15 +55,15 @@ function sendTestNotification() {
                 </a>
         </li>
         
-<li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Notificacoes
-    </a>
-    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown" id="notificationsDropdown">
-        <!-- Notification items will be populated here -->
-    </ul>
-    <button onclick="sendTestNotification()">Enviar Notificacao de teste</button>
-</li>
+        <li class="nav-item dropdown" v-if="isAuthenticated">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Notificacoes
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown" id="notificationsDropdown">
+                <!-- Notification items will be populated here -->
+            </ul>
+            <button onclick=">Enviar Notificacao de teste</button>
+        </li>
         <li class="nav-item">
             <a class="nav-link" href="{{route('user.auctions', auth()->user()->id) }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
@@ -248,3 +163,47 @@ function sendTestNotification() {
     </div>
 </div>
 </nav>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.querySelector('#notificationsDropdown')) {
+        fetchNotifications();
+    }
+});
+
+function fetchNotifications() {
+    fetch('/api/notifications/fetch-all', {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            const dropdown = document.getElementById('notificationsDropdown');
+            dropdown.innerHTML = '';
+            data.data.forEach(notification => {
+                const li = document.createElement('li');
+                li.innerText = notification.data.message;
+                dropdown.appendChild(li);
+            });
+        }
+    });
+}
+function sendTestNotification() {
+    fetch('/api/notifications/send-test', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            alert('Test notification sent');
+            fetchNotifications();
+        }
+    });
+}
+</script>

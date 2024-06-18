@@ -154,7 +154,7 @@ public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
 
         // Remover o possível dono da lista de possíveis donos
         $foundObject = FoundObject::find($foundObject->_id);
-
+    }
         if ($foundObject) {
             // Filtra o array possible_owner para remover o item com o lostObjectid fornecido
             $newPossibleOwners = array_filter($foundObject->possible_owner, function ($owner) use ($lostObjectid) {
@@ -451,8 +451,8 @@ public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
                 "status" => true,
                 "data" => $objects,
                 "code" => 200,
-            ]);
-        } catch (\Exception $e) {
+            ]);} 
+            catch (\Exception $e) {
             return response()->json([
                 "status" => false,
                 "message" => "An error occurred while searching for lost objects.",
@@ -495,5 +495,6 @@ public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
     {
         return view('profile.users.partials.usereditform', ['user' => $lostObject]);
     }
+
 }
 

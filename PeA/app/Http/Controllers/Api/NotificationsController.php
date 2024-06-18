@@ -2,108 +2,61 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\NotificationEmail;
+use App\Models\Notification;
 use Illuminate\Http\Request;
-use App\Models\Notifications\NavNotification;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Auction;
-use App\Models\Bid;
-use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 
 class NotificationsController extends Controller
 {
     public function fetchAllNotifications(Request $request)
-{
-    $user = Auth::user();
-
-    if ($user) {
-        $notifications = NavNotification::where('user_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        if ($notifications->isEmpty()) {
-            return response()->json([
-                'status' => true,
-                'message' => 'No new notifications!',
-                'data' => []
-            ]);
-        }
+    {
+        $user = Auth::user();
+        $notifications = $user->notifications()->whereNull('read_at')->get();
 
         return response()->json([
             'status' => true,
-            'data' => $notifications,
+            'data' => $notifications
         ]);
     }
 
-    return response()->json(['status' => false, 'message' => 'User not authenticated.'], 401);
-}
-
-
     public function sendBidUpdatedNotification(Request $request)
     {
-        $auctionId = $request->auctionId;
-        $highestBid = $request->highestBid;
+        $user = Auth::user();
+        $notification = $user->notifications()->create([
+            'type' => 'BidUpdated',
+            'data' => ['message' => 'Your bid has been updated', 'auction_id' => $request->auctionId],
+        ]);
 
-        $auction = Auction::where('auctionId', $auctionId)->first();
-        if (!$auction) {
-            return response()->json(['status' => false, 'message' => 'Auction not found.'], 404);
-        }
+        Mail::to($user->email)->send(new NotificationEmail($notification));
 
-        // Fetch subscribers of the auction
-        $subscribers = $auction->users;
-
-        foreach ($subscribers as $subscriber) {
-            NavNotification::create([
-                'user_id' => $subscriber->id,
-                'title' => 'Bid Updated',
-                'type' => 'bid_updated',
-                'body' => "The highest bid for auction {$auctionId} is now {$highestBid}.",
-                'is_read' => false,
-                'read_at' => null,
-            ]);
-        }
-
-        return response()->json(['status' => true, 'message' => 'Bid updated notifications sent.']);
+        return response()->json(['status' => true]);
     }
 
     public function sendBidOvertakenNotification(Request $request)
     {
-        $auctionId = $request->auctionId;
-        $previousBidderEmail = $request->previousBidderEmail;
+        $user = User::where('email', $request->previousBidderEmail)->first();
+        $notification = $user->notifications()->create([
+            'type' => 'BidOvertaken',
+            'data' => ['message' => 'Your bid has been overtaken', 'auction_id' => $request->auctionId],
+        ]);
 
-        $previousBidder = User::where('email', $previousBidderEmail)->first();
-        if ($previousBidder) {
-            NavNotification::create([
-                'user_id' => $previousBidder->id,
-                'title' => 'Bid Overtaken',
-                'type' => 'bid_overtaken',
-                'body' => "Your bid for auction {$auctionId} has been overtaken.",
-                'is_read' => false,
-                'read_at' => null,
-            ]);
+        Mail::to($user->email)->send(new NotificationEmail($notification));
 
-            return response()->json(['status' => true, 'message' => 'Bid overtaken notification sent.']);
-        }
-
-        return response()->json(['status' => false, 'message' => 'Previous bidder not found.'], 404);
+        return response()->json(['status' => true]);
     }
 
     public function sendTestNotification(Request $request)
     {
         $user = Auth::user();
+        $notification = $user->notifications()->create([
+            'type' => 'Test',
+            'data' => ['message' => 'This is a test notification'],
+        ]);
 
-        if ($user) {
-            NavNotification::create([
-                'user_id' => $user->id,
-                'title' => 'Test Notification',
-                'type' => 'test',
-                'body' => 'This is a test notification.',
-                'is_read' => false,
-                'read_at' => null,
-            ]);
+        Mail::to($user->email)->send(new NotificationEmail($notification));
 
-            return response()->json(['status' => true, 'message' => 'Test notification sent successfully.']);
-        }
-
-        return response()->json(['status' => false, 'message' => 'User not authenticated.'], 401);
+        return response()->json(['status' => true]);
     }
 }

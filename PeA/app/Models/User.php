@@ -100,4 +100,8 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Auction::class, 'auction_user')
                     ->where('end_date', '>', Carbon::now());
     }
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
 }
