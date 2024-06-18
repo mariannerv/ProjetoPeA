@@ -59,7 +59,7 @@ class AuctionController extends Controller
                 'start_date' => $dateRegistered,
                 'end_date' => $endAuctionTime,
                 'objectId' =>$request->objectId,
-                'status' => 'deactive',
+                'status' => 'active',
                 'bids_list' => []
             ]);
 
