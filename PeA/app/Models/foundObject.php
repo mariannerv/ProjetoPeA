@@ -29,7 +29,6 @@ class foundObject extends Model
         'name',
         'number',
         'email',
-        'location_id',
         'location_coords',
         'value',
         'date_found',

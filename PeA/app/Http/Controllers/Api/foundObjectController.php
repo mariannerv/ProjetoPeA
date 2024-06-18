@@ -61,7 +61,7 @@ class FoundObjectController extends Controller
                 'address' => $request->address,
                 'location' => $request->location,
                 'postalcode' => $request->postalcode,
-                "location_id" => $uuid,
+                "objectId" => $uuid,
                 "name" => $request->name,
                 "email" => $request->email,
                 "number" => $request->number,
