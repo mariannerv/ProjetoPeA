@@ -48,11 +48,13 @@ if (!Auth::guard('police')->check()) {
                                     @method('POST')
                                     <div class="col-md-4">
                                         <label for="validationCustom03" class="form-label">Objeto a Leiloar</label>
-                                        <select class="form-select" id="validationCustom02" name="objectId" value="objectId" required>
+                                        <select class="form-select" id="objectId" name="objectId" value="objectId" required>
                                             <option selected disabled value="">Choose...</option>
-                                            @foreach ($objetos as $objecto)
+                                            @if($foundObjects->estacao_policia == Auth::guard('police')->user()->policeStationId)
+                                            @foreach ($foundObjects as $objecto)
                                             <option>{{$objecto->objectId}}</option>
                                             @endforeach
+                                            @endif
                                         </select>
                                         <div class="invalid-feedback">
                                             Please provide a valid ObjectId
