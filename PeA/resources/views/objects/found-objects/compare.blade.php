@@ -94,7 +94,7 @@ if (!Auth::guard('police')->check()) {
                   </div>  
               <div class="row">
                   <div class="col">
-                      <p>Data de aparecimento:: {{ $lostObjects->date_lost }}</p>
+                      <p>Data da perda:: {{ $lostObjects->date_lost }}</p>
                   </div>
               </div>
               
@@ -105,10 +105,30 @@ if (!Auth::guard('police')->check()) {
      
   </div>
   <br>
+  <?php
+
+  $id = False;
+  foreach ($foundObjects->possible_owner as $owner) {
+    if ($owner['lostObjectid'] == $lostObjects->_id)
+    {
+        $id = True;
+    }
+
+  }
+  ?>
+  <?php
+  if ($id == False) {
+   
+  ?>
+  
+
   <form method="POST" action="{{route('addowner.objects' , [$foundObjects ,$lostObjects] )}}">
     @csrf
     <button class="btn btn-primary" >adicionar possivel owner</button>
   </form>
+  <?php
+  }
+  ?>
     @include('components.footer')
     <script 
       src="https://code.jquery.com/jquery-3.6.0.min.js" 

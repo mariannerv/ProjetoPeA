@@ -112,8 +112,8 @@ if (!Auth::guard('police')->check()) {
                       <!-- Acesse os atributos do objeto diretamente -->
                       <td>{{ $owner['owner'] ?? '' }}</td>
                       <td>{{ $owner['match'] ?? '' }}%</td>
-                      <td><a href="{{route('compare.objects' , [$object->_id , $owner['lostObjectid']])}}"><button class="btn btn-primary" >Ver detalhes</button></a></td>
-                      <td><a href="{{route('notify.owner' , [$object ,$owner['lostObjectid'], $owner['owner']])}}"><button class="btn btn-primary" >Notificar</button></a></td>
+                      <td><a href="{{route('compare.objects' , [$object->_id , $owner['lostObjectid']  ?? '' ])}}"><button class="btn btn-primary" >Ver detalhes</button></a></td>
+                      <td><a href="{{route('notify.owner' , [$object ,$owner['lostObjectid'] ?? '' , $owner['owner']])}}"><button class="btn btn-primary" >Notificar</button></a></td>
                      
                   </tr>
                   @endforeach
