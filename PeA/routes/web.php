@@ -147,6 +147,8 @@ Route::post('found-objects/delete/{object}', [foundObjectController::class,'dele
 Route::post('found-objects/delete2/{object}', [foundObjectController::class,'deleteFoundObject2'])->name('found-object2.delete');
 Route::get('/found-objects/edit/{object}', [foundObjectController::class,'edit'])->name('found-object.edit');
 
+Route::get('/found-allObjects', [foundObjectController::class,'getall'])->name('found-allObject.get');
+
 Route::get('/found-object/{object}', [foundObjectController::class,'getobject'])->name('found-object.get');
 Route::post('/found-objects/update/{object}', [foundObjectController::class,'update'])->name('found-object.update');
 Route::get('/search',function(){

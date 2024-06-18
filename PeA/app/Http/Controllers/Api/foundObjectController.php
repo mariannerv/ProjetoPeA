@@ -330,6 +330,12 @@ class FoundObjectController extends Controller
         }
     }
 
+    public function getall() {
+        $foundObjects = FoundObject::all();
+        var_dump($foundObjects);
+        return view('objects.found-objects.auctions-register' , ['foundObjects' => $foundObjects]);
+    }
+
 }
 
 
