@@ -21,34 +21,21 @@ if (!Auth::guard('police')->check()) {
       crossorigin="anonymous"
     />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <link href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.0.7/datatables.min.css" rel="stylesheet">
- 
-    <script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.0.7/datatables.min.js"></script>
-    
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
 
   </head>
   <body>
     <header>
       @include('components.navbar-police')
   </header>
-    <br>
-    @if (session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
+    <br><br>
 
-@if (session('error'))
-    <div class="alert alert-danger">
-        {{ session('error') }}
-    </div>
-@endif
-    <br>
-
+    <h1>Estes objetos têm {{$compare}}% de match</h1>
+  <br>
+    
     <div class="container border">
+        <h4>Ojeto encontado</h4>
         <div class="row">
             <div class="col align-self-center">
                 <img src="../images/Missing-image.png" alt="image representing there is no image" class="img-fluid">
@@ -56,75 +43,92 @@ if (!Auth::guard('police')->check()) {
             <div class="col">
                 <div class="row">
                     <div class="col">
-                        <h2>{{ $object->category }}</h2>
+                        <h2>{{ $foundObjects->category }}</h2>
                         <p> 
-                            {{$object->brand}}; 
-                            {{$object->color}};
-                            @if ($object->size)
-                                Tamanho {{$object->size}}
-                            @endif
+                            {{$foundObjects->brand}}; 
+                            {{$foundObjects->color}};
+                          
                         </p>
                     </div>
                 </div>
                     <div class="col">
-                        <p>Objeto perdido: {{ $object->description }}</p>
+                        <p>Objeto perdido: {{ $foundObjects->description }}</p>
 
                         
                     </div>  
                 <div class="row">
                     <div class="col">
-                        <p>Data de aparecimento:: {{ $object->date_found }}</p>
+                        <p>Data de aparecimento:: {{ $foundObjects->date_found }}</p>
                     </div>
                 </div>
                 
-                <div class="row">
-                    <div class="col">
-                        @if (Auth::guard('police')->user()->policeStationId === $object->estacao_policia )
-                        <form class="row g-3 needs-validation" novalidate action="{{ route('found-object.edit', $object->_id) }}" method="get">
-                        <button  type="submit" class="btn btn-primary">Editar objeto</button>
-                        </form>
-                        <form method="post" action="{{ route('found-object2.delete', $object->_id) }}" id="form-desactive-{{ $object->_id }}">
-                          @csrf
-                          <button class="btn btn-danger"  type="button" onclick="confirmDeactivation('{{ $object->_id }}')">Eliminar objeto</button>               
-                      </form>
-                        
-                        @else
-                        <button class="btn btn-primary">Encontrei</button> 
-                        @endif
-                        {{-- Este botão vai servir como notificação de possivel dono --}}
-                    </div>
-                </div>
+            
             </div>
-            @if (is_array($object->possible_owner))
-            <table id="usertabel" class="table table-striped" style="width:100%">
-              <thead>
-                  <tr>
-                      <th>Possível dono</th>
-                      <th>Match</th>
-                      <th>Ver detalhes</th>
-                      <th>Notificar</th>
-                      
-                  </tr>
-              </thead>
-              <tbody>
-                   @foreach ($object->possible_owner as $owner)
-                  <tr>
-                      <!-- Acesse os atributos do objeto diretamente -->
-                      <td>{{ $owner['owner'] ?? '' }}</td>
-                      <td>{{ $owner['match'] ?? '' }}%</td>
-                      <td><a href="{{route('compare.objects' , [$object->_id , $owner['lostObjectid']  ?? '' ])}}"><button class="btn btn-primary" >Ver detalhes</button></a></td>
-                      <td><a href="{{route('notify.owner' , [$object ,$owner['lostObjectid'] ?? '' , $owner['owner']])}}"><button class="btn btn-primary" >Notificar</button></a></td>
-                     
-                  </tr>
-                  @endforeach
-              </tbody>
-            </table>
-          @endif
-
-
         </div>
         <br>
     </div>
+
+<br>
+
+    <div class="container border">
+        <h4>Ojeto perdido</h4>
+        <div class="row">
+          <div class="col align-self-center">
+              <img src="../images/Missing-image.png" alt="image representing there is no image" class="img-fluid">
+          </div>
+          <div class="col">
+              <div class="row">
+                  <div class="col">
+                      <h2>{{ $lostObjects->category }}</h2>
+                      <p> 
+                          {{$lostObjects->brand}}; 
+                          {{$lostObjects  ->color}};
+                        
+                      </p>
+                  </div>
+              </div>
+                  <div class="col">
+                      <p>Objeto perdido: {{ $lostObjects->description }}</p>
+
+                      
+                  </div>  
+              <div class="row">
+                  <div class="col">
+                      <p>Data da perda:: {{ $lostObjects->date_lost }}</p>
+                  </div>
+              </div>
+              
+          
+          </div>
+      </div>
+      <br>
+     
+  </div>
+  <br>
+  <?php
+
+  $id = False;
+  foreach ($foundObjects->possible_owner as $owner) {
+    if ($owner['lostObjectid'] == $lostObjects->_id)
+    {
+        $id = True;
+    }
+
+  }
+  ?>
+  <?php
+  if ($id == False) {
+   
+  ?>
+  
+
+  <form method="POST" action="{{route('addowner.objects' , [$foundObjects ,$lostObjects] )}}">
+    @csrf
+    <button class="btn btn-primary" >adicionar possivel owner</button>
+  </form>
+  <?php
+  }
+  ?>
     @include('components.footer')
     <script 
       src="https://code.jquery.com/jquery-3.6.0.min.js" 
@@ -144,7 +148,6 @@ if (!Auth::guard('police')->check()) {
     ></script>
 
     <script>
-          let table = new DataTable('#usertabel');
        function confirmDeactivation(userId) {
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {

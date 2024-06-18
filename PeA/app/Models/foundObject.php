@@ -16,7 +16,7 @@ class foundObject extends Model
 
     protected $fillable = [
         'objectId',
-        'possible_owner',
+        'possible_owner' => 'array',
         'category',
         'brand',
         'color',
