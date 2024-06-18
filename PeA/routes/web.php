@@ -141,11 +141,13 @@ Route::put('/lost-objects/{object}', [LostObjectController::class,'upadteLostObj
 
 Route::get('/found-objects', [foundObjectController::class, 'getAllFoundObjects'])->name('found-objects.get');
 Route::view('/found-objects/register-form', 'objects.foundobjectregister')->name('found-objects.register-form');
-Route::post('/lost-objects/register', [foundObjectController::class, 'registerFoundObject'])->name('found-objects.register');
+Route::post('/found-objects/register', [foundObjectController::class, 'registerFoundObject'])->name('found-objects.register');
 Route::get('/found-objects/{object}', [foundObjectController::class,'getFoundObject'])->name('found-object.get');
 Route::post('found-objects/delete/{object}', [foundObjectController::class,'deleteFoundObject'])->name('found-object.delete');
 Route::post('found-objects/delete2/{object}', [foundObjectController::class,'deleteFoundObject2'])->name('found-object2.delete');
 Route::get('/found-objects/edit/{object}', [foundObjectController::class,'edit'])->name('found-object.edit');
+
+Route::get('/found-allObjects', [foundObjectController::class,'getall'])->name('found-allObject.get');
 
 Route::get('/found-object/{object}', [foundObjectController::class,'getobject'])->name('found-object.get');
 Route::post('/found-objects/update/{object}', [foundObjectController::class,'update'])->name('found-object.update');
@@ -177,6 +179,9 @@ Route::get('/auctions/{auction}', [AuctionController::class,'viewAuction'])->nam
 
 Route::view('/usersauctions/{user}','objects.found-objects.watch-auctions')->name('user.auctions');
 
+Route::view('/usersRegisterAuctions/{user}','objects.found-objects.auctions-register')->name('user.registerAuctions');
+Route::get('/RegisterAuctions', [AuctionController::class,'createAuction'])->name('auction.register');
+
 Route::get('/allobjects', [LostObjectController::class,'getAllObjects'])->name('allobjects.get');
 
 Route::get('/compare/{foundObject}/{lostObject}', [LostObjectController::class,'getObjects'])->name('compare.objects');
@@ -185,7 +190,4 @@ Route::post('/addowner/{foundObject}/{lostObject}', [LostObjectController::class
 
 Route::get('/ownerobject/{foundObject}/' , [LostObjectController::class,'ownerbject'])->name('getowner.objects');
 Route::get('/notifyowner/{foundObject}/{lostObject}/{owner}/' , [LostObjectController::class,'notifyowner'])->name('notify.owner');
-
-
 ?>
-

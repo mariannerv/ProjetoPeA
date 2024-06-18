@@ -174,7 +174,7 @@ class FoundObjectController extends Controller
         }
     }
 
-    public function getAllFoundObjects()
+    public function getAllFoundObjects2()
     {
         try {
             $foundObjects = FoundObject::all();
@@ -192,6 +192,10 @@ class FoundObjectController extends Controller
             ], 500);
         }
     }
+
+
+
+
 
     public function getStatistics()
     {
@@ -246,6 +250,11 @@ class FoundObjectController extends Controller
     }
 
     public function edit(FoundObject $object) {
+        return view('objects.foundobjectedit' , ['object' => $object]);
+    }
+
+    public function getall(FoundObject $object) {
+        $foundObjects = FoundObject::all();
         return view('objects.foundobjectedit' , ['object' => $object]);
     }
 
