@@ -69,6 +69,7 @@ class FoundObjectController extends Controller
                 "date_registered" => $dateRegistered,
                 "deadlineForAuction" => $deadlineForAuction,
                 "estacao_policia" => $request->policeStationId,
+                "possible_owner" => []
             ]);
 
             return redirect()->back()->with('success', 'Objeto encontrado registado com sucesso');
@@ -174,7 +175,7 @@ class FoundObjectController extends Controller
         }
     }
 
-    public function getAllFoundObjects()
+    public function getAllFoundObjects2()
     {
         try {
             $foundObjects = FoundObject::all();
@@ -192,6 +193,10 @@ class FoundObjectController extends Controller
             ], 500);
         }
     }
+
+
+
+
 
     public function getStatistics()
     {
@@ -249,6 +254,7 @@ class FoundObjectController extends Controller
         return view('objects.foundobjectedit' , ['object' => $object]);
     }
 
+ 
     public function getobject(FoundObject $object) {
         return view('objects.found-object' , ['object' => $object]);
     }
@@ -332,6 +338,7 @@ class FoundObjectController extends Controller
 
     public function getall() {
         $foundObjects = FoundObject::all();
+
         return view('objects.found-objects.auctions-register' , ['foundObjects' => $foundObjects]);
     }
 

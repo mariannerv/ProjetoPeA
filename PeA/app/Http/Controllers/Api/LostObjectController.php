@@ -164,7 +164,7 @@ public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
         
         // Envia o email
         app(SendMailController::class)->sendWelcomeEmail(
-            $email, // toEmail
+            "fc56948@alunos.fc.ul.pt", // toEmail
             $aviso,
             "Objeto Perdido possivelmente encontrado"  // subject
         );

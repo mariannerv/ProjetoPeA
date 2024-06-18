@@ -16,7 +16,7 @@ class foundObject extends Model
 
     protected $fillable = [
         'objectId',
-        'possible_owner' => 'array',
+        'possible_owner',
         'category',
         'brand',
         'color',
@@ -40,6 +40,7 @@ class foundObject extends Model
 
     protected $casts = [
         'objectId' => 'string',
+        'possible_owner' => 'array',
     ];
 
 }
