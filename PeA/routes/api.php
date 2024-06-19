@@ -5,7 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OwnerController;
 use App\Models\Owner;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\verificationCodeController;
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\PoliceStationController;
 use App\Http\Controllers\Api\PoliceController;
 use App\Http\Controllers\Api\AuctionController;
@@ -15,6 +17,7 @@ use App\Http\Controllers\Api\LostObjectController;
 use App\Http\Controllers\Api\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\DB;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -55,7 +58,7 @@ Route::post('activate', [ApiController::class, "activate"]);
 
 //APIs Policia
 
-Route::post("registerPolice", [PoliceController::class, "registerPolice"]);
+Route::post("registerPolice", [PoliceController::class, "registerPolicia"]);
 Route::post("loginPolice", [PoliceController::class, "loginPolice"]);
 
 Route::group([
@@ -71,7 +74,11 @@ Route::group([
 Route::post('deactivatePolice', [PoliceController::class, "deactivatePolice"]);
 Route::post('activatePolice', [PoliceController::class, "activatePolice"]);
 
+//API Location
 
+Route::get('fetchLocationAddress/{id}', [LocationController::class, "fetchLocationAddress"]);
+Route::get('getAllLocations', [LocationController::class, "getAllLocations"]);
+Route::get('viewLocation/{id}', [LocationController::class, "viewLocation"]);
 
 //API foundObject
 
@@ -79,6 +86,7 @@ Route::post("registerFoundObject", [foundObjectController::class, "registerFound
 Route::get("viewFoundObject", [foundObjectController::class, "viewFoundObject"]);
 Route::put("updateFoundObject", [foundObjectController::class, "updateFoundObject"]);
 Route::delete('deleteFoundObject', [foundObjectController::class, "deleteFoundObject"]);
+Route::get('getFoundObjectsStatistics', [FoundObjectController::class, 'getStatistics']);
 
 //APIs PoliceStation
 Route::post("registerPost", [PoliceStationController::class, "registerPost"]);
@@ -90,6 +98,14 @@ Route::delete('deletePost', [PoliceStationController::class, "deletePost"]);
 Route::get('viewPost', [PoliceStationController::class, "viewPost"]);
 
 
+//API pra procurar objetos encontrados
+Route::get("allFoundObjects", [foundObjectController::class, "getAllFoundObjects"]);
+Route::get("found-object-search-by-description", [foundObjectController::class, "searchByDescription"]);
+
+
+//API pra procurar 0bjetos perdidos
+Route::get("allLostObjects", [LostObjectController::class, "getAllLostObjects"]);
+Route::get("lost-object-search-by-description", [LostObjectController::class, "searchByDescription"]);
 
 //API do Auction
 
@@ -111,8 +127,10 @@ Route::put("updateLostObject", [LostObjectController::class, "updateLostObject"]
 Route::delete("deleteLostObject", [LostObjectController::class, "deleteLostObject"]);
 Route::post("crossCheck", [LostObjectController::class, "crossCheck"]);
 Route::get("getLostObject", [LostObjectController::class, "getLostObject"]);
+Route::get('getLostObjectsStatistics', [LostObjectController::class, 'getStatistics']);
 
 
+Route::post("createCode", [verificationCodeController::class, "createCode"]);
 
 // Route::get('/test_mongodb/', function (Illuminate\Http\Request $request) {
 
@@ -152,7 +170,6 @@ Route::get('/test_mongodb', function (Request $request) {
 
 
 
-
 //Teste para mandar email de para confirmar o email, tem de se ver um serviço de emails tipo Mailtrip ou Mailtrap
 
 Route::get('/email/verify', function () {
@@ -189,4 +206,5 @@ Route::post('/Owner', [OwnerController::class, 'store']);
 Route::get('/Owner/{civilId}', [OwnerController::class, 'getUserByCivilId']);
 
 //Route::post('login', [AuthController::class, 'login']);
+
 

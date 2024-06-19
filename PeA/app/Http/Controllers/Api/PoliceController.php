@@ -15,18 +15,23 @@ use App\Models\PoliceStation;
 class PoliceController extends Controller
 {
     public function index() {
-
         $user =  Police::all();
-        return view('polices' ,['users' => $user]);
+        $numberUsers = Police::count();
+         $numberactive = Police::where('account_status', 'active')->count();
+        $deactivated = Police::where('account_status', 'deactivated')->count();
+     return view('admin.polices' ,['users' => $user , 'numberusers' => $numberUsers , 
+    'numberactive' => $numberactive , 'deactivated' => $deactivated]);
+        
+    
     }
 
 
     //Register
-    public function registerPolice(Request $request){
+    public function registerPolicia(Request $request){
         try{
             $val = Validator::make($request->all(),[
                 'name' => 'required|string',
-                'internalId' => 'required|string|unique:police_user',
+                'internalId' => 'required|integer|unique:police_user',
                 'password' => 'required|min:8',
                 'policeStationId' =>  'required|string|exists:police_station,sigla',
             ]); 
@@ -52,74 +57,48 @@ class PoliceController extends Controller
                 "email_verified_at" => '',
             ]);
 
-            return redirect()->route('polices.store');
+            return redirect()->route('register.success');
 
         } catch (ValidationException $e){
-            if ($e->errors()['internalId'] && $e->erros()['internalId'][0] === "Policia com este Id já associado a outra conta.");
+            if ($e->errors()['internalId'] && $e->erros()['internalId'][0] === "Policia com este Id já associado a outra conta."){
+                
                 return response()->json([
                     "status" => false,
                     "message" => "Policia com este Id já associado a outra conta.",
                     "code" => 400,
                 ]);
+            } else{
+                throw $e;
+            }
             
-            throw $e;
+            
         }
     }
     //Login
     public function loginPolice(Request $request)
-{
-    $request->validate([
-        "internalId" => "required",
-        "password" => "required",
-    ]);
-
-    $user = Police::where("internalId", $request->internalId)->first();
-
-  if (!empty($user)) {
-        if ($user->account_status == 'active') {
-            if (Hash::check($request->password, $user->password)) {
-                
-             
-                $expirationTime = now()->addHours(24);
-
-                // Create the token instance
-                $token = $user->createToken(name: 'personal-token', expiresAt: now()->addMinutes(30))->plainTextToken;
-
-
-
-                $user->update(['token' => explode('|', $token)[1]]);
-
-                $expirationTime = now()->addHours(24)->format('Y-m-d H:i:s');
-                
-                return response()->json([
-                    "status" => true,
-                    "code" => 200,
-                    "message" => "Login successful!",
-                    "token" => $token,
-                    "expiration_time" => $expirationTime,
-                ]);
+    {
+        $request->validate([
+            "internalId" => "required",
+            "password" => "required",
+        ]);
+    
+        $user = Police::where("internalId", $request->internalId)->first();
+    
+        if (!empty($user)) {
+            if ($user->account_status == 'active') {
+                if (Hash::check($request->password, $user->password)) {
+                    auth()->guard('police')->loginUsingId($user->_id);
+                    return redirect()->route('home')->with('success', 'Login realizado com sucesso!');
+                } else {
+                    return redirect()->back()->withErrors(['password' => 'Credenciais inválidas'])->withInput();
+                }
             } else {
-                return response()->json([
-                    "status" => false,
-                    "code" => 401,
-                    "message" => "Credenciais inválidas",
-                ], 401);
+                return redirect()->back()->withErrors(['account_status' => 'Esta conta está desativada.'])->withInput();
             }
         } else {
-            return response()->json([
-                "status" => false,
-                "code" => 403,
-                "message" => "Esta conta está desativada.",
-            ], 403);
+            return redirect()->back()->withErrors(['internalId' => 'Policial não encontrado'])->withInput();
         }
-    } else {
-        return response()->json([
-            "status" => false,
-            "code" => 404,
-            "message" => "Policia não encontrado",
-        ], 404);
     }
-}
 
     //Profile
         public function profilePolice(){
@@ -132,7 +111,40 @@ class PoliceController extends Controller
         ]);
     }
 
+    public function showactive() {
+        $user = Police::where('account_status', 'active')->get();
+        $numberUsers = Police::count();
+        $numberactive = Police::where('account_status', 'active')->count();
+        $deactivated = Police::where('account_status', 'deactivated')->count();
+        return view('admin.polices' ,['users' => $user , 'numberusers' => $numberUsers , 
+        'numberactive' => $numberactive , 'deactivated' => $deactivated]);
+    }
+    public function showdeactivated() {
+        $user = Police::where('account_status', 'deactivated')->get();
+        $numberUsers = Police::count();
+        $numberactive = Police::where('account_status', 'active')->count();
+        $deactivated = Police::where('account_status', 'deactivated')->count();
+        return view('admin.polices' ,['users' => $user , 'numberusers' => $numberUsers , 
+        'numberactive' => $numberactive , 'deactivated' => $deactivated]);
 
+    }
+
+
+    public function deactivateacount($id) {    
+        $user = Police::find($id);
+        $user->account_status = 'deactivated';
+        $user->save();
+    
+    }
+    
+    public function activeacount($id) {
+
+        $user = Police::find($id);
+        $user->account_status = 'active';
+        $user->save();
+
+    
+    }
 
     //Edit
     public function updatePolice(Request $request)
@@ -239,10 +251,36 @@ class PoliceController extends Controller
         }
     }
 
-    public function destroy(string $id) {
-        Police::where('_id' ,$id )->delete();
-        return redirect()->route('polices.store');
+    public function confirmDelete(Police $user)
+{
+    return view('profile.polices.partials.confirm-deletion', compact('user'));
+}
+
+
+public function showprofile($id) {
+    $user = Police::find($id);
+    return view("admin.showpoliceprofile" , [ 'user' => $user]);
+}
+
+public function showreportadmin($id) {
+    $user = Police::find($id);
+    return view("admin.admin-police-report" , [ 'users' => $user]);
+}
+
+
+public function destroy(Request $request, $id)
+{
+    $user = Police::findOrFail($id);
+    
+    if (Hash::check($request->password, $user->password)) {
+        $user->delete();
+        Auth::guard('police')->logout();
+        return view('home');
+    } else {
+        return redirect()->route('users.store')->with('error', 'Incorrect password. User not deleted.');
     }
+}
+
 
     public function update(Request $request, string $id) {
         $update = Police::where('_id' , $id)->update($request->except(['_token' , '_method'])); 
@@ -254,7 +292,13 @@ class PoliceController extends Controller
     public function edit(Police $user) {
 
         $sigla = PoliceStation::all();
-        return view('policeseditform' , ['user' => $user , 'siglas' => $sigla]);
+        return view('profile.polices.partials.policeseditform' , ['user' => $user , 'siglas' => $sigla]);
 
+    }
+
+    public function logout(){
+        Auth::logout();
+        Auth::guard('police')->logout();
+        return view('home');
     }
 }
