@@ -23,7 +23,6 @@ use App\Http\Controllers\verificationCodeController;
 | routes are loaded by the RouteServiceProvider and all of them will
 | be assigned to the "web" middleware group. Make something great!
 */
-
 Route::get('/', function () {
     return view('home');
 })->name('home');

@@ -198,6 +198,8 @@ Route::post('login', [AuthController::class, 'login']);
 Route::group([
     "middleware" => ["auth:sanctum"]
 ], function(){
+    
+    Route::get('/user/details', [NotificationsController::class, 'getUserDetails']);
     Route::get('/notifications/fetch-all', [NotificationsController::class, 'fetchAllNotifications']);
     Route::post('/notifications/send-overtaken', [NotificationsController::class, 'sendBidOvertakenNotification']);
     Route::post('/notifications/send-updated', [NotificationsController::class, 'sendBidUpdatedNotification']);

@@ -57,12 +57,12 @@
         
         <li class="nav-item dropdown" v-if="isAuthenticated">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Notificacoes
+                Notificações
             </a>
             <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown" id="notificationsDropdown">
                 <!-- Notification items will be populated here -->
             </ul>
-            <button onclick=">Enviar Notificacao de teste</button>
+            <button onclick="sendTestNotification()">Enviar Notificação de Teste</button>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{{route('user.auctions', auth()->user()->id) }}">
@@ -163,47 +163,89 @@
     </div>
 </div>
 </nav>
+<p id="usid">{{ auth()->user()->_id }}</p>
 <script>
+var usidElement = document.getElementById('usid');
+var $uid = usidElement.textContent.trim();
+
 document.addEventListener('DOMContentLoaded', function() {
-    if (document.querySelector('#notificationsDropdown')) {
-        fetchNotifications();
-    }
+    fetchUserDetails($uid);
 });
 
-function fetchNotifications() {
+function fetchUserDetails(uid) {
+    fetch('/api/user/details') // Corrected the syntax for fetch
+        .then(response => response.json())
+        .then(data => {
+            // Handle data here as needed
+            console.log(data); // Example of handling data
+        })
+        .catch(error => {
+            console.error('Error fetching user details:', error);
+        });
+}
+
+
+function fetchNotifications(userId) {
     fetch('/api/notifications/fetch-all', {
+        method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+        },
+        body: JSON.stringify({ user_id: userId })
     })
     .then(response => response.json())
     .then(data => {
         if (data.status) {
+            logDebugMessages(data.debug_messages);
             const dropdown = document.getElementById('notificationsDropdown');
             dropdown.innerHTML = '';
             data.data.forEach(notification => {
                 const li = document.createElement('li');
+                li.classList.add('dropdown-item'); // Add Bootstrap dropdown-item class
                 li.innerText = notification.data.message;
                 dropdown.appendChild(li);
             });
         }
     });
 }
+
 function sendTestNotification() {
-    fetch('/api/notifications/send-test', {
-        method: 'POST',
+    fetch('/api/user/details', {
         headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({})
+        }
     })
     .then(response => response.json())
     .then(data => {
         if (data.status) {
-            alert('Test notification sent');
-            fetchNotifications();
+            const userId = data.user.id;
+            logDebugMessages(data.debug_messages);
+            fetch('/api/notifications/send-test', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ user_id: userId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status) {
+                    logDebugMessages(data.debug_messages);
+                    alert('Notificação de teste enviada com sucesso');
+                    fetchNotifications(userId); 
+                }
+            });
         }
     });
 }
+
+function logDebugMessages(debugMessages) {
+    if (debugMessages) {
+        debugMessages.forEach(msg => console.log(msg));
+    }
+}
+
+
 </script>
