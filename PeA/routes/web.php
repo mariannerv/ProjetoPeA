@@ -186,7 +186,7 @@ Route::get('/allobjects', [LostObjectController::class,'getAllObjects'])->name('
 
 Route::get('/finalizeOrStartAuctions', [LostObjectController::class,'finalizeOrStartAuctions'])->name('auctions.finalizeOrStart');
 
-Route::view('/viewAllAuctions/{user}','objects.found-objects.viewAll-auctions')->name('auctions.viewAll');
+Route::view('/viewAllAuctions','objects.found-objects.viewAll-auctions')->name('auctions.viewAll');
 
 Route::get('/compare/{foundObject}/{lostObject}', [LostObjectController::class,'getObjects'])->name('compare.objects');
 
