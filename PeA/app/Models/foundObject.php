@@ -35,12 +35,13 @@ class foundObject extends Model
         'date_registered',
         'deadlineForAuction',
         'estacao_policia',
+        'image',
 
     ];
 
     protected $casts = [
         'objectId' => 'string',
-        'possible_owner' => 'array',
+        
     ];
 
 }

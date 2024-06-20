@@ -18,70 +18,78 @@ use App\Models\User;
 class FoundObjectController extends Controller
 {
     public function registerFoundObject(Request $request)
-    {
-        try {
-            $val = Validator::make($request->all(),[
-                'category' => 'required|string',
-                'brand' => 'required|string',
-                'color' => 'required|string',
-                'size' => 'required|string',
-                'description' => 'required|string',
-                'address' => 'required|string',
-                'location' => 'required|string',
-                'postalcode' => 'required|string',
-                'name' => 'required|string',
-                'number' => 'required|string',
-                'email' => 'required|string',
-                'location_coords' => [
-                    'nullable',
-                    'regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),\s*[-]?((([1]?[0-7]?[0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?$/'
-                ],
-                'date_found' => 'required|date',
-                'policeStationId' => 'required|string|exists:police_station,sigla',
-            ]);
+{
+    try {
+        $val = Validator::make($request->all(),[
+            'category' => 'required|string',
+            'brand' => 'required|string',
+            'color' => 'required|string',
+            'size' => 'required|string',
+            'description' => 'required|string',
+            'address' => 'required|string',
+            'location' => 'required|string',
+            'postalcode' => 'required|string',
+            'name' => 'required|string',
+            'number' => 'required|string',
+            'email' => 'required|string',
+            'location_coords' => [
+                'nullable',
+                'regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),\s*[-]?((([1]?[0-7]?[0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?$/'
+            ],
+            'date_found' => 'required|date',
+            'policeStationId' => 'required|string|exists:police_station,sigla',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+        ]);
 
-            if ($val->fails()){
-                return redirect()
-                    ->back()
-                    ->withErrors($val)
-                    ->withInput();
-            }
-
-            $dateRegistered = (string) now();
-            $deadlineForAuction = (string) now()->addMonth();
-            $uuid = (string) Str::uuid();
-
-            $foundObject = FoundObject::create([
-                "category" => $request->category,
-                "brand" => $request->brand,
-                "color" => $request->color,
-                "size" => $request->size,
-                "description" => $request->description,
-                "location_coords" => $request->location_coords,
-                'address' => $request->address,
-                'location' => $request->location,
-                'postalcode' => $request->postalcode,
-                "objectId" => $uuid,
-                "name" => $request->name,
-                "email" => $request->email,
-                "number" => $request->number,
-                "date_found" => $request->date_found,
-                "date_registered" => $dateRegistered,
-                "deadlineForAuction" => $deadlineForAuction,
-                "estacao_policia" => $request->policeStationId,
-                "possible_owner" => []
-            ]);
-
-            return redirect()->back()->with('success', 'Objeto encontrado registado com sucesso');
-
-        } catch (\Exception $e) {
-            return response()->json([
-                "status" => false,
-                "message" => "Algo correu mal ao registar o objeto.",
-                "code" => "404",
-            ]);
+        if ($val->fails()){
+            return redirect()
+                ->back()
+                ->withErrors($val)
+                ->withInput();
         }
+
+        $dateRegistered = (string) now();
+        $deadlineForAuction = (string) now()->addMonth();
+        $uuid = (string) Str::uuid();
+
+        $imageName = null;
+        if ($request->hasFile('img')) {
+            $imageName = time().'_'.uniqid().'.'.$request->img->extension();
+            $request->img->move(public_path('images/found-objects-img'), $imageName);
+        }
+
+        $foundObject = FoundObject::create([
+            "category" => $request->category,
+            "brand" => $request->brand,
+            "color" => $request->color,
+            "size" => $request->size,
+            "description" => $request->description,
+            "location_coords" => $request->location_coords,
+            'address' => $request->address,
+            'location' => $request->location,
+            'postalcode' => $request->postalcode,
+            "objectId" => $uuid,
+            "name" => $request->name,
+            "email" => $request->email,
+            "number" => $request->number,
+            "date_found" => $request->date_found,
+            "date_registered" => $dateRegistered,
+            "deadlineForAuction" => $deadlineForAuction,
+            "estacao_policia" => $request->policeStationId,
+            "possible_owner" => [],
+            "image" => $imageName     
+        ]);
+
+        return redirect()->back()->with('success', 'Objeto encontrado registado com sucesso');
+
+    } catch (\Exception $e) {
+        return response()->json([
+            "status" => false,
+            "message" => "Algo correu mal ao registar o objeto.",
+            "code" => "404",
+        ]);
     }
+}
 
     public function getFoundObject(Request $request)
     {
@@ -150,11 +158,11 @@ class FoundObjectController extends Controller
         }
     }
 
-    public function deleteFoundObject(Request $request)
+    public function deleteFoundObject($id)
     {
         try {
-            $objectId = $request->objectId;
-            $object = FoundObject::where('objectId', $objectId)->first();
+           
+            $object = FoundObject::where('_id', $id)->first();
 
             if ($object) {
                 $object->delete();
@@ -175,7 +183,7 @@ class FoundObjectController extends Controller
         }
     }
 
-    public function getAllFoundObjects2()
+    public function getAllFoundObjects()
     {
         try {
             $foundObjects = FoundObject::all();

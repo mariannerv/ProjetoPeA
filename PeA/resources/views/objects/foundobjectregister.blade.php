@@ -43,7 +43,7 @@ if (!Auth::guard('police')->check()) {
                                     {{ session('success') }}
                                 </div>
                               @endif
-                                <form class="row g-3 needs-validation" novalidate action="{{ route('found-objects.register') }}" method="post">
+                                <form class="row g-3 needs-validation" novalidate action="{{ route('found-objects.register') }}" enctype="multipart/form-data" method="post">
                                     @csrf
                                     @method('POST')
                                     <div class="col-md-6">
@@ -83,6 +83,11 @@ if (!Auth::guard('police')->check()) {
                                         <label for="size" class="form-label">Localidade</label>
                                         <input type="text" class="form-control" id="location" name="location">
                                     </div>
+                                    <div class="col-6">
+                                        <label for="img" class="form-label">Imagem</label>
+                                        <input type="file" id="img" name="img" accept="image/*" onchange="previewImage(event)">
+                                        <img id="preview" src="#" alt="" style="display:none; max-width: 100%; margin-top: 10px;">
+                                    </div>
                                     <p>Informação sobre a pessoa que encontrou o objeto:</p>
                                     <div class="col-md-6">
                                         <label for="size" class="form-label">Nome</label>
@@ -116,6 +121,17 @@ if (!Auth::guard('police')->check()) {
         function goBack() {
             window.history.back();
         }
+
+        function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = function(){
+        const output = document.getElementById('preview');
+        output.src = reader.result;
+        output.style.display = 'block';
+    };
+    reader.readAsDataURL(event.target.files[0]);
+}
+
     </script>
     <script>
         (() => {
