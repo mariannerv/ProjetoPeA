@@ -184,6 +184,10 @@ Route::post('/RegisterAuctions', [AuctionController::class,'createAuction'])->na
 
 Route::get('/allobjects', [LostObjectController::class,'getAllObjects'])->name('allobjects.get');
 
+Route::get('/finalizeOrStartAuctions', [LostObjectController::class,'finalizeOrStartAuctions'])->name('auctions.finalizeOrStart');
+
+Route::get('/viewAllAuctions', 'objects.found-objects.auctions-viewAll')->name('auctions.viewAll');
+
 Route::get('/compare/{foundObject}/{lostObject}', [LostObjectController::class,'getObjects'])->name('compare.objects');
 
 Route::post('/addowner/{foundObject}/{lostObject}', [LostObjectController::class,'add'])->name('addowner.objects');
