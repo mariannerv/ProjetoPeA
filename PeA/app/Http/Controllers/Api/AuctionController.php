@@ -203,22 +203,59 @@ public function editAuction(Request $request){
     }
 }
 
-public function viewAllAuctions(){
-    try {
-        $activeAuctions = Auction::where('status', 'active')->get();
+    public function viewAllAuctions(){
+        try {
+            $activeAuctions = Auction::where('status', 'active')->get();
 
-        return response()->json([
-            "status" => true,
-            "data" => $activeAuctions,
-            "code" => 200,
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            "status" => false,
-            "message" => "Ocorreu um erro ao recuperar as informações dos leilões ativos.",
-            "code" => 500,
-        ], 500);
+            return response()->json([
+                "status" => true,
+                "data" => $activeAuctions,
+                "code" => 200,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "Ocorreu um erro ao recuperar as informações dos leilões ativos.",
+                "code" => 500,
+            ], 500);
+        }
     }
-}
+
+    public function finalizeorStartAuction(Request $request){
+        try {
+            $auction = Auction::where('auctionId', $request->auctionId)->first();
+            
+            if (!$auction) {
+                throw ValidationException::withMessages([
+                    'auctionId' => ['Leilão não encontrado.'],
+                ]);
+            }
+
+            if ($auction->status == 'active') {
+                $auction->status = 'deactive';
+                return response()->json([
+                    "status" => true,
+                    "code" => 200,
+                    "message" => "Leilão atualizado com sucesso.",
+                ]);
+            }
+            if ($auction->status == 'deactive') {
+                $auction->status = 'active';
+                return response()->json([
+                    "status" => true,
+                    "code" => 200,
+                    "message" => "Leilão atualizado com sucesso.",
+                ]);
+            }
+            
+        } catch (ValidationException $e) {
+            return response()->json([
+                "status" => false,
+                "code" => 404,
+                "message" => "Algo correu mal ao atualizar o estado do leilão.",
+                "errors" => $e->errors(), 
+            ], 404);
+        }
+    }
  }
 
