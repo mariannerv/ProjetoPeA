@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('distrito');
             $table->string('codigo_postal');
             $table->string('pais');
-            $table->string('coordenadas');
+            $table->json('coordenadas');
             $table->timestamps();
         });
     }
