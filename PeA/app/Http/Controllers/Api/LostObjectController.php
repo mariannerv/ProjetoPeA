@@ -23,13 +23,15 @@ use App\Http\Controllers\Emails\SendMailController;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 use MongoDB\BSON\ObjectId;
-
+use Illuminate\Support\Facades\Http;
+use App\Models\Categoria;
 
 class LostObjectController extends Controller
 {
   
     
-    public function registerLostObject(Request $request)
+
+public function registerLostObject(Request $request)
 {
     $ownerEmail = $request->ownerEmail;
     $owner = User::where('email', $ownerEmail)->first();
@@ -42,68 +44,92 @@ class LostObjectController extends Controller
         ]);
     }
     try {
-        $val = Validator::make($request->all(),[
+        $val = Validator::make($request->all(), [
             'ownerEmail' => 'required|email',
             'category' => 'required|string',
             'description' => 'required|string',
             'date_lost' => 'required|date',
-            // 'location_id' => 'required|string',
-
+            'address' => 'required|string',
+            'city' => 'required|string',
+            'postalcode' => 'required|string',
+            // Add more validation rules as needed
         ]);
-        if ($val->fails()){
-            return redirect()->back()->withErrors($val)->withInput();
+
+        if ($val->fails()) {
+            return response()->json([
+                "status" => false,
+                "message" => $val->errors(),
+                "code" => 422,
+            ]);
+        }
+
+        // Check if category exists, if not, create it
+        $category = Categoria::firstOrCreate(['name' => $request->input('category')]);
+
+        // Check if location exists, if not, create it
+        $location = Location::firstOrNew([
+            'rua' => $request->input('address'),
+            'municipio' => $request->input('city'),
+            'codigo_postal' => $request->input('postalcode'),
+        ]);
+
+        if (!$location->exists) {
+            if (!$request->has(['longitude', 'latitude'])) {
+                $encodedAddress = urlencode($request->input('address') . ' ' . $request->input('city') . ' ' . $request->input('postalcode'));
+                $apiKey = "YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn";
+                $response = Http::get("https://api.tomtom.com/search/2/geocode/{$encodedAddress}.json?key={$apiKey}");
+
+                if ($response->successful() && !empty($response['results'])) {
+                    $coordinates = $response['results'][0]['position'];
+                    $location->longitude = $coordinates['lon'];
+                    $location->latitude = $coordinates['lat'];
+                }
+            } else {
+                $location->longitude = $request->input('longitude');
+                $location->latitude = $request->input('latitude');
+            }
+
+            $location->freguesia = $request->input('freguesia', ''); // Assuming 'freguesia' might not be required
+            $location->distrito = $request->input('distrito', ''); // Assuming 'distrito' might not be required
+            $location->pais = $request->input('pais', ''); // Assuming 'pais' might not be required
+            $location->save();
         }
 
         $uuid = (string) Str::uuid();
 
-    $lostObject = LostObject::create([
-        "ownerEmail" => $ownerEmail,
-        "description" => $request->input('description'),
-        "date_lost" => $request->input('date_lost'),
-        "brand" => $request->input('brand'),
-        "color" => $request->input('color'),
-        "size" => $request->input('size'),
-        "category" => $request->input('category'),
-        "address" => $request->input('address'),
-        "location" => $request->input('location'),
-        "postalcode" => $request->input('postalcode'),
-        "location_id" => $uuid,
-        "status" => "Lost",
-        "lostObjectId" => 0,
-    ]);
+        $lostObject = LostObject::create([
+            "ownerEmail" => $ownerEmail,
+            "description" => $request->input('description'),
+            "date_lost" => $request->input('date_lost'),
+            "brand" => $request->input('brand'),
+            "color" => $request->input('color'),
+            "size" => $request->input('size'),
+            "category_id" => $category->id,
+            "location_id" => $location->id,
+            "status" => "Lost",
+            "lostObjectId" => $uuid,
+        ]);
 
-    event(new Registered($lostObject));
+        event(new Registered($lostObject));
 
-    // app(SendMailController::class)->sendWelcomeEmail(
-    //     $request->input('email'),
-    //     "Objecto registado com sucesso!",
-    //     "Obrigado por ter registado um objeto, esperamos que o consiga encontrar."
-    // );
+        return response()->json([
+            'message' => 'Lost object registered successfully',
+            'lost_object' => $lostObject,
+        ]);
+    } catch (Exception $e) {
+        $exceptionInfo = [
+            'message' => $e->getMessage(),
+            // Add more properties as needed
+        ];
+        return response()->json([
+            "status" => false,
+            "message" => "Ocorreu um erro ao recuperar as informações do objeto.",
+            "exception" => $exceptionInfo,
+            "code" => 500,
+        ], 500);
+    }
+}
 
-    return response()->json([
-        'message' => 'Lost object registered successfully',
-        'lost_object' => $lostObject,
-    ]);
-} catch (Exception $e) {
-    $exceptionInfo = [
-        'message' => $e->getMessage(),
-        
-        // Add more properties as needed
-    ];
-    return response()->json([
-        "status" => false,
-        "message" => "Ocorreu um erro ao recuperar as informações do objeto.",
-        "exception" => $exceptionInfo,
-        "code" => 500,
-    ], 500);
-}
-}
-public function getAllObjects()
-{
-$foundObjects = FoundObject::all();
-$lostObjects = LostObject::all();
-return view('objects.found-objects.all-objects' ,['foundObjects' => $foundObjects , 'lostObjects' => $lostObjects]);
-}
 
 public function getObjects($foundObjectId, $lostObjectId)
 {

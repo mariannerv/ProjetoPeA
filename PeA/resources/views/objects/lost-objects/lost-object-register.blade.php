@@ -11,7 +11,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tomtom-international/web-sdk-maps@6.19/dist/maps-web.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/@tomtom-international/web-sdk-maps@6.19/dist/maps.css" rel="stylesheet">
-
 </head>
 <body>
     <header>
@@ -39,7 +38,7 @@
                                         </ul>
                                     </div>
                                 @endif
-                                <form class="row g-3 needs-validation" novalidate action="{{ route('lost-objects.register') }}" method="post">
+                                <form class="row g-3 needs-validation" novalidate action="{{ route('lost-objects.register') }}" enctype="multipart/form-data" method="post">
                                     @csrf
                                     @method('POST')
                                     <div class="col-12">
@@ -71,6 +70,36 @@
                                         <input type="hidden" id="map-postalcode" name="postalcode">
                                         <input type="hidden" id="map-city" name="city">
                                     </div>
+                                    <div class="col-6">
+                                        <label for="description" class="form-label">Descrição</label>
+                                        <input type="text" class="form-control" id="description" name="description" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="date_lost" class="form-label">Data de Perda</label>
+                                        <input type="date" class="form-control" id="date_lost" name="date_lost" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="category" class="form-label">Categoria</label>
+                                        <input type="text" class="form-control" id="category" name="category" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="brand" class="form-label">Marca</label>
+                                        <input type="text" class="form-control" id="brand" name="brand">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="color" class="form-label">Cor</label>
+                                        <input type="text" class="form-control" id="color" name="color">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="size" class="form-label">Tamanho</label>
+                                        <input type="text" class="form-control" id="size" name="size">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="img" class="form-label">Imagem</label>
+                                        <input type="file" id="img" name="img" accept="image/*" onchange="previewImage(event)">
+                                        <img id="preview" src="#" alt="" style="display:none; max-width: 100%; margin-top: 10px;">
+                                    </div>
+                                    <input type="hidden" name="ownerEmail" value="{{ auth()->user()->email }}">
                                     <div class="col-12">
                                         <button class="btn btn-primary" type="submit">Registar</button>
                                         <button class="btn btn-secondary" onclick="goBack()">Cancelar</button>
@@ -115,117 +144,114 @@
     {{-- Popper --}}
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
-      integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
+      integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz2D9Ht5H57EAP4gl8z4ykG1qKfI5pVb"
       crossorigin="anonymous"
     ></script>
     {{-- Bootstrap --}}
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
-      integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
+      integrity="sha384-QJHtvGhmr9DZ/bvYUCuVjCJBlrRJZ9fEXlWV9I6YICpC7MA4G/7aD64cD9B5QW1T"
       crossorigin="anonymous"
     ></script>
-    {{-- Volta página anterior --}}
+    {{-- Form Validation --}}
     <script>
-        function goBack() {
-            window.history.back();
-        }
-    </script>
-    {{-- Validação formulário --}}
-    <script>
-        (() => {
-            'use strict';
-
-            const forms = document.querySelectorAll('.needs-validation');
-            Array.from(forms).forEach(form => {
-                form.addEventListener('submit', event => {
-                    if (!form.checkValidity()) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    form.classList.add('was-validated');
-                }, false);
-            });
-        })();
-    </script>
-    {{-- Registo Objeto --}}
-    <script>
-        $(document).ready(function() {
-            $('form').submit(function(event) {
-                // Prevent the default form submission
-                event.preventDefault();
-    
-                // Serialize form data
-                var formData = $(this).serialize();
-    
-                // Submit form data via AJAX
-                $.ajax({
-                    url: $(this).attr('action'),
-                    method: $(this).attr('method'),
-                    data: formData,
-                    dataType: 'json',
-                    success: function(response) {
-                        toastr.success(response.message, 'Success', { closeButton: true });
-                        $('#lostObjectRegister').modal('show');
-                    },
-                    error: function(xhr, status, error) {
-                        console.error(xhr.responseText);
-                    }
-                });
-            });
-        });
-    </script>
-    <script>
-        function goBack() {
-            window.history.back();
-        }
-    </script>
-    <script>
-        $(document).ready(function() {
-            $('input[name="address-input-method"]').change(function() {
-                if ($('#map').is(':checked')) {
-                    $('#manual-address-input').hide();
-                    $('#map-address-input').show();
-                    initTomTomMap();
-                } else {
-                    $('#manual-address-input').show();
-                    $('#map-address-input').hide();
-                }
-            });
-
-            function initTomTomMap() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(function(position) {
-                        var latitude = position.coords.latitude;
-                        var longitude = position.coords.longitude;
-
-                        var map = tt.map({
-                            key: 'YaHwXWGyliPES0fF3ymLjwaqwdo2IbZnY',
-                            container: 'map',
-                            center: [longitude, latitude],
-                            zoom: 15
-                        });
-
-                        var marker = new tt.Marker().setLngLat([longitude, latitude]).addTo(map);
-
-                        map.on('click', function(event) {
-                            var coords = event.lngLat;
-                            marker.setLngLat(coords);
-
-                            // Fetch address details using TomTom's Reverse Geocoding API
-                            $.get(`https://api.tomtom.com/search/2/reverseGeocode/${coords.lat},${coords.lng}.json?key=YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn`, function(data) {
-                                if (data && data.addresses && data.addresses.length > 0) {
-                                    var address = data.addresses[0].address;
-                                    $('#map-address').val(address.freeformAddress);
-                                    $('#map-postalcode').val(address.postalCode);
-                                    $('#map-city').val(address.localName);
-                                }
-                            });
-                        });
-                    });
-                }
+      (function () {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+          form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+              event.preventDefault();
+              event.stopPropagation();
             }
+            form.classList.add('was-validated');
+          }, false);
         });
+      })();
     </script>
-    
+    {{-- AJAX Form Submission --}}
+    <script>
+      $(document).ready(function () {
+        $('form').on('submit', function (e) {
+          e.preventDefault();
+          var formData = new FormData(this);
+          $.ajax({
+            type: 'POST',
+            url: $(this).attr('action'),
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+              toastr.success(response.message);
+              $('#lostObjectRegister').modal('show');
+            },
+            error: function (response) {
+              toastr.error(response.responseJSON.message);
+            },
+          });
+        });
+      });
+    </script>
+    {{-- Image Preview --}}
+    <script>
+      function previewImage(event) {
+        var reader = new FileReader();
+        reader.onload = function(){
+          var output = document.getElementById('preview');
+          output.src = reader.result;
+          output.style.display = 'block';
+        };
+        reader.readAsDataURL(event.target.files[0]);
+      }
+    </script>
+    {{-- TomTom Map --}}
+    <script>
+  var map = tt.map({
+    key: 'YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn',
+    container: 'map',
+    style: 'tomtom://vector/1/basic-main',
+    center: [0, 0],
+    zoom: 2
+  });
+
+  var marker;
+  map.on('click', function(event) {
+    var coordinates = event.lngLat;
+    if (marker) {
+      marker.remove();
+    }
+    marker = new tt.Marker().setLngLat(coordinates).addTo(map);
+    document.getElementById('longitude').value = coordinates.lng;
+    document.getElementById('latitude').value = coordinates.lat;
+    geocodeCoordinates(coordinates.lng, coordinates.lat);
+  });
+
+  function geocodeCoordinates(lon, lat) {
+    var apiKey = 'YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn';
+    var url = `https://api.tomtom.com/search/2/reverseGeocode/${lat},${lon}.json?key=${apiKey}`;
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        if (data.addresses.length > 0) {
+          var address = data.addresses[0].address;
+          document.getElementById('address').value = address.freeformAddress;
+          document.getElementById('city').value = address.municipality;
+          document.getElementById('postalcode').value = address.postalCode;
+        }
+      });
+  }
+
+  $('input[name="address-input-method"]').on('change', function() {
+    if (this.value === 'manual') {
+      $('#manual-address-input').show();
+      $('#map-address-input').hide();
+    } else {
+      $('#manual-address-input').hide();
+      $('#map-address-input').show();
+    }
+  });
+</script>
+
 </body>
 </html>

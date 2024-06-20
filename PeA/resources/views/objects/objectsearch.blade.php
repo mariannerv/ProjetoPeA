@@ -7,12 +7,12 @@
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 <style>
     .similar-description {
-        background-color: #ffcccc; /* Color to highlight similar objects */
+        background-color: #ffcccc; 
     }
 </style>
 </head>
 <body>
-@if {{auth()->check()}}
+@if (auth()->check())
 
 <div class="container">
   <h1>Lost and Found Objects Search</h1>

@@ -1,31 +1,33 @@
 <?php
-
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-use MongoDB\Laravel\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
 class LostObject extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory;
 
-    protected $connection = 'mongodb';
-    protected $collection = 'lostObject';
+    protected $fillable = [
+        'ownerEmail',
+        'description',
+        'date_lost',
+        'brand',
+        'color',
+        'size',
+        'category_id',
+        'location_id',
+        'status',
+        'lostObjectId',
+    ];
 
-        protected $fillable = [
-            'ownerEmail',
-            'category',
-            'description',
-            'date_lost',
-            'brand',
-            'color',
-            'size',
-            'location',
-            'status',
-            'lostObjectId'
-        ];
+    public function category()
+    {
+        return $this->belongsTo(Categoria::class, 'category_id');
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'location_id');
+    }
 }

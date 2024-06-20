@@ -16,9 +16,9 @@
   <body>
     <header>
       @if (auth()->check())
-        @include('navbar')
+        @include('components.navbar')
       @else
-        @include('navbar-guest')
+        @include('components.navbar-guest')
       @endif 
       
     </header>

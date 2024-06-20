@@ -152,6 +152,9 @@ Route::post('/found-objects/update/{object}', [foundObjectController::class,'upd
 Route::get('/search',function(){
     return view('objects.objectsearch');
 });
+Route::get('/search2',function(){
+    return view('objects.object-search');
+});
 
 // Login and Logout Routes
 Route::prefix('auth')->group(function () {
