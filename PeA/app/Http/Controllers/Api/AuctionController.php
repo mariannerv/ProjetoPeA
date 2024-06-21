@@ -46,6 +46,7 @@ class AuctionController extends Controller
                 'objectId' => 'required|string',
                 'start_date' => 'date',
                 'end_date' => 'date',
+                'policeStationId' => 'string',
             ]);
 
            
@@ -60,7 +61,9 @@ class AuctionController extends Controller
                 'end_date' => $endAuctionTime,
                 'objectId' =>$request->objectId,
                 'status' => 'active',
-                'bids_list' => []
+                'policeStationId' => $request->policeStationId,
+                'bids_list' => [],
+                'bidder_list' => []
             ]);
 
             return response()->json([
