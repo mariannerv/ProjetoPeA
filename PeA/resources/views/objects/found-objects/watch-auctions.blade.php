@@ -112,6 +112,7 @@
         success: function(response) {
             let html = '';
             var userEmail = "{{ auth()->user()->email }}";
+            var userName = "{{ auth()->user()->name }}"
             for (let i = 0; i < response.data.length; i++) {
               const item = response.data[i];
               if (i+1 % 3 === 0 || i === 0){
@@ -123,7 +124,7 @@
               html += "<p>Acaba em: " + item.end_date + "</p>";
               html += "<p>Status: " + item.status + "</p>";
               if (item.bidder_list.includes(userEmail)) {
-                html += "<p>Inscrito no Leilao </p> "
+                html += "<p>Nome: " +  userName + " Inscrito no Leilao </p> "
               }
               html += "<a class='btn btn-secondary' href={{ route('auction.get', '') }}/" + item._id + ">Ver Leilao </a> "
               if (!item.bidder_list.includes(userEmail)) {
