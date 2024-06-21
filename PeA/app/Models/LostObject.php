@@ -30,5 +30,6 @@ class LostObject extends Model
             'postalcode',
             'lostObjectId',
             'location_id',
+            'image',
         ];
 }

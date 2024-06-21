@@ -30,74 +30,77 @@ class LostObjectController extends Controller
   
     
     public function registerLostObject(Request $request)
-{
-    $ownerEmail = $request->ownerEmail;
-    $owner = User::where('email', $ownerEmail)->first();
-
-    if (!$owner) {
-        return response()->json([
-            "status" => false,
-            "message" => "Utilizador não encontrado.",
-            "code" => 404,
-        ]);
-    }
-    try {
-        $val = Validator::make($request->all(),[
-            'ownerEmail' => 'required|email',
-            'category' => 'required|string',
-            'description' => 'required|string',
-            'date_lost' => 'required|date',
-            // 'location_id' => 'required|string',
-
-        ]);
-        if ($val->fails()){
-            return redirect()->back()->withErrors($val)->withInput();
+    {
+        $ownerEmail = $request->ownerEmail;
+        $owner = User::where('email', $ownerEmail)->first();
+    
+        if (!$owner) {
+            return response()->json([
+                "status" => false,
+                "message" => "Utilizador não encontrado.",
+                "code" => 404,
+            ]);
         }
-
-        $uuid = (string) Str::uuid();
-
-    $lostObject = LostObject::create([
-        "ownerEmail" => $ownerEmail,
-        "description" => $request->input('description'),
-        "date_lost" => $request->input('date_lost'),
-        "brand" => $request->input('brand'),
-        "color" => $request->input('color'),
-        "size" => $request->input('size'),
-        "category" => $request->input('category'),
-        "address" => $request->input('address'),
-        "location" => $request->input('location'),
-        "postalcode" => $request->input('postalcode'),
-        "location_id" => $uuid,
-        "status" => "Lost",
-        "lostObjectId" => 0,
-    ]);
-
-    event(new Registered($lostObject));
-
-    // app(SendMailController::class)->sendWelcomeEmail(
-    //     $request->input('email'),
-    //     "Objecto registado com sucesso!",
-    //     "Obrigado por ter registado um objeto, esperamos que o consiga encontrar."
-    // );
-
-    return response()->json([
-        'message' => 'Lost object registered successfully',
-        'lost_object' => $lostObject,
-    ]);
-} catch (Exception $e) {
-    $exceptionInfo = [
-        'message' => $e->getMessage(),
-        
-        // Add more properties as needed
-    ];
-    return response()->json([
-        "status" => false,
-        "message" => "Ocorreu um erro ao recuperar as informações do objeto.",
-        "exception" => $exceptionInfo,
-        "code" => 500,
-    ], 500);
-}
-}
+    
+        try {
+            $val = Validator::make($request->all(),[
+                'ownerEmail' => 'required|email',
+                'category' => 'required|string',
+                'description' => 'required|string',
+                'date_lost' => 'required|date',
+                'img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                // 'location_id' => 'required|string',
+            ]);
+    
+            if ($val->fails()){
+                return redirect()->back()->withErrors($val)->withInput();
+            }
+    
+            $uuid = (string) Str::uuid();
+            
+            // Process image upload, if present
+            $imageName = null;
+            if ($request->hasFile('img')) {
+                $imageName = time().'_'.uniqid().'.'.$request->img->extension();
+                $request->img->move(public_path('images/lost-objects-img'), $imageName);
+            }
+    
+            // Create the lost object with provided data
+            $lostObject = LostObject::create([
+                "ownerEmail" => $ownerEmail,
+                "description" => $request->input('description'),
+                "date_lost" => $request->input('date_lost'),
+                "brand" => $request->input('brand'),
+                "color" => $request->input('color'),
+                "size" => $request->input('size'),
+                "category" => $request->input('category'),
+                "address" => $request->input('address'),
+                "location" => $request->input('location'),
+                "postalcode" => $request->input('postalcode'),
+                "location_id" => $uuid,
+                "status" => "Lost",
+                "lostObjectId" => 0,
+                "image" => $imageName,
+            ]);
+    
+            event(new Registered($lostObject));
+    
+            return response()->json([
+                'message' => 'Lost object registered successfully',
+                'lost_object' => $lostObject,
+            ]);
+    
+        } catch (Exception $e) {
+            // Return exception details for debugging
+            return response()->json([
+                "status" => false,
+                "message" => "Ocorreu um erro ao registrar o objeto perdido.",
+                "exception_message" => $e->getMessage(),
+                "code" => 500,
+            ], 500);
+        }
+    }
+    
 public function getAllObjects()
 {
 $foundObjects = FoundObject::all();

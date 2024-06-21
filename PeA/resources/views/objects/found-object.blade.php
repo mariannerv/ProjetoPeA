@@ -51,7 +51,9 @@ if (!Auth::guard('police')->check()) {
     <div class="container border">
         <div class="row">
             <div class="col align-self-center">
-                <img src="../images/Missing-image.png" alt="image representing there is no image" class="img-fluid">
+                <img src="{{ asset('images/found-objects-img/' . $object->image) }}" alt="image representing there is no image" class="img-fluid">
+
+
             </div>
             <div class="col">
                 <div class="row">
