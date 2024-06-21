@@ -110,9 +110,9 @@ class AuctionController extends Controller
     }
 
 
-public function editAuction(Request $request){
+public function editAuction(Request $request, $id){
     try {
-        $auction = Auction::where('auctionId', $request->auctionId)->first();
+        $auction = Auction::where('_id', $id)->first();
         
         if (!$auction) {
             throw ValidationException::withMessages([
@@ -121,9 +121,9 @@ public function editAuction(Request $request){
         }
 
         
-        if ($auction->status !== 'active') {
+        if ($auction->status !== 'deactive') {
             throw ValidationException::withMessages([
-                'status' => ['Não é possível editar um leilão finalizado.'],
+                'status' => ['Não é possível editar um leilão inicializado.'],
             ]);
         }
 
@@ -150,10 +150,10 @@ public function editAuction(Request $request){
     }
 }
 
-     public function deleteAuction(Request $request){
+     public function deleteAuction($id){
         try {
-            $auctionId = $request->auctionId;
-            $auction = Auction::where('auctionId', $auctionId)->first();
+            $auctionId = $id;
+            $auction = Auction::where('_id', $auctionId)->first();
 
         if ($auction) {
             $auction->delete();
@@ -203,7 +203,7 @@ public function editAuction(Request $request){
     }
 }
 
-    public function viewAllAuctions(){
+    public function viewAllActiveAuctions(){
         try {
             $activeAuctions = Auction::where('status', 'active')->get();
 
@@ -221,9 +221,27 @@ public function editAuction(Request $request){
         }
     }
 
-    public function finalizeorStartAuction(Request $request){
+    public function viewAllAuctions(){
         try {
-            $auction = Auction::where('auctionId', $request->auctionId)->first();
+            $activeAuctions = Auction::all();
+
+            return response()->json([
+                "status" => true,
+                "data" => $activeAuctions,
+                "code" => 200,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "Ocorreu um erro ao recuperar as informações dos leilões ativos.",
+                "code" => 500,
+            ], 500);
+        }
+    }
+
+    public function finalizeorStartAuction($id){
+        try {
+            $auction = Auction::where('_id', $id)->first();
             
             if (!$auction) {
                 throw ValidationException::withMessages([
@@ -233,18 +251,20 @@ public function editAuction(Request $request){
 
             if ($auction->status == 'active') {
                 $auction->status = 'deactive';
+                $auction->save();
                 return response()->json([
                     "status" => true,
                     "code" => 200,
-                    "message" => "Leilão atualizado com sucesso.",
+                    "message" => "Leilão atualizado com sucesso1.",
                 ]);
             }
             if ($auction->status == 'deactive') {
                 $auction->status = 'active';
+                $auction->save();
                 return response()->json([
                     "status" => true,
                     "code" => 200,
-                    "message" => "Leilão atualizado com sucesso.",
+                    "message" => "Leilão atualizado com sucesso2.",
                 ]);
             }
             
@@ -256,6 +276,11 @@ public function editAuction(Request $request){
                 "errors" => $e->errors(), 
             ], 404);
         }
+    }
+
+    public function updateAuction(Auction $id) {
+        $foundObjects = foundObject::all();
+        return view('objects.found-objects.edit-auction' , ['object' => $id, 'foundObjects' => $foundObjects]);
     }
  }
 
