@@ -111,6 +111,7 @@
         dataType: 'json',
         success: function(response) {
             let html = '';
+            var userEmail = "{{ auth()->user()->email }}";
             for (let i = 0; i < response.data.length; i++) {
               const item = response.data[i];
               if (i+1 % 3 === 0 || i === 0){
@@ -122,6 +123,7 @@
               html += "<p>Acaba em: " + item.end_date + "</p>";
               html += "<p>Status: " + item.status + "</p>";
               html += "<a class='btn btn-secondary' href={{ route('auction.get', '') }}/" + item._id + ">Ver Leilao </a> "
+              html += "<a class='btn btn-secondary' href={{ url('signUpAuctions') }}/" + item._id + "/" + userEmail + "'>Inscrever no Leilao </a> "
               if (i+1 % 3 === 0){
               html += "</div>";
               }

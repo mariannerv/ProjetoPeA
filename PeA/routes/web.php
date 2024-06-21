@@ -182,6 +182,10 @@ Route::post('/editAuctions/{id}',[AuctionController::class,'editAuction'])->name
 
 Route::get('/deleteAuctions/{id}',[AuctionController::class,'deleteAuction'])->name('auctions.delete');
 
+Route::view('/bidderAuction/{id}/{email}', 'objects.found-objects.bidding-auction')->name('auction.userBidding');
+
+Route::get('/signUpAuctions/{id}/{email}',[AuctionController::class,'signUpAuctions'])->name('auctions.signUp');
+
 Route::view('/usersauctions/{user}','objects.found-objects.watch-auctions')->name('user.auctions');
 
 Route::get('/userEditsAuctions/{id}', [AuctionController::class,'updateAuction'])->name('user.updateAuction');

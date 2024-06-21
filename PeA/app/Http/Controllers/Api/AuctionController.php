@@ -285,5 +285,14 @@ public function editAuction(Request $request, $id){
         $foundObjects = foundObject::all();
         return view('objects.found-objects.edit-auction' , ['object' => $id, 'foundObjects' => $foundObjects]);
     }
+
+    public function signUpAuctions($id, $email) {
+        $auction = Auction::where('_id', $id)->first();
+        $bidder = $auction->bidder_list ?? [];
+        $bidder[] = $email;
+        $auction->bidder_list = $bidder;
+        $auction->save();
+        return view('objects.found-objects.bidding-auction' , ['id'=>$id, 'email' => $email]);
+    }
  }
 
