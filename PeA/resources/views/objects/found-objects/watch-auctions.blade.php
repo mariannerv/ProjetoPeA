@@ -122,10 +122,14 @@
               html += "<p>Licitação mais alta: " + item.highestBid + "</p>";
               html += "<p>Acaba em: " + item.end_date + "</p>";
               html += "<p>Status: " + item.status + "</p>";
+              if (item.bidder_list.includes(userEmail)) {
+                html += "<p>Inscrito no Leilao </p> "
+              }
               html += "<a class='btn btn-secondary' href={{ route('auction.get', '') }}/" + item._id + ">Ver Leilao </a> "
               if (!item.bidder_list.includes(userEmail)) {
                 html += "<a class='btn btn-secondary' href={{ url('signUpAuctions') }}/" + item._id + "/" + userEmail + ">Inscrever no Leilao </a> "
               }
+              
               if (i+1 % 3 === 0){
               html += "</div>";
               }
