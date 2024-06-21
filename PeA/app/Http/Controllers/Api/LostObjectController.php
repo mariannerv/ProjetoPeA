@@ -218,10 +218,12 @@ public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
 }
 
 
-    public function getAllLostObjects()
+public function getAllLostObjects()
 {
     try {
-        $lostObjects = LostObject::orderBy('created_at', 'desc')->get();
+        Log::info('Fetching all lost objects.'); // Logging the fetch operation
+
+        $lostObjects = LostObject::all();
         
         return response()->json([
             "status" => true,
@@ -229,6 +231,8 @@ public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
             "code" => 200,
         ]);
     } catch (\Exception $e) {
+        Log::error('Error fetching all lost objects: ' . $e->getMessage()); // Logging the error
+        
         return response()->json([
             "status" => false,
             "message" => "An error occurred while fetching all lost objects.",
@@ -236,6 +240,7 @@ public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
         ], 500);
     }
 }
+
 
     public function getLostObject(String $id){
         try {

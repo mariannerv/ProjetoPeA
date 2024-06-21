@@ -9,9 +9,9 @@
 <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      integrity="sha384-1BmE4fWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
       crossorigin="anonymous"
-    />
+/>
 <style>
     body {
         background-color: #f8f9fa;
@@ -50,6 +50,11 @@
     .similar-description {
         background-color: #ffcccc; 
     }
+
+    .btn.active {
+        background-color: #007bff;
+        color: white;
+    }
 </style>
 </head>
 <body>           
@@ -70,7 +75,7 @@
         </div>
         
         <div class="btn-group btn-group-toggle mb-3" role="group" aria-label="Tipo de Objetos">
-            <button type="button" class="btn btn-outline-primary active" id="toggleObjects" onclick="toggleObjects('all')">Todos</button>
+            <button type="button" class="btn btn-outline-primary" id="toggleObjects" onclick="toggleObjects('all')">Todos</button>
             <button type="button" class="btn btn-outline-primary" id="toggleLost" onclick="toggleObjects('lost')">Objetos Perdidos</button>
             <button type="button" class="btn btn-outline-primary" id="toggleFound" onclick="toggleObjects('found')">Objetos Achados</button>
         </div>
@@ -83,9 +88,6 @@
 
     <div id="map"></div>
 
-
-
-
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -95,11 +97,21 @@
 <script>
 // Initialize with all objects shown
 var currentDisplay = 'all';
+var currentMarker = null;
+var map = tt.map({
+    key: 'YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn',
+    container: 'map',
+    center: [2.2945, 48.8584],
+    zoom: 12
+});
+
+map.addControl(new tt.NavigationControl());
 
 // Function to toggle between displaying all, lost, or found objects
 function toggleObjects(type) {
     currentDisplay = type;
-    fetchAllData(); // Fetch data according to the current display type
+    updateButtonStyles();
+    fetchAllData();
 }
 
 // Function to search objects based on description
@@ -167,6 +179,21 @@ function searchObjectsByDescription(searchTerm) {
     });
 }
 
+// Function to update button styles
+function updateButtonStyles() {
+    document.getElementById('toggleObjects').classList.remove('active');
+    document.getElementById('toggleLost').classList.remove('active');
+    document.getElementById('toggleFound').classList.remove('active');
+
+    if (currentDisplay === 'all') {
+        document.getElementById('toggleObjects').classList.add('active');
+    } else if (currentDisplay === 'lost') {
+        document.getElementById('toggleLost').classList.add('active');
+    } else if (currentDisplay === 'found') {
+        document.getElementById('toggleFound').classList.add('active');
+    }
+}
+
 // Function to display search results on frontend
 function displaySearchResults(results, objectType, tableId, searchTerm) {
     var tableDiv = document.getElementById(tableId);
@@ -214,14 +241,15 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
             mapButton.textContent = "Mostrar Localização";
             mapButton.className = "btn btn-sm btn-outline-primary";
             mapButton.onclick = function() {
-                var coordenadas = result.coordenadas;
-                if (coordenadas) {
-                    var latitude = coordenadas.latitude;
-                    var longitude = coordenadas.longitude;
-                    displayLocationOnMap(latitude, longitude);
-                } else {
-                    console.error('Coordenadas não estão definidas para esta localização.');
-                }
+                fetchLocationCoordinates(result.locationId, function(coordenadas) {
+                    if (coordenadas) {
+                        var latitude = coordenadas.latitude;
+                        var longitude = coordenadas.longitude;
+                        displayLocationOnMap(latitude, longitude);
+                    } else {
+                        console.error('Coordenadas não estão definidas para esta localização.');
+                    }
+                });
             };
             mapButtonCell.appendChild(mapButton);
             row.appendChild(descriptionCell);
@@ -235,33 +263,37 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
     tableDiv.appendChild(table);
 }
 
-// Display current location on map
-function displayCurrentLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            var latitude = position.coords.latitude;
-            var longitude = position.coords.longitude;
-            displayLocationOnMap(latitude, longitude);
+function fetchLocationCoordinates(locationId, callback) {
+    fetch('/api/locations/' + locationId)
+        .then(response => response.json())
+        .then(location => {
+            if (location && location.data && location.data.coordenadas) {
+                callback(location.data.coordenadas);
+            } else {
+                console.error('Localização não encontrada ou coordenadas ausentes.');
+                callback(null);
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao buscar coordenadas da localização:', error);
+            callback(null);
         });
-    } else {
-        console.error('Geolocalização não é suportada por este navegador.');
-    }
 }
 
 // Function to display location on map
 function displayLocationOnMap(latitude, longitude) {
-    var map = tt.map({
-        key: 'YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn', 
-        container: 'map',
-        center: [longitude, latitude],
-        zoom: 12
-    });
+    if (currentMarker) {
+        currentMarker.remove();
+    }
 
-    map.addControl(new tt.NavigationControl());
-
-    var marker = new tt.Marker()
+    currentMarker = new tt.Marker()
         .setLngLat([longitude, latitude])
         .addTo(map);
+
+    map.flyTo({
+        center: [longitude, latitude],
+        zoom: 14
+    });
 }
 
 // Initial fetch of all data when page loads

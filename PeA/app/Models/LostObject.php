@@ -16,9 +16,7 @@ class LostObject extends Model
         'color',
         'size',
         'category_id',
-        'location_id',
-        'status',
-        'lostObjectId',
+        'location_id'
     ];
 
     public function category()
