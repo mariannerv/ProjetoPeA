@@ -106,7 +106,7 @@
     {{-- Leilões --}}
     <script>
       $.ajax({
-        url: '{{ route("auctions.get") }}',
+        url: '{{ route("activeAuctions.get") }}',
         method: 'GET',
         dataType: 'json',
         success: function(response) {
