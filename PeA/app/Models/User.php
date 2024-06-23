@@ -8,20 +8,19 @@ use MongoDB\Laravel\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use MongoDB\Laravel\Eloquent\Model;
-
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
+use App\Notifications\EmailVerificationNotification;
+use App\Notifications\BidOvertakenNotification;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * 
-     *
-     * @var array<int, string>
-     */
-
     protected $connection = 'mongodb';
     protected $collection = 'users';
+
     protected $fillable = [
         'account_id',
         'name',
@@ -44,27 +43,17 @@ class User extends Authenticatable implements MustVerifyEmail
         'admin',
     ];
 
-    /**
-     * 
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'token',
     ];
 
-    /**
-     * 
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
 
-        public function hasVerifiedEmail()
+    public function hasVerifiedEmail()
     {
         return ! is_null($this->email_verified_at);
     }
@@ -79,6 +68,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->email;
     }
+
     public function sendEmailVerificationNotification()
     {
         $verifyUrl = URL::temporarySignedRoute(
@@ -96,11 +86,22 @@ class User extends Authenticatable implements MustVerifyEmail
             $this->notify(new BidOvertakenNotification($mostRecentBidderName));
         }
     }
+
+    
     public function createNotificationToken()
     {
         $token = new NotificationToken();
         $token->user_id = $this->id;
-        $token->token = \Illuminate\Support\Str::random(60); 
+        $token->token = Str::random(60); 
         $token->save();
+    }
+    public function auctions(): BelongsToMany
+    {
+        return $this->belongsToMany(Auction::class, 'auction_user')
+                    ->where('end_date', '>', Carbon::now());
+    }
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
     }
 }

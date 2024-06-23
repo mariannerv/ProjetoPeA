@@ -14,14 +14,10 @@ class LocationController extends Controller
     protected $collection = 'location'; 
 
 
-    public function viewLocation(Request $request)
+    public function viewLocation(Request $request, $locationId)
 {
     try {
-        $request->validate([
-            '_id' => 'required|string',
-        ]);
-
-        $location = Location::find($request->_id);
+        $location = Location::find($locationId);
 
         if ($location) {
             return response()->json([
@@ -44,6 +40,7 @@ class LocationController extends Controller
         ], 500);
     }
 }
+
 
 public function fetchLocationAddress($id)
 {
@@ -230,5 +227,9 @@ public function fetchLocationAddress($id)
             ], 500);
         }
     }
+
+    
+
+
 }
 

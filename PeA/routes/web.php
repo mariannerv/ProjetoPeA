@@ -1,4 +1,4 @@
-<?php
+<?php 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OwnerController;
@@ -13,6 +13,7 @@ use App\Http\Controllers\emailVerificationCodeController;
 use App\Models\PoliceStation;
 use App\Http\Controllers\Emails\SendMailController;
 use App\Http\Controllers\verificationCodeController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -22,10 +23,9 @@ use App\Http\Controllers\verificationCodeController;
 | routes are loaded by the RouteServiceProvider and all of them will
 | be assigned to the "web" middleware group. Make something great!
 */
-
 Route::get('/', function () {
-        return view('home');
-    })->name('home');
+    return view('home');
+})->name('home');
 
 // User Routes
 Route::get('/users', [ApiController::class, 'index'])->name('users.store');
@@ -154,25 +154,58 @@ Route::post('/found-objects/update/{object}', [foundObjectController::class,'upd
 Route::get('/search',function(){
     return view('objects.objectsearch');
 });
+Route::get('/search2',function(){
+    return view('objects.object-search');
+});
 
-Route::get('/statmap',function(){
+// Login and Logout Routes
+Route::prefix('auth')->group(function () {
+    Route::get('/login', function () {
+        return view('login');
+    })->name('user.login-view');
+    Route::post('/login', [ApiController::class, 'login'])->name('user.login');
+    Route::get('/logout', [ApiController::class, 'logout'])->name('user.logout');
+    Route::get('/testeauth', function () {
+        return view('auth.testeauth');
+    });
+});
+
+// Registration Views
+Route::prefix('register')->group(function () {
+    Route::get('/chooseaccounttype', function () {
+        return view('register.chooseaccounttype');
+    });
+    Route::get('/success', function () {
+        return view('register.registerSuccess');
+    })->name('register.success');
+    Route::get('/stationsform', function () {
+        return view('register.stationsform');
+    });
+    Route::get('/usersform', function () {
+        return view('register.usersform');
+    });
+});
+
+// Object Routes
+Route::prefix('objects')->group(function () {
+    Route::view('/register-form', 'objects.objectregister')->name('objects.register-form');
+    Route::post('/register', [LostObjectController::class, 'registerLostObject'])->name('objects.register');
+    Route::get('/lost', [LostObjectController::class, 'getAllLostObjects'])->name('lost-objects.get');
+    Route::get('/lost/{object}', [LostObjectController::class, 'getLostObject'])->name('lost-object.get');
+    Route::delete('/lost/delete/{object}', [LostObjectController::class, 'deleteLostObject'])->name('lost-object.delete');
+    Route::get('/lost/{object}/edit', [LostObjectController::class, 'editLostObject'])->name('lost-object.edit');
+    Route::put('/lost/{object}', [LostObjectController::class, 'upadteLostObject'])->name('lost-object.update');
+    Route::get('/found', [foundObjectController::class, 'getAllFoundObjects'])->name('found-objects.get');
+    Route::get('/found/{object}', [foundObjectController::class, 'getFoundObject'])->name('found-object.get');
+    Route::delete('/found/delete/{object}', [foundObjectController::class, 'deleteFoundObject'])->name('found-object.delete');
+    Route::get('/search', function () {
+        return view('objects.objectsearch');
+    });
+    
+});
+Route::get('/statmap', function () {
     return view('objectstatmap');
 });
-
-// Email routes
-Route::get('/send-mail', [SendMailController::class, 'sendWelcomeEmail']);
-Route::get('send-mail',[EmailController::class, 'sendWelcomeEmail']);
-Route::get('/verification-form', function () {
-    return view('mail-template.verificaemail');
-});
-Route::view('/novoemail', 'mail-template.novoemail')->name('novoemail');
-Route::view('/verificaemail', 'mail-template.verificaemail')->name('verificaemail');
-Route::get('/verify-email/{uuid}', [verificationCodeController::class, 'verifyEmail'])->name('verify-email');
-
-// Tokens views/routes
-Route::post('/generate-new-token/{uuid}', [verificationCodeController::class, 'geraNovoToken'])->name('generate-new-token');
-Route::view('/tokenexpirou/{uuid}', 'tokenexpirou')->name('tokenexpirou');
-
 // Auction views/routes
 Route::get('/auctions',[AuctionController::class,'viewAllAuctions'])->name('auctions.get');
 Route::get('/auctions/{auction}', [AuctionController::class,'viewAuction'])->name('auction.get');

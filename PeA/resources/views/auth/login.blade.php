@@ -1,3 +1,4 @@
+
 <?php
 if (Auth::guard('police')->check() || Auth::check()) {
     header('Location: ' . route('home'));
@@ -38,7 +39,7 @@ if (Auth::guard('police')->check() || Auth::check()) {
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
-                               
+
                             </ul>
                         </div>
                     @endif

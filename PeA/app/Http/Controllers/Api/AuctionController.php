@@ -220,5 +220,62 @@ public function viewAllAuctions(){
         ], 500);
     }
 }
+
+
+
+
+public function subscribe(Request $request)
+{
+    $request->validate([
+        'auctionId' => 'required|string|exists:auctions,auctionId',
+    ]);
+
+    $user = Auth::user();
+    $auction = Auction::where('auctionId', $request->auctionId)->first();
+
+    if ($auction) {
+        $user->auctions()->attach($auction->id);
+        return response()->json([
+            'status' => true,
+            'message' => 'Subscribed to auction successfully.',
+        ]);
+    }
+
+    return response()->json([
+        'status' => false,
+        'message' => 'Auction not found.',
+    ], 404);
+}
+
+public function unsubscribe(Request $request)
+{
+    $request->validate([
+        'auctionId' => 'required|string|exists:auctions,auctionId',
+    ]);
+
+    $user = Auth::user();
+    $auction = Auction::where('auctionId', $request->auctionId)->first();
+
+    if ($auction) {
+        $user->auctions()->detach($auction->id);
+        return response()->json([
+            'status' => true,
+            'message' => 'Unsubscribed from auction successfully.',
+        ]);
+    }
+
+    return response()->json([
+        'status' => false,
+        'message' => 'Auction not found.',
+    ], 404);
+}
+
+
+
+public function users(): BelongsToMany
+{
+    return $this->belongsToMany(User::class, 'auction_user');
+}
+
  }
 

@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\LostObjectController;
 use App\Http\Controllers\Api\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Api\NotificationsController;
 
 
 /*
@@ -36,9 +37,8 @@ use Illuminate\Support\Facades\DB;
 
 
 //APIs User
-
 Route::post("register", [ApiController::class, "register"]);
-Route::post("login", [ApiController::class, "login"]);
+Route::post("login", [ApiController::class, "login"])->name('login');
 
 
 Route::group([
@@ -79,6 +79,7 @@ Route::post('activatePolice', [PoliceController::class, "activatePolice"]);
 Route::get('fetchLocationAddress/{id}', [LocationController::class, "fetchLocationAddress"]);
 Route::get('getAllLocations', [LocationController::class, "getAllLocations"]);
 Route::get('viewLocation/{id}', [LocationController::class, "viewLocation"]);
+Route::get('/locations/{locationId}', [LocationController::class, 'viewLocation']);
 
 //API foundObject
 
@@ -86,7 +87,6 @@ Route::post("registerFoundObject", [foundObjectController::class, "registerFound
 Route::get("viewFoundObject", [foundObjectController::class, "viewFoundObject"]);
 Route::put("updateFoundObject", [foundObjectController::class, "updateFoundObject"]);
 Route::delete('deleteFoundObject', [foundObjectController::class, "deleteFoundObject"]);
-Route::get('getFoundObjectsStatistics', [FoundObjectController::class, 'getStatistics']);
 
 //APIs PoliceStation
 Route::post("registerPost", [PoliceStationController::class, "registerPost"]);
@@ -127,26 +127,24 @@ Route::put("updateLostObject", [LostObjectController::class, "updateLostObject"]
 Route::delete("deleteLostObject", [LostObjectController::class, "deleteLostObject"]);
 Route::post("crossCheck", [LostObjectController::class, "crossCheck"]);
 Route::get("getLostObject", [LostObjectController::class, "getLostObject"]);
-Route::get('getLostObjectsStatistics', [LostObjectController::class, 'getStatistics']);
-
 
 Route::post("createCode", [verificationCodeController::class, "createCode"]);
 
-// Route::get('/test_mongodb/', function (Illuminate\Http\Request $request) {
+ Route::get('/test_mongodb/', function (Illuminate\Http\Request $request) {
 
-//     $connection = DB::connection('mongodb');
-//     $msg = 'MongoDB is accessible!';
-//     try {
-//         $connection->command(['ping' => 1]);
-//         $dbName = $connection->getDatabaseName();
-//         $uri = config('database.connections.mongodb.dsn');
-//         $dbName = config('database.connections.mongodb.database');
-//         return [$msg, 'uri' => $uri, 'dbName' => $dbName];
-//     } catch (\Exception $e) {
-//         return $msg = 'MongoDB is not accessible. Error: ' . $e->getMessage();
-//     }
+     $connection = DB::connection('mongodb');
+     $msg = 'MongoDB is accessible!';
+    try {
+         $connection->command(['ping' => 1]);
+        $dbName = $connection->getDatabaseName();
+        $uri = config('database.connections.mongodb.dsn');
+        $dbName = config('database.connections.mongodb.database');
+         return [$msg, 'uri' => $uri, 'dbName' => $dbName];
+   } catch (\Exception $e) {
+      return $msg = 'MongoDB is not accessible. Error: ' . $e->getMessage();
+   }
     
-// });
+ });
 
 //Para testar se a conexão ao mongo está a funcionar
 
@@ -189,22 +187,29 @@ Route::post('/email/verification-notification', function (Request $request) {
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 
-
-
-
-
-
-
-
-
-
-
-
 //OWNER
 Route::post('/Owner', [OwnerController::class, 'store']);
 
 Route::get('/Owner/{civilId}', [OwnerController::class, 'getUserByCivilId']);
 
-//Route::post('login', [AuthController::class, 'login']);
+Route::post('login', [AuthController::class, 'login']);
 
+
+//notification routes
+Route::group([
+    "middleware" => ["auth:sanctum"]
+], function(){
+    
+    Route::get('/user/details', [NotificationsController::class, 'getUserDetails']);
+    Route::get('/notifications/fetch-all', [NotificationsController::class, 'fetchAllNotifications']);
+    Route::post('/notifications/send-overtaken', [NotificationsController::class, 'sendBidOvertakenNotification']);
+    Route::post('/notifications/send-updated', [NotificationsController::class, 'sendBidUpdatedNotification']);
+    Route::post('/notifications/send-test', [NotificationsController::class, 'sendTestNotification']);
+});
+
+//sub e unsub notifs de um auction
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/auction/subscribe', [AuctionController::class, 'subscribe']);
+    Route::post('/auction/unsubscribe', [AuctionController::class, 'unsubscribe']);
+});
 

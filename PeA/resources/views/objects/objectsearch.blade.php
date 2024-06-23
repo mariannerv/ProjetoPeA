@@ -1,44 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lost and Found Objects Search</title>
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<link rel="icon" href="images/favicon.ico" type="image/x-icon">
+<title>Buscar Objetos Perdidos e Achados</title>
+<link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4fWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+/>
 <style>
+    body {
+        background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 50px auto;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .input-group {
+        margin-bottom: 20px;
+    }
+
+    .btn-group {
+        margin-bottom: 20px;
+    }
+
+    .table {
+        margin-top: 20px;
+    }
+
+    #map {
+        margin-top: 20px;
+        height: 400px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
     .similar-description {
-        background-color: #ffcccc; /* Color to highlight similar objects */
+        background-color: #ffcccc; 
+    }
+
+    .btn.active {
+        background-color: #007bff;
+        color: white;
     }
 </style>
 </head>
-<body>
-@if {{auth()->check()}}
-<div class="container">
-  <h1>Lost and Found Objects Search</h1>
-  <div class="input-group mb-3">
-    <input type="text" class="form-control" id="searchInput" placeholder="Search..." aria-label="Search" aria-describedby="basic-addon2">
-    <div class="input-group-append">
-      <button class="btn btn-outline-secondary" type="button" onclick="searchObjects()">Search</button>
+<body>           
+<header>
+      @if (auth()->check())
+        @include('components.navbar')
+      @else
+        @include('components.navbar-guest')
+      @endif      
+</header>
+    <div class="container"> 
+        <h1 class="text-center mb-4">Buscar Objetos Perdidos e Achados</h1>
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" id="searchInput" placeholder="Pesquisar..." aria-label="Pesquisar" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="button" onclick="searchObjects()">Pesquisar</button>
+            </div>
+        </div>
+        
+        <div class="btn-group btn-group-toggle mb-3" role="group" aria-label="Tipo de Objetos">
+            <button type="button" class="btn btn-outline-primary" id="toggleObjects" onclick="toggleObjects('all')">Todos</button>
+            <button type="button" class="btn btn-outline-primary" id="toggleLost" onclick="toggleObjects('lost')">Objetos Perdidos</button>
+            <button type="button" class="btn btn-outline-primary" id="toggleFound" onclick="toggleObjects('found')">Objetos Achados</button>
+        </div>
+        
+        <div id="searchResults">
+            <h2 id="allObjectsTitle" style="display: none;">Todos os Objetos</h2>
+            <div id="allObjectsTable"></div>
+        </div>
     </div>
-  </div>
 
-  <div id="searchResults" class="mt-3">
-    <h2>Lost Objects</h2>
-    <div id="lostObjectsTable"></div>
-    <h2>Found Objects</h2>
-    <div id="foundObjectsTable"></div>
-    <div id="reportFoundObject" style="display: none;">
-        <h3>Report Possible Found Object</h3>
-        <textarea id="reportFoundObjectText" class="form-control" rows="3" placeholder="Enter details..."></textarea>
-        <button id="submitReport" class="btn btn-primary mt-2">Submit</button>
-    </div>
-  </div>
-</div>
-<div id= "allLocationsTable"></div>
-<div id="map" style="height: 400px;"></div>
-@else
-    @include('auth.noaccess')
-    @endif
+    <div id="map"></div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
@@ -47,21 +95,121 @@
 <link href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css" rel="stylesheet">
 
 <script>
+// Initialize with all objects shown
+var currentDisplay = 'all';
+var currentMarker = null;
+var map = tt.map({
+    key: 'YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn',
+    container: 'map',
+    center: [2.2945, 48.8584],
+    zoom: 12
+});
+
+map.addControl(new tt.NavigationControl());
+
+// Function to toggle between displaying all, lost, or found objects
+function toggleObjects(type) {
+    currentDisplay = type;
+    updateButtonStyles();
+    fetchAllData();
+}
+
+// Function to search objects based on description
+function searchObjects() {
+    var searchTerm = document.getElementById('searchInput').value;
+    if (searchTerm.trim() !== '') {
+        searchObjectsByDescription(searchTerm);
+    } else {
+        fetchAllData();
+    }
+}
+
+// Fetch all data function based on currentDisplay
+function fetchAllData() {
+    if (currentDisplay === 'all') {
+        fetchAllLostObjects();
+        fetchAllFoundObjects();
+    } else if (currentDisplay === 'lost') {
+        fetchAllLostObjects();
+    } else if (currentDisplay === 'found') {
+        fetchAllFoundObjects();
+    }
+}
+
+// Function to fetch all lost objects from backend
+function fetchAllLostObjects() {
+    $.ajax({
+        url: '/api/allLostObjects',
+        method: 'GET',
+        success: function(response) {
+            displaySearchResults(response.data, "Objetos Perdidos", "allObjectsTable");
+        },
+        error: function(xhr, status, error) {
+            console.error("Erro ao buscar todos os objetos perdidos:", error);
+        }
+    });
+}
+
+// Function to fetch all found objects from backend
+function fetchAllFoundObjects() {
+    $.ajax({
+        url: '/api/allFoundObjects',
+        method: 'GET',
+        success: function(response) {
+            displaySearchResults(response.data, "Objetos Achados", "allObjectsTable");
+        },
+        error: function(xhr, status, error) {
+            console.error("Erro ao buscar todos os objetos achados:", error);
+        }
+    });
+}
+
+// Function to search objects by description
+function searchObjectsByDescription(searchTerm) {
+    $.ajax({
+        url: '/api/searchObjectsByDescription',
+        method: 'GET',
+        data: { description: searchTerm },
+        success: function(response) {
+            displaySearchResults(response.data, "Objetos", "allObjectsTable", searchTerm);
+        },
+        error: function(xhr, status, error) {
+            console.error("Erro ao buscar objetos:", error);
+        }
+    });
+}
+
+// Function to update button styles
+function updateButtonStyles() {
+    document.getElementById('toggleObjects').classList.remove('active');
+    document.getElementById('toggleLost').classList.remove('active');
+    document.getElementById('toggleFound').classList.remove('active');
+
+    if (currentDisplay === 'all') {
+        document.getElementById('toggleObjects').classList.add('active');
+    } else if (currentDisplay === 'lost') {
+        document.getElementById('toggleLost').classList.add('active');
+    } else if (currentDisplay === 'found') {
+        document.getElementById('toggleFound').classList.add('active');
+    }
+}
+
+// Function to display search results on frontend
 function displaySearchResults(results, objectType, tableId, searchTerm) {
     var tableDiv = document.getElementById(tableId);
     tableDiv.innerHTML = "";
 
     var table = document.createElement("table");
-    table.className = "table";
+    table.className = "table table-striped";
     var thead = document.createElement("thead");
     var tbody = document.createElement("tbody");
     var headerRow = document.createElement("tr");
     var headerCell1 = document.createElement("th");
-    headerCell1.textContent = "Description";
+    headerCell1.textContent = "Descrição";
     var headerCell2 = document.createElement("th");
-    headerCell2.textContent = "Location ID";
+    headerCell2.textContent = "ID da Localização";
     var headerCell3 = document.createElement("th");
-    headerCell3.textContent = "Action";
+    headerCell3.textContent = "Ação";
     headerRow.appendChild(headerCell1);
     headerRow.appendChild(headerCell2);
     headerRow.appendChild(headerCell3);
@@ -71,7 +219,7 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
     if (results.length === 0) {
         var noResultsRow = document.createElement("tr");
         var noResultsCell = document.createElement("td");
-        noResultsCell.textContent = "No results found.";
+        noResultsCell.textContent = "Nenhum resultado encontrado.";
         noResultsCell.setAttribute("colspan", "3");
         noResultsRow.appendChild(noResultsCell);
         tbody.appendChild(noResultsRow);
@@ -86,18 +234,22 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
 
             if (searchTerm && result.description.toLowerCase().includes(searchTerm.toLowerCase())) {
                 descriptionCell.classList.add('similar-description');
-                showReportFoundObject();
             }
 
             var mapButtonCell = document.createElement("td");
             var mapButton = document.createElement("button");
-            mapButton.textContent = "Show Location";
+            mapButton.textContent = "Mostrar Localização";
+            mapButton.className = "btn btn-sm btn-outline-primary";
             mapButton.onclick = function() {
-                var locationId = result.locationId;
-                if (locationId) {fetchLocationAddress(locationId)
-                } else {
-                    console.error('Location ID is undefined or null');
-                }
+                fetchLocationCoordinates(result.locationId, function(coordenadas) {
+                    if (coordenadas) {
+                        var latitude = coordenadas.latitude;
+                        var longitude = coordenadas.longitude;
+                        displayLocationOnMap(latitude, longitude);
+                    } else {
+                        console.error('Coordenadas não estão definidas para esta localização.');
+                    }
+                });
             };
             mapButtonCell.appendChild(mapButton);
             row.appendChild(descriptionCell);
@@ -111,230 +263,42 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
     tableDiv.appendChild(table);
 }
 
-function fetchAllData() {
-    fetchAllLostObjects();
-    fetchAllFoundObjects();
-    fetchAllLocations();
-    displayCurrentLocation();
-}
-
-function displayCurrentLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            var latitude = position.coords.latitude;
-            var longitude = position.coords.longitude;
-            displayLocationOnMap(latitude, longitude);
+function fetchLocationCoordinates(locationId, callback) {
+    fetch('/api/locations/' + locationId)
+        .then(response => response.json())
+        .then(location => {
+            if (location && location.data && location.data.coordenadas) {
+                callback(location.data.coordenadas);
+            } else {
+                console.error('Localização não encontrada ou coordenadas ausentes.');
+                callback(null);
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao buscar coordenadas da localização:', error);
+            callback(null);
         });
-    } else {
-        console.error('Geolocation is not supported by this browser.');
-    }
 }
 
-function fetchAllLostObjects() {
-    $.ajax({
-        url: '/api/allLostObjects',
-        method: 'GET',
-        success: function(response) {
-            displaySearchResults(response.data, "Lost Objects", "lostObjectsTable");
-        },
-        error: function(xhr, status, error) {
-            console.error("Error fetching all lost objects:", error);
-        }
-    });
-}
-
-function fetchAllFoundObjects() {
-    $.ajax({
-        url: '/api/allFoundObjects',
-        method: 'GET',
-        success: function(response) {
-            displaySearchResults(response.data, "Found Objects", "foundObjectsTable");
-        },
-        error: function(xhr, status, error) {
-            console.error("Error fetching all found objects:", error);
-        }
-    });
-}
-
-function fetchAllLocations() {
-    $.ajax({
-        url: 'api/getAllLocations',
-        method: 'GET',
-        success: function(response) {
-            if (response.status === false) {
-                console.error("Error fetching all locations objects", response.message);
-                
-            } else {
-                displaylocations(response.data, "Locations", "allLocationsTable");
-            }
-        },
-        error: function(xhr, status, error) {
-            if (xhr.status === 404) {
-                console.error("Route not found:", error);
-             
-            } else {
-                console.error("Error fetching all locations route:", error);
-                
-            }
-        }
-    });
-}
-
-function displaylocations(locations, objectType, tableId) {
-    var tableDiv = document.getElementById(tableId);
-    tableDiv.innerHTML = "";
-
-    var table = document.createElement("table");
-    table.className = "table";
-    var thead = document.createElement("thead");
-    var tbody = document.createElement("tbody");
-    var headerRow = document.createElement("tr");
-    var headerCell1 = document.createElement("th");
-    headerCell1.textContent = "Location ID";
-    var headerCell2 = document.createElement("th");
-    headerCell2.textContent = "Street";
-    var headerCell3 = document.createElement("th");
-    headerCell3.textContent = "Freguesia";
-    var headerCell4 = document.createElement("th");
-    headerCell4.textContent = "Municipio";
-    var headerCell5 = document.createElement("th");
-    headerCell5.textContent = "Distrito";
-    var headerCell6 = document.createElement("th");
-    headerCell6.textContent = "Postal Code";
-    var headerCell7 = document.createElement("th");
-    headerCell7.textContent = "Country";
-
-    headerRow.appendChild(headerCell1);
-    headerRow.appendChild(headerCell2);
-    headerRow.appendChild(headerCell3);
-    headerRow.appendChild(headerCell4);
-    headerRow.appendChild(headerCell5);
-    headerRow.appendChild(headerCell6);
-    headerRow.appendChild(headerCell7);
-    thead.appendChild(headerRow);
-    table.appendChild(thead);
-
-    if (locations.length === 0) {
-        var noResultsRow = document.createElement("tr");
-        var noResultsCell = document.createElement("td");
-        noResultsCell.textContent = "No locations found.";
-        noResultsCell.setAttribute("colspan", "7");
-        noResultsRow.appendChild(noResultsCell);
-        tbody.appendChild(noResultsRow);
-    } else {
-        locations.forEach(function(location) {
-            var row = document.createElement("tr");
-            var locationIdCell = document.createElement("td");
-            locationIdCell.textContent = location._id;
-            var streetCell = document.createElement("td");
-            streetCell.textContent = location.rua;
-            var freguesiaCell = document.createElement("td");
-            freguesiaCell.textContent = location.freguesia;
-            var municipioCell = document.createElement("td");
-            municipioCell.textContent = location.municipio;
-            var distritoCell = document.createElement("td");
-            distritoCell.textContent = location.distrito;
-            var postalCodeCell = document.createElement("td");
-            postalCodeCell.textContent = location.codigo_postal;
-            var countryCell = document.createElement("td");
-            countryCell.textContent = location.pais;
-
-            row.appendChild(locationIdCell);
-            row.appendChild(streetCell);
-            row.appendChild(freguesiaCell);
-            row.appendChild(municipioCell);
-            row.appendChild(distritoCell);
-            row.appendChild(postalCodeCell);
-            row.appendChild(countryCell);
-            tbody.appendChild(row);
-        });
-    }
-
-    table.appendChild(tbody);
-    tableDiv.appendChild(table);
-}
-function fetchLocationAddress(locationId) {
-    $.ajax({
-        url: '/api/fetchLocationAddress/' + locationId,
-        method: 'GET',
-        success: function(response) {
-            if (response && response.data) {
-                geocodeAddress(response.data[0],response.data[1]);
-            } else {
-                console.error("Invalid response format for location address data.");
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error("Error fetching location address:", error);
-        }
-    });
-}
-
-function geocodeAddress(address, apiKey) {
-    $.ajax({
-        url: 'https://api.tomtom.com/search/2/geocode/' + encodeURIComponent(address) + '.json?key=' + apiKey,
-        method: 'GET',
-        success: function(response) {
-            if (response && response.results && response.results.length > 0 && response.results[0].type === "Point Address") {
-                var latitude = response.results[0].position.lat;
-                var longitude = response.results[0].position.lon;
-                displayLocationOnMap(latitude, longitude);
-            } else {
-                console.error('No coordinates found for the address:', address);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('Error geocoding address:', error);
-        }
-    });
-}
-
-
-
-
+// Function to display location on map
 function displayLocationOnMap(latitude, longitude) {
-    var map = tt.map({
-        key: 'YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn',
-        container: 'map',
+    if (currentMarker) {
+        currentMarker.remove();
+    }
+
+    currentMarker = new tt.Marker()
+        .setLngLat([longitude, latitude])
+        .addTo(map);
+
+    map.flyTo({
         center: [longitude, latitude],
-        zoom: 10
-    });
-    map.on('load', () => {
-    var marker = new tt.Marker().setLngLat([longitude, latitude]).addTo(map);
-})
-}
-
-function searchObjects() {
-    var searchTerm = document.getElementById("searchInput").value.trim(); // Trim the search term
-    searchObjectsByDescription(searchTerm);
-}
-
-function searchObjectsByDescription(searchTerm) {
-    $.ajax({
-        url: '/api/searchObjectsByDescription',
-        method: 'GET',
-        data: { description: searchTerm },
-        success: function(response) {
-            displaySearchResults(response.data, "Objects", "searchResults", searchTerm);
-        },
-        error: function(xhr, status, error) {
-            console.error("Error searching objects:", error);
-        }
+        zoom: 14
     });
 }
 
-document.getElementById('submitReport').addEventListener('click', function() {
-    var reportText = document.getElementById('reportFoundObjectText').value;
-    submitReport(reportText);
-});
-
-function submitReport(reportText) {
-    console.log("Report submitted:", reportText);
-    document.getElementById('reportFoundObjectText').value = "";
-    document.getElementById('reportFoundObject').style.display = 'none';
-}
-
+// Initial fetch of all data when page loads
 fetchAllData();
+
 </script>
 
 </body>

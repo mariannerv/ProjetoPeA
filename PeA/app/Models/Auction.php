@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use MongoDB\Laravel\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use MongoDB\Laravel\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Auction extends Model
 {
@@ -28,5 +27,8 @@ class Auction extends Model
         'bids_list',
     ];
 
-
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'auction_user');
+    }
 }
