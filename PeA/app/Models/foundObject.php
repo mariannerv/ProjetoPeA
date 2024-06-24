@@ -23,16 +23,25 @@ class foundObject extends Model
         'size',
         'description',
         'location',
+        'address',
+        'location',
+        'postalcode',
+        'name',
+        'number',
+        'email',
         'location_coords',
         'value',
         'date_found',
         'date_registered',
         'deadlineForAuction',
         'estacao_policia',
+        'image',
+
     ];
 
     protected $casts = [
-        'objectId' => 'string', 
+        'objectId' => 'string',
+        
     ];
 
 }

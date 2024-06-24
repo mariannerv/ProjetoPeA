@@ -101,6 +101,8 @@ Route::view('/users/{user}','profile.users.user')->name('user.profile');
 
 Route::view('/police/{police}','profile.polices.police')->name('police.profile');
 
+Route::view('/usersauctions/{user}','objects.found-objects.watch-auctions')->name('user.auctions');
+
 #showprofile
 Route::get('/usersadmin/{user}', [ApiController::class, 'showprofile'])->name('useradm.profile');
 
@@ -145,6 +147,8 @@ Route::post('found-objects/delete/{object}', [foundObjectController::class,'dele
 Route::post('found-objects/delete2/{object}', [foundObjectController::class,'deleteFoundObject2'])->name('found-object2.delete');
 Route::get('/found-objects/edit/{object}', [foundObjectController::class,'edit'])->name('found-object.edit');
 
+Route::get('/found-allObjects', [foundObjectController::class,'getall'])->name('found-allObject.get');
+
 Route::get('/found-object/{object}', [foundObjectController::class,'getobject'])->name('found-object.get');
 Route::post('/found-objects/update/{object}', [foundObjectController::class,'update'])->name('found-object.update');
 Route::get('/search',function(){
@@ -175,4 +179,15 @@ Route::get('/auctions/{auction}', [AuctionController::class,'viewAuction'])->nam
 
 Route::view('/usersauctions/{user}','objects.found-objects.watch-auctions')->name('user.auctions');
 
+Route::view('/usersRegisterAuctions/{user}','objects.found-objects.auctions-register')->name('user.registerAuctions');
+Route::get('/RegisterAuctions', [AuctionController::class,'createAuction'])->name('auction.register');
+
+Route::get('/allobjects', [LostObjectController::class,'getAllObjects'])->name('allobjects.get');
+
+Route::get('/compare/{foundObject}/{lostObject}', [LostObjectController::class,'getObjects'])->name('compare.objects');
+
+Route::post('/addowner/{foundObject}/{lostObject}', [LostObjectController::class,'add'])->name('addowner.objects');
+
+Route::get('/ownerobject/{foundObject}/' , [LostObjectController::class,'ownerbject'])->name('getowner.objects');
+Route::get('/notifyowner/{foundObject}/{lostObject}/{owner}/' , [LostObjectController::class,'notifyowner'])->name('notify.owner');
 ?>

@@ -22,75 +22,177 @@ use App\Http\Controllers\Emails\crossCheckMailController;
 use App\Http\Controllers\Emails\SendMailController;
 use Exception;
 use Illuminate\Support\Facades\Validator;
+use MongoDB\BSON\ObjectId;
 
 
 class LostObjectController extends Controller
 {
+  
+    
     public function registerLostObject(Request $request)
-{
-    $ownerEmail = $request->ownerEmail;
-    $owner = User::where('email', $ownerEmail)->first();
-
-    if (!$owner) {
-        return response()->json([
-            "status" => false,
-            "message" => "Utilizador não encontrado.",
-            "code" => 404,
-        ]);
+    {
+        $ownerEmail = $request->ownerEmail;
+        $owner = User::where('email', $ownerEmail)->first();
+    
+        if (!$owner) {
+            return response()->json([
+                "status" => false,
+                "message" => "Utilizador não encontrado.",
+                "code" => 404,
+            ]);
+        }
+    
+        try {
+            $val = Validator::make($request->all(),[
+                'ownerEmail' => 'required|email',
+                'category' => 'required|string',
+                'description' => 'required|string',
+                'date_lost' => 'required|date',
+                'img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                // 'location_id' => 'required|string',
+            ]);
+    
+            if ($val->fails()){
+                return redirect()->back()->withErrors($val)->withInput();
+            }
+    
+            $uuid = (string) Str::uuid();
+            
+            // Process image upload, if present
+            $imageName = null;
+            if ($request->hasFile('img')) {
+                $imageName = time().'_'.uniqid().'.'.$request->img->extension();
+                $request->img->move(public_path('images/lost-objects-img'), $imageName);
+            }
+    
+            // Create the lost object with provided data
+            $lostObject = LostObject::create([
+                "ownerEmail" => $ownerEmail,
+                "description" => $request->input('description'),
+                "date_lost" => $request->input('date_lost'),
+                "brand" => $request->input('brand'),
+                "color" => $request->input('color'),
+                "size" => $request->input('size'),
+                "category" => $request->input('category'),
+                "address" => $request->input('address'),
+                "location" => $request->input('location'),
+                "postalcode" => $request->input('postalcode'),
+                "location_id" => $uuid,
+                "status" => "Lost",
+                "lostObjectId" => 0,
+                "image" => $imageName,
+            ]);
+    
+            event(new Registered($lostObject));
+    
+            return response()->json([
+                'message' => 'Lost object registered successfully',
+                'lost_object' => $lostObject,
+            ]);
+    
+        } catch (Exception $e) {
+            // Return exception details for debugging
+            return response()->json([
+                "status" => false,
+                "message" => "Ocorreu um erro ao registrar o objeto perdido.",
+                "exception_message" => $e->getMessage(),
+                "code" => 500,
+            ], 500);
+        }
     }
-    try {
-        $val = Validator::make($request->all(),[
-            'ownerEmail' => 'required|email',
-            'category' => 'required|string',
-            'description' => 'required|string',
-            'date_lost' => 'required|date',
-            // 'location_id' => 'required|string',
+    
+public function getAllObjects()
+{
+$foundObjects = FoundObject::all();
+$lostObjects = LostObject::all();
+return view('objects.found-objects.all-objects' ,['foundObjects' => $foundObjects , 'lostObjects' => $lostObjects]);
+}
 
-        ]);
-        if ($val->fails()){
-            return redirect()->back()->withErrors($val)->withInput();
+public function getObjects($foundObjectId, $lostObjectId)
+{
+    // Buscar o objeto encontrado pelo ID
+    $foundObject = FoundObject::find($foundObjectId);
+
+    // Buscar o objeto perdido pelo ID
+    $lostObject = LostObject::find($lostObjectId);
+
+    // Verificar se ambos os objetos foram encontrados
+    if (!$foundObject || !$lostObject) {
+        return redirect()->back()->withErrors('One or both objects not found.');
+    }
+    $matchPercentage = $this->calculateMatchPercentage($foundObject, $lostObject);
+    // Passar os objetos para a view
+    return view('objects.found-objects.compare',['foundObjects' => $foundObject , 'lostObjects' => $lostObject , 'compare' => $matchPercentage]);
+}
+
+public function add(FoundObject $foundObject, LostObject $lostObject) {
+    $matchPercentage = $this->calculateMatchPercentage($foundObject, $lostObject);
+
+    $possibleOwner = ['owner' => $lostObject->ownerEmail, 'match' => $matchPercentage , 'lostObjectid' => $lostObject->_id];
+
+    $fObject = FoundObject::where('_id', $foundObject->_id)->first();
+
+    if ($fObject) {
+        // Clone a propriedade possible_owner para garantir que a modificação indireta funcione
+        $owners = $fObject->possible_owner ?? [];
+        
+        // Adiciona o novo possível proprietário ao array
+        $owners[] = $possibleOwner;
+        
+        // Reatribui o array modificado de volta à propriedade possible_owner
+        $fObject->possible_owner = $owners;
+
+        // Salva as mudanças no banco de dados
+        $fObject->save();
+        return redirect()->route('found-object.get' , $foundObject->_id);
+    }
+}
+
+public function ownerbject($foundObjectId) {
+    $object = FoundObject::find($foundObjectId);
+    return view('objects.found-objects.owner-object',['object' => $object]);
+}
+
+public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
+    try {
+        $lostObject = LostObject::find($lostObjectid);
+        
+        $aviso = "Informamos que o seu objeto com a seguinte descrição: " . $lostObject->description . 
+                 " da marca " . $lostObject->brand . ". " . 
+                 "Veja o seu objeto <a href='http://localhost:8000/lost-objects/".$lostObject->id."'>aqui</a>. " .
+                 "Possa ter sido achado. Para mais informações, contacte o policial " . $foundObject->name . 
+                 " por email: " . $foundObject->email . 
+                 " ou número de telefone: "  . $foundObject->number . 
+                 ". Se tiver algum problema, contacte o administrador projetopea1@gmail.com";
+        
+        // Envia o email
+        app(SendMailController::class)->sendWelcomeEmail(
+            $email, // toEmail
+            $aviso,
+            "Objeto Perdido possivelmente encontrado"  // subject
+        );
+
+        // Remover o possível dono da lista de possíveis donos
+        $foundObject = FoundObject::find($foundObject->_id);
+
+        if ($foundObject) {
+            // Filtra o array possible_owner para remover o item com o lostObjectid fornecido
+            $newPossibleOwners = array_filter($foundObject->possible_owner, function ($owner) use ($lostObjectid) {
+                return $owner['lostObjectid'] !== $lostObjectid;
+            });
+
+            // Atualiza o documento com o novo array possible_owner
+            $foundObject->possible_owner = array_values($newPossibleOwners); // array_values para reindexar o array
+            $foundObject->save();
         }
 
-    $lostObject = LostObject::create([
-        "ownerEmail" => $ownerEmail,
-        "description" => $request->input('description'),
-        "date_lost" => $request->input('date_lost'),
-        "brand" => $request->input('brand'),
-        "color" => $request->input('color'),
-        "size" => $request->input('size'),
-        "category" => $request->input('category'),
-        "location" => "12345fsaw1",
-        "status" => "Lost",
-        "lostObjectId" => 0,
-    ]);
-
-    event(new Registered($lostObject));
-
-    // app(SendMailController::class)->sendWelcomeEmail(
-    //     $request->input('email'),
-    //     "Objecto registado com sucesso!",
-    //     "Obrigado por ter registado um objeto, esperamos que o consiga encontrar."
-    // );
-
-    return response()->json([
-        'message' => 'Lost object registered successfully',
-        'lost_object' => $lostObject,
-    ]);
-} catch (Exception $e) {
-    $exceptionInfo = [
-        'message' => $e->getMessage(),
-        
-        // Add more properties as needed
-    ];
-    return response()->json([
-        "status" => false,
-        "message" => "Ocorreu um erro ao recuperar as informações do objeto.",
-        "exception" => $exceptionInfo,
-        "code" => 500,
-    ], 500);
+        // Redireciona de volta com uma mensagem de sucesso
+        return redirect()->back()->with('success', 'Utilizador: '. $email .  ' notificado com sucesso!') ;
+    } catch (\Exception $e) {
+        // Redireciona de volta com uma mensagem de erro
+        return redirect()->back()->with('error', 'Ocorreu um erro: ' . $e->getMessage());
+    }
 }
-}
-
 
 
     public function getAllLostObjects()
@@ -276,7 +378,7 @@ public function crossCheck(Request $request)
 
         if ($matchPercentage >= 70) {
             $possibleOwner = $foundObject->possible_owner ?? [];
-            $possibleOwner[] = $lostObject->ownerEmail;
+            $possibleOwner[]     = $lostObject->ownerEmail;
             $foundObject->possible_owner = $possibleOwner;
             $foundObject->save();
 

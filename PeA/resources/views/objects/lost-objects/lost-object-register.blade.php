@@ -37,7 +37,7 @@
                             </ul>
                         </div>
                     @endif
-                                <form class="row g-3 needs-validation" novalidate action="{{ route('lost-objects.register') }}" method="post">
+                                <form class="row g-3 needs-validation" novalidate action="{{ route('lost-objects.register') }}" enctype="multipart/form-data" method="post">
                                     @csrf
                                     @method('POST')
                                     <div class="col-6">
@@ -74,7 +74,12 @@
                                     </div>
                                     <div class="col-6">
                                         <label for="size" class="form-label">Localidade</label>
-                                        <input type="text" class="form-control" id="city" name="city">
+                                        <input type="text" class="form-control" id="location" name="location">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="img" class="form-label">Imagem</label>
+                                        <input type="file" id="img" name="img" accept="image/*" onchange="previewImage(event)">
+                                        <img id="preview" src="#" alt="" style="display:none; max-width: 100%; margin-top: 10px;">
                                     </div>
                                     <input type="hidden" name="ownerEmail" value="{{ auth()->user()->email }}">
                                     <div class="col-12">
@@ -135,6 +140,16 @@
         function goBack() {
             window.history.back();
         }
+        function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = function(){
+        const output = document.getElementById('preview');
+        output.src = reader.result;
+        output.style.display = 'block';
+    };
+    reader.readAsDataURL(event.target.files[0]);
+}
+
     </script>
     {{-- Validação formulário --}}
     <script>
@@ -156,29 +171,30 @@
     {{-- Registo Objeto --}}
     <script>
         $(document).ready(function() {
-            $('form').submit(function(event) {
-                // Prevent the default form submission
-                event.preventDefault();
-    
-                // Serialize form data
-                var formData = $(this).serialize();
-    
-                // Submit form data via AJAX
-                $.ajax({
-                    url: $(this).attr('action'),
-                    method: $(this).attr('method'),
-                    data: formData,
-                    dataType: 'json',
-                    success: function(response) {
-                        toastr.success(response.message, 'Success', { closeButton: true });
-                        $('#lostObjectRegister').modal('show');
-                    },
-                    error: function(xhr, status, error) {
-                        console.error(xhr.responseText);
-                    }
-                });
+        $('form').submit(function(event) {
+            // Prevent the default form submission
+            event.preventDefault();
+
+            // Create a FormData object and append all form data to it
+            var formData = new FormData(this);
+
+            // Submit form data via AJAX
+            $.ajax({
+                url: $(this).attr('action'),
+                method: $(this).attr('method'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    toastr.success(response.message, 'Success', { closeButton: true });
+                    $('#lostObjectRegister').modal('show');
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
             });
         });
+    });
     </script>
     
 </body>

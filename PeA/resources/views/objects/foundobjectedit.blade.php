@@ -60,17 +60,42 @@ if (!Auth::guard('police')->check()) {
                                     </div>
                                     <div class="col-md-6">
                                         <label for="brand" class="form-label">Marca</label>
-                                        <input type="text" class="form-control" id="brand" name="brand" value="{{$object->brand}}">
+                                        <input type="text" class="form-control" id="brand" name="brand" value="{{$object->brand}}" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="color" class="form-label">Cor</label>
-                                        <input type="text" class="form-control" id="color" name="color" value="{{$object->color}}">
+                                        <input type="text" class="form-control" id="color" name="color" value="{{$object->color}}" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="size" class="form-label">Tamanho</label>
-                                        <input type="text" class="form-control" id="size" name="size" value="{{$object->size}}">
+                                        <input type="text" class="form-control" id="size" name="size" value="{{$object->size}}" required>
+                                    </div>
+                                    <div class="col-*">
+                                        <label for="size" class="form-label">Morada</label>
+                                        <input type="text" class="form-control" id="address" name="address" value="{{$object->address}}" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="size" class="form-label">Código Postal</label>
+                                        <input type="text" class="form-control" id="postalcode" name="postalcode" value="{{$object->postalcode}}" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="size" class="form-label">Localidade</label>
+                                        <input type="text" class="form-control" id="location" name="location" value="{{$object->location}}" required>
                                     </div>
                                     <input type="hidden" name="policeStationId" value="{{ Auth::guard('police')->user()->policeStationId }}">
+                                    <p>Informação sobre a pessoa que encontrou o objeto:</p>
+                                    <div class="col-md-6">
+                                        <label for="size" class="form-label">Nome</label>
+                                        <input type="text" class="form-control" id="name" name="name" value="{{$object->name}}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="size" class="form-label">Número</label>
+                                        <input type="text" class="form-control" id="number" name="number" value="{{$object->number}}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="size" class="form-label">Email</label>
+                                        <input type="text" class="form-control" id="email" name="email" value="{{$object->email}}" required>
+                                    </div>
                                     <div class="col-12">
                                         <button class="btn btn-primary" type="submit">Editar</button>
                                         <button class="btn btn-secondary" onclick="goBack()">Cancelar</button>
