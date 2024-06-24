@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-    @if (auth()->check())
-    <title>{{auth()->user()->name}}</title>
+    @if (Auth::guard('police')->user())
+    <title>{{Auth::guard('police')->user()->name}}</title>
     @else
     <title>Sem acesso</title>
     @endif
@@ -22,14 +22,14 @@
   </head>
   <body>
     <header>
-      @if (auth()->check())
-        @include('components.navbar')
+      @if (Auth::guard('police')->user())
+        @include('components.navbar-police')
       @else
         @include('components.navbar-guest')
       @endif 
       
     </header>
-    @if (auth()->check())
+    @if ((Auth::guard('police')->user()))
     <br><br>
     <div class="container vh-100">
         <div class="row border">
@@ -106,14 +106,11 @@
     {{-- Leilões --}}
     <script>
       $.ajax({
-        //teste
-        url: '{{ route("activeAuctions.get") }}',
+        url: '{{ route("auctions.get") }}',
         method: 'GET',
         dataType: 'json',
         success: function(response) {
             let html = '';
-            var userEmail = "{{ auth()->user()->email }}";
-            var userName = "{{ auth()->user()->name }}"
             for (let i = 0; i < response.data.length; i++) {
               const item = response.data[i];
               if (i+1 % 3 === 0 || i === 0){
@@ -124,12 +121,18 @@
               html += "<p>Licitação mais alta: " + item.highestBid + "</p>";
               html += "<p>Acaba em: " + item.end_date + "</p>";
               html += "<p>Status: " + item.status + "</p>";
-              if (item.bidder_list.includes(userEmail)) {
-                html += "<p>Nome: " +  userName + " Inscrito no Leilao </p> "
-              }
+              html += "<p>Estacao: " + item.policeStationId + "</p>";
               html += "<a class='btn btn-secondary' href={{ route('auction.get', '') }}/" + item._id + ">Ver Leilao </a> "
-              if (!item.bidder_list.includes(userEmail)) {
-                html += "<a class='btn btn-secondary' href={{ url('signUpAuctions') }}/" + item._id + "/" + userEmail + ">Inscrever no Leilao </a> "
+              if (item.status == "active") {
+                html += "<a class='btn btn-secondary' href={{ route('auctions.finalizeOrStart', '') }}/" + item._id + ">Desativar Leilao </a> "
+              }
+              if(item.status == "deactive" && item.policeStationId != '{{Auth::guard('police')->user()->policeStationId}}') {
+                html += "<a class='btn btn-secondary' href={{ route('auctions.finalizeOrStart', '') }}/" + item._id + ">Ativar Leilao </a> "
+              }
+              if (item.status == "deactive" && item.policeStationId == '{{Auth::guard('police')->user()->policeStationId}}') {
+                html += "<a class='btn btn-secondary' href={{ route('auctions.finalizeOrStart', '') }}/" + item._id + ">Ativar Leilao </a> "
+                html += "<a class='btn btn-secondary' href={{ route('user.updateAuction', '') }}/" + item._id + ">Editar Leilao </a> "
+                html += "<a class='btn btn-secondary' href={{ route('auctions.delete', '') }}/" + item._id + ">Remover Leilao </a> "
               }
               
               if (i+1 % 3 === 0){

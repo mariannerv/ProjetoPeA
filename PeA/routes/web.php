@@ -175,14 +175,29 @@ Route::view('/tokenexpirou/{uuid}', 'tokenexpirou')->name('tokenexpirou');
 
 // Auction views/routes
 Route::get('/auctions',[AuctionController::class,'viewAllAuctions'])->name('auctions.get');
+Route::get('/activeAuctions',[AuctionController::class,'viewAllActiveAuctions'])->name('activeAuctions.get');
 Route::get('/auctions/{auction}', [AuctionController::class,'viewAuction'])->name('auction.get');
+
+Route::post('/editAuctions/{id}',[AuctionController::class,'editAuction'])->name('auctions.edit');
+
+Route::get('/deleteAuctions/{id}',[AuctionController::class,'deleteAuction'])->name('auctions.delete');
+
+Route::view('/bidderAuction/{id}/{email}', 'objects.found-objects.bidding-auction')->name('auction.userBidding');
+
+Route::get('/signUpAuctions/{id}/{email}',[AuctionController::class,'signUpAuctions'])->name('auctions.signUp');
 
 Route::view('/usersauctions/{user}','objects.found-objects.watch-auctions')->name('user.auctions');
 
+Route::get('/userEditsAuctions/{id}', [AuctionController::class,'updateAuction'])->name('user.updateAuction');
+
 Route::view('/usersRegisterAuctions/{user}','objects.found-objects.auctions-register')->name('user.registerAuctions');
-Route::get('/RegisterAuctions', [AuctionController::class,'createAuction'])->name('auction.register');
+Route::post('/RegisterAuctions', [AuctionController::class,'createAuction'])->name('auction.register');
 
 Route::get('/allobjects', [LostObjectController::class,'getAllObjects'])->name('allobjects.get');
+
+Route::get('/finalizeOrStartAuctions/{id}', [AuctionController::class,'finalizeorStartAuction'])->name('auctions.finalizeOrStart');
+
+Route::view('/viewAllAuctions','objects.found-objects.viewAll-auctions')->name('auctions.viewAll');
 
 Route::get('/compare/{foundObject}/{lostObject}', [LostObjectController::class,'getObjects'])->name('compare.objects');
 
