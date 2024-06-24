@@ -259,6 +259,7 @@ class FoundObjectController extends Controller
     }
 
     public function edit(FoundObject $object) {
+        
         return view('objects.foundobjectedit' , ['object' => $object]);
     }
 

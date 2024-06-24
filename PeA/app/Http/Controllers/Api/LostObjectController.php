@@ -167,7 +167,7 @@ public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
         
         // Envia o email
         app(SendMailController::class)->sendWelcomeEmail(
-            "fc56948@alunos.fc.ul.pt", // toEmail
+            $email, // toEmail
             $aviso,
             "Objeto Perdido possivelmente encontrado"  // subject
         );
@@ -378,7 +378,7 @@ public function crossCheck(Request $request)
 
         if ($matchPercentage >= 70) {
             $possibleOwner = $foundObject->possible_owner ?? [];
-            $possibleOwner[] = $lostObject->ownerEmail;
+            $possibleOwner[]     = $lostObject->ownerEmail;
             $foundObject->possible_owner = $possibleOwner;
             $foundObject->save();
 
