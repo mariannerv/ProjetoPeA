@@ -75,7 +75,8 @@ Route::post('deactivatePolice', [PoliceController::class, "deactivatePolice"]);
 Route::post('activatePolice', [PoliceController::class, "activatePolice"]);
 
 //API Location
-
+Route::get('/api/fetch-location-address/{coordinates}', [LocationController::class, 'fetchLocationAddress']);
+Route::post('/api/register-location', [LocationController::class, 'registerLocation']);
 Route::get('fetchLocationAddress/{id}', [LocationController::class, "fetchLocationAddress"]);
 Route::get('getAllLocations', [LocationController::class, "getAllLocations"]);
 Route::get('viewLocation/{id}', [LocationController::class, "viewLocation"]);

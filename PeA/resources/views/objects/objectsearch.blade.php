@@ -6,12 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <link rel="icon" href="images/favicon.ico" type="image/x-icon">
 <title>Buscar Objetos Perdidos e Achados</title>
-<link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-1BmE4fWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
-      crossorigin="anonymous"
-/>
+
 <style>
     body {
         background-color: #f8f9fa;
@@ -56,15 +51,14 @@
         color: white;
     }
 </style>
-</head>
-<body>           
-<header>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps-web.min.js"></script>
 <link href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css" rel="stylesheet">
-
+</head>
+<body>
+<header>
       @if (auth()->check())
         @include('components.navbar')
       @else
@@ -93,7 +87,6 @@
     </div>
 
     <div id="map"></div>
-
 
 <script>
 // Initialize with all objects shown

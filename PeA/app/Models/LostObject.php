@@ -1,14 +1,16 @@
 <?php
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 
-class LostObject extends Model
+class LostObject extends Eloquent
 {
-    use HasFactory;
-
+    protected $connection = 'mongodb';
+    protected $collection = 'lostObject';
+    protected $primaryKey = '_id';
     protected $fillable = [
+        'owner_id',
         'ownerEmail',
         'description',
         'date_lost',
@@ -18,11 +20,6 @@ class LostObject extends Model
         'category_id',
         'location_id'
     ];
-
-    public function category()
-    {
-        return $this->belongsTo(Categoria::class, 'category_id');
-    }
 
     public function location()
     {

@@ -117,34 +117,43 @@ public function fetchLocationAddress($id)
 }
 
 
-    public function registerLocation(Request $request)
-    {
-        try {
-            $request->validate([
-                'rua' => 'required|string',
-                'freguesia' => 'required|string',
-                'municipio' => 'required|string',
-                'distrito' => 'required|string',
-                'codigo_postal' => 'required|string',
-                'pais' => 'required|string',
-            ]);
+use GuzzleHttp\Client;
+use App\Models\Location;
+use Illuminate\Http\Request;
 
-            $location = Location::create($request->all());
+public function registerLocation(Request $request)
+{
+    try {
+        $request->validate([
+            'rua' => 'nullable|string',
+            'freguesia' => 'nullable|string',
+            'municipio' => 'nullable|string',
+            'distrito' => 'nullable|string',
+            'codigo_postal' => 'nullable|string',
+            'pais' => 'nullable|string',
+            'coordenadas' => 'nullable|string', // expects coordinates in "latitude,longitude" format
+        ]);
 
-            return response()->json([
-                "status" => true,
-                "data" => $location,
-                "message" => "Location registered successfully.",
-                "code" => 200,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                "status" => false,
-                "message" => "An error occurred while registering the location.",
-                "code" => 500,
-            ], 500);
-        }
+        $locationData = $request->all();
+        $location = Location::create($locationData);
+
+        return response()->json([
+            "status" => true,
+            "data" => $location,
+            "message" => "Location registered successfully.",
+            "code" => 200,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            "status" => false,
+            "message" => "An error occurred while registering the location.",
+            "code" => 500,
+        ], 500);
     }
+}
+
+
+
 
     public function updateLocation(Request $request, $_id)
     {
