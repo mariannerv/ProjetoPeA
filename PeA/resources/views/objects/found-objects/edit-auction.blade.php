@@ -25,7 +25,7 @@ if (!Auth::guard('police')->check()) {
                 <div class="row justify-content-center">
                     <div class="col-md-8">
                         <div class="card">
-                            <div class="card-header">Registar Leilão</div>
+                            <div class="card-header">Editar Leilão</div>
                             <div class="card-body">
 
                                 @if ($errors->any())
@@ -43,7 +43,7 @@ if (!Auth::guard('police')->check()) {
                                     {{ session('success') }}
                                 </div>
                               @endif
-                                <form class="row g-3 needs-validation" novalidate action="{{ route('auction.register') }}" method="post">
+                                <form class="row g-3 needs-validation" novalidate action="{{ route('auctions.edit', $object->_id) }}" method="post">
                                     @csrf
                                     @method('POST')
                                     <div class="col-md-4">
@@ -60,7 +60,6 @@ if (!Auth::guard('police')->check()) {
                                             Please provide a valid ObjectId
                                         </div>
                                     </div>
-                                    <input type="hidden" name="policeStationId" value="{{ Auth::guard('police')->user()->policeStationId }}">
                                     <div class="col-12">
                                         <button class="btn btn-primary" type="submit">Registar</button>
                                         <button class="btn btn-secondary" onclick="goBack()">Cancelar</button>
