@@ -152,7 +152,7 @@
 
     function initMap() {
         map = tt.map({
-            key: 'your_api_key_here', // Replace with your TomTom API key
+            key: 'YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn', // Replace with your TomTom API key
             container: 'map',
             center: [0, 0],
             zoom: 2
@@ -180,7 +180,7 @@
 
     // Function for reverse geocoding
     function reverseGeocode(coordinates) {
-        var apiKey = 'your_api_key_here'; // Replace with your TomTom API key
+        var apiKey = 'YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn'; // Replace with your TomTom API key
         var url = `https://api.tomtom.com/search/2/reverseGeocode/${coordinates.lat},${coordinates.lng}.json?key=${apiKey}`;
         
         $.ajax({
