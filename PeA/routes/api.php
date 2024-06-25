@@ -197,13 +197,11 @@ Route::post('login', [AuthController::class, 'login']);
 
 
 //notification routes
+Route::get('/notifications/{uid}', [NotificationsController::class, 'fetchAllNotifications']);
+Route::post('/send-bid-updated-notification', [NotificationsController::class, 'sendBidUpdatedNotification']);
+Route::post('/send-bid-overtaken-notification', [NotificationsController::class, 'sendBidOvertakenNotification']);
+Route::post('/send-test-notification/{uid}', [NotificationsController::class, 'sendTestNotification']);
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/notifications', [NotificationsController::class, 'fetchAllNotifications']);
-    Route::post('/send-bid-updated-notification', [NotificationsController::class, 'sendBidUpdatedNotification']);
-    Route::post('/send-bid-overtaken-notification', [NotificationsController::class, 'sendBidOvertakenNotification']);
-    Route::post('/send-test-notification', [NotificationsController::class, 'sendTestNotification']);
-});
 
 //sub e unsub notifs de um auction
 Route::middleware('auth:sanctum')->group(function () {
