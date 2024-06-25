@@ -134,6 +134,13 @@
               if (!item.bidder_list.includes(userEmail)) {
                 html += "<a class='btn btn-secondary' href={{ url('signUpAuctions') }}/" + item._id + "/" + userEmail + ">Inscrever no Leilao </a> "
               }
+              if (item.highestBidderId ==  userEmail && item.pay == true) {
+                html += "<br></br>";
+                html += "Seu leilão já esta pago</p>";
+              } 
+              if (item.highestBidderId ==  userEmail && item.pay == false && item.status == "deactive") {
+                 html += "<a class='btn btn-secondary' href={{ route('auction.pay', '') }}/" + item._id + ">Efetuar pagamento</a> "
+              }
               
               if (i+1 % 3 === 0){
               html += "</div>";
