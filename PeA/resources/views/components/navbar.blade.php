@@ -2,6 +2,7 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.12/push.min.js"></script>
 
+
 <nav class="navbar navbar-dark bg-dark">
 <div class="container-fluid">
     <a class="navbar-brand" href="http://localhost:8000">PeA</a>
@@ -54,16 +55,19 @@
                 </a>
         </li>
         
-        <li class="nav-item dropdown" id="app">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Notificações
-                </a>
-                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown" id="notificationsDropdown">
-                    <li v-for="notification in notifications" :key="notification.id">
-                        <a class="dropdown-item" href="#">@{{notification.data.message}}</a>
-                    </li>
-                </ul>
-                <button @click="sendTestNotification" class="btn btn-secondary">Enviar Notificação de Teste</button>
+        <li class="nav-item dropdown">
+        <div id="app" data-user-id="{{auth()->user()->id}}">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Notificações
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown" id="notificationsDropdown">
+                <li v-for="notification in notifications" :key="notification.id">
+                    @{{ notification.data.message }}
+                </li>
+            </ul>
+            <button @click="sendTestNotification" class="btn btn-secondary">Enviar Notificação de Teste</button>
+        </div>
+
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{{route('user.auctions', auth()->user()->id) }}">
@@ -165,38 +169,43 @@
 </div>
 </nav>
 
-
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-new Vue({
-    el: '#app',
-    data: {
-        notifications: []
-    },
-    methods: {
-        fetchNotifications() {
-            axios.get('/api/notifications')
-                .then(response => {
-                    this.notifications = response.data.data;
-                })
-                .catch(error => {
-                    console.error('Error fetching notifications:', error);
-                });
-        },
-        sendTestNotification() {
-            axios.post('/api/send-test-notification')
-                .then(response => {
-                    console.log('Test notification sent:', response.data);
-                    this.fetchNotifications();
-                })
-                .catch(error => {
-                    console.error('Error sending test notification:', error);
-                });
-        }
-    },
-    mounted() {
-        this.fetchNotifications();
-    }
-});
-</script>
+        new Vue({
+            el: '#app',
+            data: {
+                userId: null,
+                notifications: []
+            },
+            
+            mounted() {
+                this.userId = document.getElementById('app').getAttribute('data-user-id');
+                this.fetchNotifications(); // Fetch notifications when the Vue instance is mounted
+            },
+            methods: {
+                fetchNotifications() {
+                    axios.get(`/api/notifications/${this.userId}`)
+                        .then(response => {
+                            this.notifications = response.data.notifications;
+                        })
+                        .catch(error => {
+                            console.error('Error fetching notifications:', error);
+                        });
+                },
+                sendTestNotification() {
+                    axios.post(`/api/send-test-notification/${this.userId}`)
+                        .then(response => {
+                            console.log('Test notification sent:', response.data);
+                            this.fetchNotifications(); // Refresh notifications after sending test notification
+                        })
+                        .catch(error => {
+                            console.error('Error sending test notification:', error);
+                        });
+                }
+            }
+        });
+    </script>
+
 
 

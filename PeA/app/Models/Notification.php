@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
+use MongoDB\Laravel\Eloquent\Model;
 
-class Notification extends Eloquent
+class Notification extends Model
 {
     use HasFactory;
 
@@ -16,7 +16,6 @@ class Notification extends Eloquent
         'user_id', 'type', 'data', 'read_at'
     ];
 
-    // Define a relação com o modelo User
     public function user()
     {
         return $this->belongsTo(User::class);
