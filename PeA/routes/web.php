@@ -13,6 +13,7 @@ use App\Http\Controllers\emailVerificationCodeController;
 use App\Models\PoliceStation;
 use App\Http\Controllers\Emails\SendMailController;
 use App\Http\Controllers\verificationCodeController;
+use App\Http\Controllers\Api\BidController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -182,7 +183,9 @@ Route::post('/editAuctions/{id}',[AuctionController::class,'editAuction'])->name
 
 Route::get('/deleteAuctions/{id}',[AuctionController::class,'deleteAuction'])->name('auctions.delete');
 
-Route::view('/bidderAuction/{id}/{email}', 'objects.found-objects.bidding-auction')->name('auction.userBidding');
+Route::view('/bidderAuction/{id}', 'objects.found-objects.bidding-auction')->name('auction.userBidding');
+
+Route::post('/Bidding/{id}',[BidController::class,'placeBid'])->name('auctions.bidding');
 
 Route::get('/signUpAuctions/{id}/{email}',[AuctionController::class,'signUpAuctions'])->name('auctions.signUp');
 

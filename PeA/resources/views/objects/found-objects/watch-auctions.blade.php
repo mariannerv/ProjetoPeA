@@ -127,6 +127,9 @@
               if (item.bidder_list.includes(userEmail)) {
                 html += "<p>Nome: " +  userName + " Inscrito no Leilao </p> "
               }
+              if (item.bidder_list.includes(userEmail)) {
+                html += "<a class='btn btn-secondary' href={{ url('signUpAuctions') }}/" + item._id + "/" + userEmail + ">Licitar </a> "
+              }
               html += "<a class='btn btn-secondary' href={{ route('auction.get', '') }}/" + item._id + ">Ver Leilao </a> "
               if (!item.bidder_list.includes(userEmail)) {
                 html += "<a class='btn btn-secondary' href={{ url('signUpAuctions') }}/" + item._id + "/" + userEmail + ">Inscrever no Leilao </a> "

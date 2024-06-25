@@ -288,11 +288,15 @@ public function editAuction(Request $request, $id){
 
     public function signUpAuctions($id, $email) {
         $auction = Auction::where('_id', $id)->first();
+        $idAuction = $auction->auctionId;
+        if (in_array($email, $auction->bidder_list)) {
+            return view('objects.found-objects.bidding-auction' , ['auctionId'=>$idAuction]);
+        }
         $bidder = $auction->bidder_list ?? [];
         $bidder[] = $email;
         $auction->bidder_list = $bidder;
         $auction->save();
-        return view('objects.found-objects.bidding-auction' , ['id'=>$id, 'email' => $email]);
+        return view('objects.found-objects.watch-auctions' , ['email'=>$email]);
     }
  }
 
