@@ -94,6 +94,7 @@
                                         <input type="hidden" id="map-postalcode" name="postalcode">
                                         <input type="hidden" id="map-city" name="city">
                                     </div>
+                                    <p id="map-coordinates"></p>
                                 </div>
 
                                 <div class="row">
@@ -165,12 +166,11 @@
             function initMap() {
                 map = tt.map({
                     key: 'YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn', 
-                    container: 'map',
+                    container: 'map-address-input',
                     center: [0, 0],
                     zoom: 2
                 });
 
-                // Event listener for map click to place marker
                 map.on('click', function (event) {
                     var coordinates = event.lngLat;
 
@@ -180,7 +180,9 @@
 
                     marker = new tt.Marker().setLngLat(coordinates).addTo(map);
 
-                    document.getElementById('map-coordinates').value = coordinates.lat + ',' + coordinates.lng;
+                    var latLngString = coordinates.lat + ',' + coordinates.lng;
+                    document.getElementById('map-coordinates').textContent = 'Coordenadas: ' + latLngString;
+                    document.getElementById('map-coordinates').value = latLngString;
 
                     reverseGeocode(coordinates);
                 });

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\NotifMail;
+use App\Mail\notifMail;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -14,14 +14,14 @@ class NotificationsController extends Controller
 {
     public function getUserDetails($uid)
 {
-    $user = User::find($uid); // Corrected the assignment operator ':'
+    $user = User::find($uid); 
 
     $debug_messages = ["Fetched user details for: " . $user->email];
 
     return response()->json([
         'status' => true,
         'user' => [
-            'id' => $user->_id, // Assuming _id is the correct property name for user ID
+            'id' => $user->_id, 
             'name' => $user->name,
             'email' => $user->email
         ],
@@ -80,7 +80,7 @@ public function fetchAllNotifications(Request $request)
 
         $debug_messages[] = "Created notification: " . $notification->toJson();
 
-        $this->sendNotifMail($user->email, $notification);
+        $this->sendnotifMail($user->email, $notification);
 
         return response()->json([
             'status' => true,
@@ -103,7 +103,7 @@ public function fetchAllNotifications(Request $request)
 
         $debug_messages[] = "Created notification: " . $notification->toJson();
 
-        $this->sendNotifMail($user->email, $notification);
+        $this->sendnotifMail($user->email, $notification);
 
         return response()->json([
             'status' => true,
@@ -127,7 +127,7 @@ public function fetchAllNotifications(Request $request)
 
         $debug_messages[] = "Created notification: " . $notification->toJson();
 
-        $this->sendNotifMail($user->email, $notification);
+        $this->sendnotifMail($user->email, $notification);
 
         return response()->json([
             'status' => true,
@@ -136,8 +136,8 @@ public function fetchAllNotifications(Request $request)
         ]);
     }
 
-    private function sendNotifMail($email, $notification)
+    private function sendnotifMail($email, $notification)
     {
-        Mail::to($email)->send(new NotifMail($notification));
+        Mail::to($email)->send(new notifMail($notification));
     }
 }

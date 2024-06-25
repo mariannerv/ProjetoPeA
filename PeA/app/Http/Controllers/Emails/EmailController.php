@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Emails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\WelcomeEmail;
-use App\Mail\NotifMail;
+use App\Mail\notifMail;
 
 class EmailController extends Controller
 {
@@ -18,9 +18,9 @@ class EmailController extends Controller
 
         dd($response);
     }
-    public function sendNotifMail($toEmail, $message, $subject)
+    public function sendnotifMail($toEmail, $message, $subject)
     {
-        $response = Mail::to($toEmail)->send(new NotifMail($message, $subject));
+        $response = Mail::to($toEmail)->send(new notifMail($message, $subject));
         return $response;
     }
 }

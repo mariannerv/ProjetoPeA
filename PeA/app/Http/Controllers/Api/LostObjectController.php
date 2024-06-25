@@ -15,7 +15,7 @@ use Illuminate\Validation\Rule;
 use App\Models\User;
 use App\Models\Auction;
 use App\Models\Bid;
-use App\Models\LostObject;
+use App\Models\lostObject;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Emails\crossCheckMailController;
@@ -26,14 +26,9 @@ use MongoDB\BSON\ObjectId;
 use Illuminate\Support\Facades\Http;
 use App\Models\Categoria;
 
-class LostObjectController extends Controller
+class lostObjectController extends Controller
 {
-  
-    
-
-
-
-    public function registerLostObject(Request $request)
+    public function registerlostObject(Request $request)
     {
         $ownerEmail = $request->ownerEmail;
         $owner = User::where('email', $ownerEmail)->first();
@@ -66,7 +61,7 @@ class LostObjectController extends Controller
     
             $uuid = (string) Str::uuid();
     
-            $lostObject = LostObject::create([
+            $lostObject = lostObject::create([
                 "ownerEmail" => $ownerEmail,
                 "description" => $request->input('description'),
                 "date_lost" => $request->input('date_lost'),
@@ -93,7 +88,7 @@ class LostObjectController extends Controller
                 "code" => 500,
             ], 500);
         }}
-        
+
 
 public function getObjects($foundObjectId, $lostObjectId)
 {
@@ -101,7 +96,7 @@ public function getObjects($foundObjectId, $lostObjectId)
     $foundObject = FoundObject::find($foundObjectId);
 
     // Buscar o objeto perdido pelo ID
-    $lostObject = LostObject::find($lostObjectId);
+    $lostObject = lostObject::find($lostObjectId);
 
     // Verificar se ambos os objetos foram encontrados
     if (!$foundObject || !$lostObject) {
@@ -112,7 +107,7 @@ public function getObjects($foundObjectId, $lostObjectId)
     return view('objects.found-objects.compare',['foundObjects' => $foundObject , 'lostObjects' => $lostObject , 'compare' => $matchPercentage]);
 }
 
-public function add(FoundObject $foundObject, LostObject $lostObject) {
+public function add(FoundObject $foundObject, lostObject $lostObject) {
     $matchPercentage = $this->calculateMatchPercentage($foundObject, $lostObject);
 
     $possibleOwner = ['owner' => $lostObject->ownerEmail, 'match' => $matchPercentage , 'lostObjectid' => $lostObject->_id];
@@ -142,7 +137,7 @@ public function ownerbject($foundObjectId) {
 
 public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
     try {
-        $lostObject = LostObject::find($lostObjectid);
+        $lostObject = lostObject::find($lostObjectid);
         
         $aviso = "Informamos que o seu objeto com a seguinte descrição: " . $lostObject->description . 
                  " da marca " . $lostObject->brand . ". " . 
@@ -182,12 +177,12 @@ public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
 }
 
 
-public function getAllLostObjects()
+public function getAlllostObjects()
 {
     try {
         Log::info('Fetching all lost objects.'); // Logging the fetch operation
 
-        $lostObjects = LostObject::all();
+        $lostObjects = lostObject::all();
         
         return response()->json([
             "status" => true,
@@ -206,9 +201,9 @@ public function getAllLostObjects()
 }
 
 
-    public function getLostObject(String $id){
+    public function getlostObject(String $id){
         try {
-            $object = LostObject::where('_id', $id)->first();
+            $object = lostObject::where('_id', $id)->first();
 
             if ($object) {
                 return view('objects.lost-objects.lost-object', ['object' => $object]);
@@ -239,7 +234,7 @@ public function getAllLostObjects()
     {
         try {
             // Group lost objects by category and date found
-            $statistics = DB::table('LostObject')
+            $statistics = DB::table('lostObject')
                 ->select('categoryId', DB::raw('count(*) as count'))
                 ->groupBy('categoryId')
                 ->get();
@@ -262,8 +257,8 @@ public function getAllLostObjects()
             ], 500);
         }
     }
-    public function updateLostObject(Request $request){
-        $object = LostObject::where('lostObjectId', $request->lostObjectId)->first();
+    public function updatelostObject(Request $request){
+        $object = lostObject::where('lostObjectId', $request->lostObjectId)->first();
 
         if ($object) {
             $request->validate([
@@ -295,11 +290,11 @@ public function getAllLostObjects()
     }
 
 
-    public function deleteLostObject(Request $request){
+    public function deletelostObject(Request $request){
     try {
         $lostObjectId = $request->lostObjectId;
         
-        $lostObject = LostObject::where('_id', $lostObjectId)->first();
+        $lostObject = lostObject::where('_id', $lostObjectId)->first();
 
         if (!$lostObject) {
             return response()->json([
@@ -347,7 +342,7 @@ public function crossCheck(Request $request)
 
     $lostObjectId = $request->lostObjectId;
 
-    $lostObject = LostObject::where('lostObjectId', $lostObjectId)->first();
+    $lostObject = lostObject::where('lostObjectId', $lostObjectId)->first();
 
     Log::info('Lost object attributes: ' . json_encode($lostObject));
 
@@ -420,7 +415,7 @@ public function searchByDescription(Request $request)
             'description' => 'required|string',
         ]);
 
-        $objects = LostObject::where('description', 'like', '%' . $request->description . '%')->get();
+        $objects = lostObject::where('description', 'like', '%' . $request->description . '%')->get();
 
         return response()->json([
             "status" => true,
@@ -467,8 +462,8 @@ private function calculateMatchPercentage($foundObject, $lostObject)
     return $matchPercentage;
 }
 
-public function editLostObject($objectId) {
-    $lostObject = LostObject::findOrFail($objectId);
+public function editlostObject($objectId) {
+    $lostObject = lostObject::findOrFail($objectId);
     if ($lostObject){
         return view('objects.lost-objects.partials.lost-object-editform' , ['lostObject' => $lostObject]);
     } else {
