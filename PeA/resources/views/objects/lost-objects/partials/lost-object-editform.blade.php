@@ -38,7 +38,7 @@
                             </ul>
                         </div>
                     @endif
-                                <form class="row g-3 needs-validation" novalidate action="{{ route('lost-object.update', ['object' => $lostObject->_id]) }}" method="put">
+                                <form class="row g-3 needs-validation" novalidate action="{{ route('lost-object.update', ['object' => $lostObject->_id]) }}" enctype="multipart/form-data" method="post" >
                                     @csrf
                                     @method('PUT')
                                     <div class="col-6">
@@ -159,15 +159,15 @@
     </script>
     {{-- Edição Objeto --}}
     <script>
-      $(document).ready(function() {
+    $(document).ready(function() {
         $('form').submit(function(event) {
-          
+
             event.preventDefault();
 
-           
+
             var formData = new FormData(this);
 
-            
+
             $.ajax({
                 url: $(this).attr('action'),
                 method: $(this).attr('method'),
