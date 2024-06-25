@@ -34,7 +34,7 @@ public function placeBid(Request $request)
         ]);
     }
 
-    if ($auction->status === 'finished') {
+    if ($auction->status === 'deactive') {
         return response()->json([
             "status" => false,
             "message" => "Este leilão já terminou.",
