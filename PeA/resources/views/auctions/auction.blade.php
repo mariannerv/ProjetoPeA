@@ -58,7 +58,7 @@
                         <a class="btn btn-primary" href="{{ route('auction.edit', ['auction' => $auction->_id, 'auction' => $auction]) }}">Editar leilão</a>
                         <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#lostObject" onclick="setID('<?php echo $auction->_id; ?>')">Eliminar leilão</button>
                         @else
-                        <button class="btn btn-primary" href="{{-- route para licitar --}}">Licitar</button> 
+                        <a class="btn btn-primary" href="{{ route("auction.userBidding", ['id' => $auction->_id,'email' => auth()->user()->email]) }}">Licitar</a> 
                         @endif
                       @endif
                         {{-- Este botão vai servir como notificação de possivel dono --}}
@@ -129,14 +129,16 @@
     </script>
     {{-- Escrever objeto --}}
     <script>
-        let object = [];
+      var url = '{{ route("found-object1.get", ":objectId") }}';
+      url = url.replace(':objectId', '{{ $auction->objectId }}');
         $.ajax({
-            url: '{{ route("found-object.get",'') }}/' + $auction->objectId,
+            url: url,
+
             method: 'GET',
             dataType: 'json',
             success: function(response) {
-                object = response.data;
-                $("#obj_img").html("<img src='{{ asset('images/lost-objects-img/' . $object->image) }}' alt='image representing there is no image' class='img-fluid'>");
+                let object = response.data;
+                $("#obj_img").html("<img src='{{ asset('images/lost-objects-img/') }}/" + object.image + "' alt='image representing there is no image' class='img-fluid'>");                
                 $("#obj_info").html("<h2>" + object.category + "</h2>");
                 $("#obj_info").html(
                                     "<h2>" + object.category + "</h2>" +

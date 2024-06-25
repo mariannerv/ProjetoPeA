@@ -98,11 +98,7 @@ class AuctionController extends Controller
             
             if ($auction) {
               
-                return response()->json([
-                    "status" => true,
-                    "data" => $auction,
-                    "code" => 200,
-                ]);
+                return view('auctions.auction', ['auction' => $auction]);
             } else {
                 return response()->json([
                     "status" => false,
