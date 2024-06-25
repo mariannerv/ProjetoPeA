@@ -182,7 +182,7 @@
                 contentType: false,
                 success: function(response) {
                     toastr.success(response.message, 'Success', { closeButton: true });
-                    // $('#lostObjectRegister').modal('show');
+                    $('#lostObjectRegister').modal('show');
                 },
                 error: function(xhr, status, error) {
                     console.error(xhr.responseText);
