@@ -31,73 +31,69 @@ class LostObjectController extends Controller
   
     
 
-    use App\Models\LostObject;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 
-public function registerLostObject(Request $request)
-{
-    $user = Auth::user();
-    $ownerEmail = $user->email;
-    $owner = User::where('email', $ownerEmail)->first();
 
-    if (!$owner) {
-        return response()->json([
-            "status" => false,
-            "message" => "Utilizador não encontrado.",
-            "code" => 404,
-        ]);
-    }
-
-    try {
-        $validator = Validator::make($request->all(), [
-            'ownerEmail' => 'required|email',
-            'category' => 'required|string',
-            'description' => 'required|string',
-            'date_lost' => 'required|date',
-            'locationId' => 'required|exists:locations,id', // adjust 'id' to your actual primary key field name in the locations table
-            'size' => 'required|string',
-            'color' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
+    public function registerLostObject(Request $request)
+    {
+        $ownerEmail = $request->ownerEmail;
+        $owner = User::where('email', $ownerEmail)->first();
+    
+        if (!$owner) {
             return response()->json([
                 "status" => false,
-                "message" => $validator->errors(),
-                "code" => 422,
+                "message" => "Utilizador não encontrado.",
+                "code" => 404,
             ]);
         }
-
-        // Create lost object linked to the location
-        $lostObject = LostObject::create([
-            'owner_id' => $owner->id,
-            'category' => $request->category,
-            'description' => $request->description,
-            'date_lost' => $request->date_lost,
-            'location_id' => $request->locationId,
-            'size' => $request->size,
-            'color' => $request->color,
-        ]);
-
-        return response()->json([
-            "status" => true,
-            "data" => $lostObject,
-            "message" => "Objeto perdido registrado com sucesso.",
-            "code" => 200,
-        ]);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            "status" => false,
-            "message" => "Ocorreu um erro ao registrar o objeto perdido.",
-            "code" => 500,
-        ], 500);
-    }
-}
-
-
+    
+        try {
+            $val = Validator::make($request->all(),[
+                'ownerEmail' => 'required|email',
+                'category' => 'required|string',
+                'description' => 'required|string',
+                'date_lost' => 'required|date',
+                'address' => 'required_without:map-address|string',
+                'postalcode' => 'required_without:map-postalcode|string',
+                'city' => 'required_without:map-city|string',
+                'map-address' => 'required_without:address|string',
+                'map-postalcode' => 'required_without:postalcode|string',
+                'map-city' => 'required_without:city|string',
+            ]);
+    
+            if ($val->fails()){
+                return redirect()->back()->withErrors($val)->withInput();
+            }
+    
+            $uuid = (string) Str::uuid();
+    
+            $lostObject = LostObject::create([
+                "ownerEmail" => $ownerEmail,
+                "description" => $request->input('description'),
+                "date_lost" => $request->input('date_lost'),
+                "brand" => $request->input('brand'),
+                "color" => $request->input('color'),
+                "size" => $request->input('size'),
+                "category" => $request->input('category'),
+                "location_id" => $uuid,
+                "status" => "Lost",
+            ]);
+    
+            return response()->json([
+                'message' => 'Lost object registered successfully',
+                'lost_object' => $lostObject,
+            ]);
+        } catch (Exception $e) {
+            $exceptionInfo = [
+                'message' => $e->getMessage(),
+            ];
+            return response()->json([
+                "status" => false,
+                "message" => "Ocorreu um erro ao registrar o objeto perdido.",
+                "exception" => $exceptionInfo,
+                "code" => 500,
+            ], 500);
+        }}
+        
 
 public function getObjects($foundObjectId, $lostObjectId)
 {

@@ -21,13 +21,6 @@
                     </a>
             </li>
             <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Notifications
-    </a>
-    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
-        <!-- Notifications will be dynamically loaded here -->
-    </ul>
-    <button onclick="sendTestNotification()">Send Test Notification</button>
 </li>
             <li class="nav-item">
                 <a href="http://localhost:8000/login" class="nav-link active" aria-current="page">
@@ -58,52 +51,4 @@
     </nav>
     
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Fetch notifications when the page loads
-        fetchNotifications();
-
-        // Fetch notifications every 5 seconds
-        setInterval(fetchNotifications, 5000);
-    });
-
-    function fetchNotifications() {
-        axios.get('/notifications')
-            .then(function(response) {
-                var notifications = response.data.notifications;
-                var dropdownMenu = document.querySelector('#navbarDropdown ul');
-
-                // Clear existing notifications
-                dropdownMenu.innerHTML = '';
-
-                // Add new notifications to the dropdown menu
-                notifications.forEach(function(notification) {
-                    var li = document.createElement('li');
-                    li.classList.add('dropdown-item');
-                    li.textContent = notification.message;
-                    dropdownMenu.appendChild(li);
-                });
-            })
-            .catch(function(error) {
-                console.log(error);
-            }); // Added closing curly brace
-    }
-    function sendTestNotification() {
-        fetch('/api/notifications/send-test-notification', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        })
-        .then(function(response) {
-            return response.json();
-        })
-        .then(function(data) {
-            console.log(data.message);
-        })
-        .catch(function(error) {
-            console.log(error);
-        });
-    }
-</script>
+   

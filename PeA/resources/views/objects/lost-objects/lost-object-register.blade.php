@@ -6,12 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="images/favicon.ico" type="image/x-icon">
     <title>Registar Objeto Perdido</title>
-    
     <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- TomTom Maps SDK CSS -->
-    <link href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous">
+
+<!-- TomTom Maps SDK CSS -->
+<link href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css"
+      rel="stylesheet">
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap JS bundle (including Popper.js) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-..."
+        crossorigin="anonymous"></script>
+
+<!-- TomTom Maps SDK JS -->
+<script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps-web.min.js"></script>
+
 </head>
+
 <body>
     <header>
         <!-- Navbar inclusion based on authentication status -->
@@ -66,7 +86,7 @@
                                 </div>
 
                                 <!-- Map address input fields -->
-                                <div id="map-address-input">
+                                <div id="map-address-input" style="display: none;">
                                     <div class="mb-3">
                                         <label class="form-label">Selecione a localização no mapa:</label>
                                         <div id="map" style="height: 400px;"></div>
@@ -122,88 +142,75 @@
             </div>
         </div>
     </main>
+    <script>
+        $(document).ready(function () {
+            $('input[name="address-input-method"]').on('change', function () {
+                if (this.value === 'manual') {
+                    $('#manual-address-input').show();
+                    $('#map-address-input').hide();
+                } else {
+                    $('#manual-address-input').hide();
+                    $('#map-address-input').show();
 
-    <!-- Bootstrap JS and TomTom Maps SDK JS -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps-web.min.js"></script>
-
-    <script>$(document).ready(function () {
-    // Function to handle radio button change
-    $('input[name="address-input-method"]').on('change', function () {
-        if (this.value === 'manual') {
-            $('#manual-address-input').show();
-            $('#map-address-input').hide();
-        } else {
-            $('#manual-address-input').hide();
-            $('#map-address-input').show();
-            
-            // Initialize the map if it's not already initialized
-            if ($('#map').children().length === 0) {
-                initMap();
-            }
-        }
-    });
-
-    // Function to initialize the map
-    var map;
-    var marker;
-
-    function initMap() {
-        map = tt.map({
-            key: 'YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn', // Replace with your TomTom API key
-            container: 'map',
-            center: [0, 0],
-            zoom: 2
-        });
-
-        // Event listener for map click to place marker
-        map.on('click', function (event) {
-            var coordinates = event.lngLat;
-
-            // Remove existing marker if present
-            if (marker) {
-                marker.remove();
-            }
-
-            // Place new marker at clicked coordinates
-            marker = new tt.Marker().setLngLat(coordinates).addTo(map);
-
-            // Update hidden inputs with selected coordinates
-            document.getElementById('map-coordinates').value = coordinates.lat + ',' + coordinates.lng;
-
-            // Reverse geocoding to update other address details if needed
-            reverseGeocode(coordinates);
-        });
-    }
-
-    // Function for reverse geocoding
-    function reverseGeocode(coordinates) {
-        var apiKey = 'YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn'; // Replace with your TomTom API key
-        var url = `https://api.tomtom.com/search/2/reverseGeocode/${coordinates.lat},${coordinates.lng}.json?key=${apiKey}`;
-        
-        $.ajax({
-            url: url,
-            type: 'GET',
-            success: function(data) {
-                if (data.addresses && data.addresses.length > 0) {
-                    var address = data.addresses[0].address;
-                    document.getElementById('map-street').value = address.streetName || '';
-                    document.getElementById('map-municipality').value = address.municipality || '';
-                    document.getElementById('map-postalcode').value = address.postalCode || '';
-                    document.getElementById('map-country').value = address.country || '';
+                    // Initialize the map if it's not already initialized
+                    if ($('#map').children().length === 0) {
+                        initMap();
+                    }
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error during reverse geocoding:', error);
+            });
+
+            var map;
+            var marker;
+
+            function initMap() {
+                map = tt.map({
+                    key: 'YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn', 
+                    container: 'map',
+                    center: [0, 0],
+                    zoom: 2
+                });
+
+                // Event listener for map click to place marker
+                map.on('click', function (event) {
+                    var coordinates = event.lngLat;
+
+                    if (marker) {
+                        marker.remove();
+                    }
+
+                    marker = new tt.Marker().setLngLat(coordinates).addTo(map);
+
+                    document.getElementById('map-coordinates').value = coordinates.lat + ',' + coordinates.lng;
+
+                    reverseGeocode(coordinates);
+                });
+            }
+
+            function reverseGeocode(coordinates) {
+                var url = `https://api.tomtom.com/search/2/reverseGeocode/${coordinates.lat},${coordinates.lng}.json?key=YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn`;
+
+                $.get(url, function (data) {
+                    var address = data.addresses[0].address;
+                    document.getElementById('map-address').value = address.freeformAddress;
+                    document.getElementById('map-postalcode').value = address.postalCode;
+                    document.getElementById('map-city').value = address.municipality;
+                });
             }
         });
-    }
 
-    // Other JavaScript functions remain unchanged...
-});
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('preview');
+                output.src = reader.result;
+                output.style.display = 'block';
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
 
+        function goBack() {
+            window.history.back();
+        }
     </script>
 </body>
 </html>

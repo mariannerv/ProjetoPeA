@@ -17,7 +17,7 @@ class LostObject extends Eloquent
         'brand',
         'color',
         'size',
-        'category_id',
+        'category',
         'location_id'
     ];
 

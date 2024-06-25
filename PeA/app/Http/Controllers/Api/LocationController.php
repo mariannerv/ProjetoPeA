@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Location;
 use MongoDB\BSON\ObjectId;
 use App\Http\Controllers\Controller;
-
+use GuzzleHttp\Client;
 class LocationController extends Controller
 {
     protected $connection = 'mongodb';
@@ -117,9 +117,7 @@ public function fetchLocationAddress($id)
 }
 
 
-use GuzzleHttp\Client;
-use App\Models\Location;
-use Illuminate\Http\Request;
+
 
 public function registerLocation(Request $request)
 {
@@ -131,7 +129,7 @@ public function registerLocation(Request $request)
             'distrito' => 'nullable|string',
             'codigo_postal' => 'nullable|string',
             'pais' => 'nullable|string',
-            'coordenadas' => 'nullable|string', // expects coordinates in "latitude,longitude" format
+            'coordenadas' => 'nullable|array', // expects coordinates in [latitude,longitude] format
         ]);
 
         $locationData = $request->all();
@@ -151,6 +149,7 @@ public function registerLocation(Request $request)
         ], 500);
     }
 }
+
 
 
 

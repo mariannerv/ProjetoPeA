@@ -109,53 +109,88 @@
       </div>
   </div>
   </nav>
+<script>
+var usidElement = document.getElementById('usid');
+var $uid = usidElement.textContent.trim();
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Fetch notifications when the page loads
-        fetchNotifications();
+document.addEventListener('DOMContentLoaded', function() {
+    fetchUserDetails($uid);
+});
 
-        // Fetch notifications every 5 seconds
-        setInterval(fetchNotifications, 5000);
-    });
-
-    function fetchNotifications() {
-        axios.get('/notifications')
-            .then(function(response) {
-                var notifications = response.data.notifications;
-                var dropdownMenu = document.querySelector('#navbarDropdown ul');
-
-                // Clear existing notifications
-                dropdownMenu.innerHTML = '';
-
-                // Add new notifications to the dropdown menu
-                notifications.forEach(function(notification) {
-                    var li = document.createElement('li');
-                    li.classList.add('dropdown-item');
-                    li.textContent = notification.message;
-                    dropdownMenu.appendChild(li);
-                });
-            })
-            .catch(function(error) {
-                console.log(error);
-            }); // Added closing curly brace
-    }
-    function sendTestNotification() {
-        fetch('/api/notifications/send-test-notification', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
+function fetchUserDetails(uid) {
+    fetch('/api/user/details') // Corrected the syntax for fetch
+        .then(response => response.json())
+        .then(data => {
+            // Handle data here as needed
+            console.log(data); // Example of handling data
         })
-        .then(function(response) {
-            return response.json();
-        })
-        .then(function(data) {
-            console.log(data.message);
-        })
-        .catch(function(error) {
-            console.log(error);
+        .catch(error => {
+            console.error('Error fetching user details:', error);
         });
+}
+
+
+function fetchNotifications(userId) {
+    fetch('/api/notifications/fetch-all', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ user_id: userId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            logDebugMessages(data.debug_messages);
+            const dropdown = document.getElementById('notificationsDropdown');
+            dropdown.innerHTML = '';
+            data.data.forEach(notification => {
+                const li = document.createElement('li');
+                li.classList.add('dropdown-item'); // Add Bootstrap dropdown-item class
+                li.innerText = notification.data.message;
+                dropdown.appendChild(li);
+            });
+        }
+    });
+}
+
+function sendTestNotification() {
+    fetch('/api/user/details', {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            const userId = data.user.id;
+            logDebugMessages(data.debug_messages);
+            fetch('/api/notifications/send-test', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ user_id: userId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status) {
+                    logDebugMessages(data.debug_messages);
+                    alert('Notificação de teste enviada com sucesso');
+                    fetchNotifications(userId); 
+                }
+            });
+        }
+    });
+}
+
+function logDebugMessages(debugMessages) {
+    if (debugMessages) {
+        debugMessages.forEach(msg => console.log(msg));
     }
+}
+
+
 </script>
