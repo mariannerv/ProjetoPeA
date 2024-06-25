@@ -39,6 +39,10 @@ class notifMail extends Mailable
         return $this->from('projetopea1@gmail.com', 'Perdidos & Achados')
                     ->replyTo('projetopea1@gmail.com', 'Perdidos & Achados')
                     ->subject($this->subject)
-                    ->view('emails.notification');
+                    ->view('emails.notification')
+                    ->with([
+                        'mensagem' => $this->mensagem,
+                        'buttonUrl' => $this->buttonUrl,
+                    ]);
     }
 }
