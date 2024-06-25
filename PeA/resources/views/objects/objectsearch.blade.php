@@ -243,7 +243,7 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
             descriptionCell.textContent = result.description;
 
             var locationIdCell = document.createElement("td");
-            locationIdCell.textContent = result.locationId;
+            locationIdCell.textContent = result.locsign;
 
             if (searchTerm && result.description.toLowerCase().includes(searchTerm.toLowerCase())) {
                 descriptionCell.classList.add('similar-description');
@@ -254,10 +254,11 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
             mapButton.textContent = "Mostrar Localização";
             mapButton.className = "btn btn-sm btn-outline-primary";
             mapButton.onclick = function() {
-                fetchLocationCoordinates(result.locationId, function(coordenadas) {
+                fetchLocationCoordinates(locationIdCell.textContent, function(coordenadas) {
                     if (coordenadas) {
-                        var latitude = coordenadas.latitude;
-                        var longitude = coordenadas.longitude;
+                        console.log(coordenadas);
+                        var latitude = coordenadas[0];
+                        var longitude = coordenadas[1];
                         displayLocationOnMap(latitude, longitude);
                     } else {
                         console.error('Coordenadas não estão definidas para esta localização.');
@@ -278,7 +279,12 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
 
 function fetchLocationCoordinates(locationId, callback) {
     fetch('/api/locations/' + locationId)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
         .then(location => {
             if (location && location.data && location.data.coordenadas) {
                 callback(location.data.coordenadas);

@@ -90,9 +90,9 @@
                                     <div class="mb-3">
                                         <label class="form-label">Selecione a localização no mapa:</label>
                                         <div id="map" style="height: 400px;"></div>
-                                        <input type="hidden" id="map-address" name="address">
-                                        <input type="hidden" id="map-postalcode" name="postalcode">
-                                        <input type="hidden" id="map-city" name="city">
+                                        <input type="hidden" id="map-address" name="map-address">
+                                        <input type="hidden" id="map-postalcode" name="map-postalcode">
+                                        <input type="hidden" id="map-city" name="map-city">
                                     </div>
                                     <p id="map-coordinates"></p>
                                 </div>
@@ -130,8 +130,10 @@
                                 </div>
 
                                 <!-- Hidden input for owner's email -->
-                                <input type="hidden" name="ownerEmail" value="{{ auth()->user()->email }}">
-
+                                <input type="hidden" name="ownerEmail" id="ownerEmail" value="{{ auth()->user()->email }}">
+                                <input type="hidden" name="uuid" id="uuid" value="{{ Str::uuid() }}">
+                                <input type="hidden" name="latitude" id="latitude">
+                                <input type="hidden" name="longitude" id="longitude">
                                 <div class="mb-3">
                                     <button class="btn btn-primary" type="submit">Registar</button>
                                     <button class="btn btn-secondary" type="button" onclick="goBack()">Cancelar</button>
@@ -153,7 +155,6 @@
                     $('#manual-address-input').hide();
                     $('#map-address-input').show();
 
-                    // Initialize the map if it's not already initialized
                     if ($('#map').children().length === 0) {
                         initMap();
                     }
@@ -165,7 +166,7 @@
 
             function initMap() {
                 map = tt.map({
-                    key: 'YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn', 
+                    key: 'YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn',
                     container: 'map-address-input',
                     center: [0, 0],
                     zoom: 2
@@ -179,10 +180,15 @@
                     }
 
                     marker = new tt.Marker().setLngLat(coordinates).addTo(map);
+                    map.flyTo({
+                        center: [coordinates.lng, coordinates.lat],
+                        zoom: 14
+                    });
 
                     var latLngString = coordinates.lat + ',' + coordinates.lng;
                     document.getElementById('map-coordinates').textContent = 'Coordenadas: ' + latLngString;
-                    document.getElementById('map-coordinates').value = latLngString;
+                    document.getElementById('latitude').value = coordinates.lat;
+                    document.getElementById('longitude').value = coordinates.lng;
 
                     reverseGeocode(coordinates);
                 });
@@ -215,4 +221,5 @@
         }
     </script>
 </body>
+
 </html>

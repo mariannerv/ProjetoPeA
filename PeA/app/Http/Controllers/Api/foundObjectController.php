@@ -26,7 +26,7 @@ class FoundObjectController extends Controller
                 'color' => 'required|string',
                 'size' => 'required|string',
                 'description' => 'required|string',
-                'location_id' => 'nullable|string',
+                'locsign' => 'nullable|string',
                 'location_coords' => [
                     'nullable',
                     'regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),\s*[-]?((([1]?[0-7]?[0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?$/'
@@ -52,7 +52,7 @@ class FoundObjectController extends Controller
                 "color" => $request->color,
                 "size" => $request->size,
                 "description" => $request->description,
-                "location_id" => $request->location_id,,
+                "locsign" => $request->locsign,,
                 "date_found" => $request->date_found,
                 "date_registered" => $dateRegistered,
                 "deadlineForAuction" => $deadlineForAuction,
@@ -111,7 +111,7 @@ class FoundObjectController extends Controller
                 'color' => 'string',
                 'size' => 'string',
                 'description' => 'string',
-                'location_id' => 'string',
+                'locsign' => 'string',
                 'location_coords' => [
                     'regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),\s*[-]?((([1]?[0-7]?[0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?$/'
                 ],
@@ -250,7 +250,7 @@ class FoundObjectController extends Controller
                 'color' => 'required|string',
                 'size' => 'required|string',
                 'description' => 'required|string',
-                'location_id' => 'nullable|string',
+                'locsign' => 'nullable|string',
                 'location_coords' => [
                     'nullable',
                     'regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),\s*[-]?((([1]?[0-7]?[0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?$/'
@@ -274,7 +274,7 @@ class FoundObjectController extends Controller
                 "color" => $request->color,
                 "size" => $request->size,
                 "description" => $request->description,
-                "location_id" => $request->location_id,
+                "locsign" => $request->locsign,
                 "location_coords" => $request->location_coords,
                 "date_found" => $request->date_found,
                 "estacao_policia" => $request->policeStationId,

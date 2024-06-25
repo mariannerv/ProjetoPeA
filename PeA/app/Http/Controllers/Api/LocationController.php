@@ -17,7 +17,7 @@ class LocationController extends Controller
     public function viewLocation(Request $request, $locationId)
 {
     try {
-        $location = Location::find($locationId);
+        $location = Location::where('locsign', $locationId)->first();
 
         if ($location) {
             return response()->json([
@@ -51,10 +51,6 @@ public function fetchLocationAddress($id)
             if (!empty(trim($location->rua))) {
                 $addressComponents[] = str_replace(' ', '%20', $location->rua);
             }// freguesia n funciona, o tomtom n reconhece
-            /* 
-            if (!empty(trim($location->freguesia))) {
-                $addressComponents[] = str_replace(' ', '%20', $location->freguesia);
-            }*/
             if (!empty(trim($location->municipio))) {
                 $addressComponents[] = str_replace(' ', '%20', $location->municipio);
             }
@@ -117,19 +113,15 @@ public function fetchLocationAddress($id)
 }
 
 
-
-
 public function registerLocation(Request $request)
 {
     try {
         $request->validate([
-            'rua' => 'nullable|string',
-            'freguesia' => 'nullable|string',
-            'municipio' => 'nullable|string',
-            'distrito' => 'nullable|string',
+            'locsign' => 'nullable|string',
+            'morada' => 'nullable|string',
+            'localidade' => 'nullable|string',
             'codigo_postal' => 'nullable|string',
-            'pais' => 'nullable|string',
-            'coordenadas' => 'nullable|array', // expects coordinates in [latitude,longitude] format
+            'coordenadas' => 'nullable|array',
         ]);
 
         $locationData = $request->all();

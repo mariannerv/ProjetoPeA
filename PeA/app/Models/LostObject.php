@@ -20,11 +20,11 @@ class lostObject extends Model
         'color',
         'size',
         'category',
-        'location_id'
+        'locsign'
     ];
 
     public function location()
     {
-        return $this->belongsTo(Location::class, 'location_id');
+        return $this->belongsTo(Location::class, 'locsign');
     }
 }

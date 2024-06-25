@@ -9,5 +9,5 @@ class Location extends Model
     protected $connection = 'mongodb';
     protected $collection = 'location'; 
 
-    protected $fillable = ['rua', 'freguesia', 'municipio', 'distrito', 'codigo_postal', 'pais','coordenadas'];
+    protected $fillable = ['locsign','morada', 'codigo_postal','localidade','coordenadas'];
 }
