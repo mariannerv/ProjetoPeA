@@ -205,4 +205,7 @@ Route::post('/addowner/{foundObject}/{lostObject}', [LostObjectController::class
 
 Route::get('/ownerobject/{foundObject}/' , [LostObjectController::class,'ownerbject'])->name('getowner.objects');
 Route::get('/notifyowner/{foundObject}/{lostObject}/{owner}/' , [LostObjectController::class,'notifyowner'])->name('notify.owner');
+Route::get('/pay/{id}' , [AuctionController::class,'pay'])->name('auction.pay');
+Route::get('success' , [AuctionController::class,'success']);
+
 ?>

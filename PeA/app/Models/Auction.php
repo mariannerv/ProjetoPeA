@@ -28,6 +28,7 @@ class Auction extends Model
         'bids_list',
         'policeStationId',
         'bidder_list',
+        'pay',
     ];
 
 
