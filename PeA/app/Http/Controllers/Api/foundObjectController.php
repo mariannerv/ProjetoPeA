@@ -186,7 +186,7 @@ class FoundObjectController extends Controller
     public function getAllFoundObjects()
     {
         try {
-            $foundObjects = FoundObject::all();
+            $foundObjects = FoundObject::orderBy('created_at', 'desc')->get();
 
             return response()->json([
                 "status" => true,

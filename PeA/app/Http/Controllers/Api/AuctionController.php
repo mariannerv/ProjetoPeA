@@ -81,14 +81,10 @@ class AuctionController extends Controller
     }
 
 
-    public function viewAuction(Request $request){
+    public function viewAuction($id){
             try {
-                $request->validate([
-                    'auctionId' => 'required|string',
-            ]);
-
-            $auction = Auction::where('auctionId', $request->auctionId)->first();
-
+            $auction = Auction::where('_id', $id)->first();
+            
             if ($auction) {
               
                 return response()->json([
@@ -208,8 +204,9 @@ public function editAuction(Request $request, $id){
 
     public function viewAllActiveAuctions(){
         try {
-            $activeAuctions = Auction::where('status', 'active')->get();
-
+            $activeAuctions = Auction::where('status', 'active')
+                          ->orderBy('created_at', 'desc')
+                          ->get();
             return response()->json([
                 "status" => true,
                 "data" => $activeAuctions,
@@ -226,11 +223,11 @@ public function editAuction(Request $request, $id){
 
     public function viewAllAuctions(){
         try {
-            $activeAuctions = Auction::all();
+            $auctions = Auction::orderBy('created_at', 'desc')->get();
 
             return response()->json([
                 "status" => true,
-                "data" => $activeAuctions,
+                "data" => $auctions,
                 "code" => 200,
             ]);
         } catch (\Exception $e) {

@@ -136,8 +136,8 @@ Route::post('/lost-objects/register', [LostObjectController::class, 'registerLos
 Route::get('/lost-objects', [LostObjectController::class, 'getAllLostObjects'])->name('lost-objects.get');
 Route::get('/lost-objects/{object}', [LostObjectController::class,'getLostObject'])->name('lost-object.get');
 Route::delete('lost-objects/{object}', [LostObjectController::class,'deleteLostObject'])->name('lost-object.delete');
-Route::get('/lost-objects/{object}/edit', [LostObjectController::class,'editLostObject'])->name('lost-object.edit');
-Route::put('/lost-objects/{object}', [LostObjectController::class,'upadteLostObject'])->name('lost-object.update');
+Route::get('/lost-objects/edit/{object}', [LostObjectController::class,'editLostObject'])->name('lost-object.edit');
+Route::put('/lost-objects/{object}', [LostObjectController::class,'updateLostObject'])->name('lost-object.update');
 
 Route::get('/found-objects', [foundObjectController::class, 'getAllFoundObjects'])->name('found-objects.get');
 Route::view('/found-objects/register-form', 'objects.foundobjectregister')->name('found-objects.register-form');

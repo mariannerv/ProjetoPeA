@@ -378,31 +378,17 @@
                 for (let i = 0; i < auctions.length; i++) {
                     const auction = auctions[i];
 
-                    // Debugging information
-                    console.log('Auction ownerEmail:', auction.ownerEmail);
-                    console.log('Authenticated user email:', '{{ auth()->user()->email }}');
-
-                    if (auction.ownerEmail == '{{ auth()->user()->email }}') {
+                    if (auction.bidder_list.includes( '{{ auth()->user()->email }}' )) {
                         if (counter % 3 === 0 || counter === 0) {
                             html += "<div class='row'>";
                         }
 
                         html += "<div class='col-4 border'>";
-                        html += "<div class='row'>";
-                        html += "<div class='col'><br>";
-                        html += "<p>Nome: " + auction.name + "</p>";
-                        html += "</div>";
-                        html += "<div class='col-auto'>";
-                        html += "<button class='btn btn-danger' data-bs-toggle='modal' data-bs-target='#auctionModal' onclick='setID(\"" + auction._id + "\")'> \
-                                    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-trash2' viewBox='0 0 16 16'>\
-                                        <path d='M14 3a.7.7 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225A.7.7 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2M3.215 4.207l1.493 8.957a1 1 0 0 0 .986.836h4.612a1 1 0 0 0 .986-.836l1.493-8.957C11.69 4.689 9.954 5 8 5s-3.69-.311-4.785-.793'/>\
-                                    </svg>\
-                                </button>";
-                        html += "</div>";  
-                        html += "</div>";  
-                        html += "<p>Descrição: " + auction.description + "</p>";
-                        html += "<p>Data de início: " + auction.startDate + "</p>";
-                        html += "<p>Data de término: " + auction.endDate + "</p>";
+                        html += "<p>Objeto: " + auction.objectId + "</p>";
+                        html += "<p>Licitação mais alta: " + auction.highestBid + "</p>";
+                        html += "<p>Acaba em: " + auction.end_date + "</p>";
+                        html += "<p>Status: " + auction.status + "</p>";
+                        html += "<p>Nome: " +  '{{ auth()->user()->name }}' + " Inscrito no Leilao </p> "
                         html += "<div class='row justify-content-end'>";
                         html += "<div class='col-auto'>";
                         html += "<a class='btn btn-secondary' href={{ route('auction.get', '') }}/" + auction._id + ">Ver Leilão </a><br><br>";
