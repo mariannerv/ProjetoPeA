@@ -15,7 +15,7 @@ use Illuminate\Validation\Rule;
 use App\Models\User;
 use App\Models\Auction;
 use App\Models\Bid;
-use App\Models\LostObject;
+use App\Models\lostObject;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Emails\crossCheckMailController;
@@ -23,15 +23,17 @@ use App\Http\Controllers\Emails\SendMailController;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 use MongoDB\BSON\ObjectId;
+use Illuminate\Support\Facades\Http;
+use App\Models\Categoria;
 
+class lostObjectController extends Controller
+{
+    protected $locationController;
 
-class LostObjectController extends Controller
+    public function registerlostObject(Request $request)
 {
-  
-    
-    public function registerLostObject(Request $request)
-{
-    $ownerEmail = $request->ownerEmail;
+    $locationController = new LocationController();
+    $ownerEmail = $request->input('ownerEmail');
     $owner = User::where('email', $ownerEmail)->first();
 
     if (!$owner) {
@@ -41,69 +43,65 @@ class LostObjectController extends Controller
             "code" => 404,
         ]);
     }
+
     try {
-        $val = Validator::make($request->all(),[
+        $val = Validator::make($request->all(), [
             'ownerEmail' => 'required|email',
             'category' => 'required|string',
             'description' => 'required|string',
             'date_lost' => 'required|date',
-            // 'location_id' => 'required|string',
-
         ]);
-        if ($val->fails()){
+
+        if ($val->fails()) {
             return redirect()->back()->withErrors($val)->withInput();
         }
 
-        $uuid = (string) Str::uuid();
+        $lostObject = LostObject::create([
+            "ownerEmail" => $request->input('ownerEmail'),
+            "description" => $request->input('description'),
+            "date_lost" => $request->input('date_lost'),
+            "brand" => $request->input('brand'),
+            "color" => $request->input('color'),
+            "size" => $request->input('size'),
+            "category" => $request->input('category'),
+            "locsign" => $request->input('uuid'),
+            "status" => "Lost",
+        ]);
 
-    $lostObject = LostObject::create([
-        "ownerEmail" => $ownerEmail,
-        "description" => $request->input('description'),
-        "date_lost" => $request->input('date_lost'),
-        "brand" => $request->input('brand'),
-        "color" => $request->input('color'),
-        "size" => $request->input('size'),
-        "category" => $request->input('category'),
-        "address" => $request->input('address'),
-        "location" => $request->input('location'),
-        "postalcode" => $request->input('postalcode'),
-        "location_id" => $uuid,
-        "status" => "Lost",
-        "lostObjectId" => 0,
-    ]);
+        $locationData = [
+            "locsign" => $request->input('uuid'),
+            "coordenadas" => [],
+            "morada" => $request->input('address') ?? $request->input('map-address'),
+            "localidade" => $request->input('city') ?? $request->input('map-city'),
+            "codigo_postal" => $request->input('postalcode') ?? $request->input('map-postalcode')
+        ];
 
-    event(new Registered($lostObject));
+        if ($request->has('latitude') && $request->has('longitude')) {
+            $locationData['coordenadas'] = [$request->input('latitude'), $request->input('longitude')];
+        }
+        $request->merge($locationData);
+        $location = $locationController->registerLocation($request);
 
-    // app(SendMailController::class)->sendWelcomeEmail(
-    //     $request->input('email'),
-    //     "Objecto registado com sucesso!",
-    //     "Obrigado por ter registado um objeto, esperamos que o consiga encontrar."
-    // );
-
-    return response()->json([
-        'message' => 'Lost object registered successfully',
-        'lost_object' => $lostObject,
-    ]);
-} catch (Exception $e) {
-    $exceptionInfo = [
-        'message' => $e->getMessage(),
-        
-        // Add more properties as needed
-    ];
-    return response()->json([
-        "status" => false,
-        "message" => "Ocorreu um erro ao recuperar as informações do objeto.",
-        "exception" => $exceptionInfo,
-        "code" => 500,
-    ], 500);
+        return response()->json([
+            'message' => 'Lost object registered successfully',
+            'lost_object' => $lostObject,
+            'location' => $location
+        ]);
+    } catch (Exception $e) {
+        $exceptionInfo = [
+            'message' => $e->getMessage(),
+        ];
+        return response()->json([
+            "status" => false,
+            "message" => "Ocorreu um erro ao registrar o objeto perdido.",
+            "exception" => $exceptionInfo,
+            "code" => 500,
+        ], 500);
+    }
 }
-}
-public function getAllObjects()
-{
-$foundObjects = FoundObject::all();
-$lostObjects = LostObject::all();
-return view('objects.found-objects.all-objects' ,['foundObjects' => $foundObjects , 'lostObjects' => $lostObjects]);
-}
+
+
+
 
 public function getObjects($foundObjectId, $lostObjectId)
 {
@@ -111,7 +109,7 @@ public function getObjects($foundObjectId, $lostObjectId)
     $foundObject = FoundObject::find($foundObjectId);
 
     // Buscar o objeto perdido pelo ID
-    $lostObject = LostObject::find($lostObjectId);
+    $lostObject = lostObject::find($lostObjectId);
 
     // Verificar se ambos os objetos foram encontrados
     if (!$foundObject || !$lostObject) {
@@ -122,7 +120,7 @@ public function getObjects($foundObjectId, $lostObjectId)
     return view('objects.found-objects.compare',['foundObjects' => $foundObject , 'lostObjects' => $lostObject , 'compare' => $matchPercentage]);
 }
 
-public function add(FoundObject $foundObject, LostObject $lostObject) {
+public function add(FoundObject $foundObject, lostObject $lostObject) {
     $matchPercentage = $this->calculateMatchPercentage($foundObject, $lostObject);
 
     $possibleOwner = ['owner' => $lostObject->ownerEmail, 'match' => $matchPercentage , 'lostObjectid' => $lostObject->_id];
@@ -152,7 +150,7 @@ public function ownerbject($foundObjectId) {
 
 public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
     try {
-        $lostObject = LostObject::find($lostObjectid);
+        $lostObject = lostObject::find($lostObjectid);
         
         $aviso = "Informamos que o seu objeto com a seguinte descrição: " . $lostObject->description . 
                  " da marca " . $lostObject->brand . ". " . 
@@ -192,10 +190,12 @@ public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
 }
 
 
-    public function getAllLostObjects()
+public function getAlllostObjects()
 {
     try {
-        $lostObjects = LostObject::orderBy('created_at', 'desc')->get();
+        Log::info('Fetching all lost objects.'); // Logging the fetch operation
+
+        $lostObjects = lostObject::all();
         
         return response()->json([
             "status" => true,
@@ -203,6 +203,8 @@ public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
             "code" => 200,
         ]);
     } catch (\Exception $e) {
+        Log::error('Error fetching all lost objects: ' . $e->getMessage()); // Logging the error
+        
         return response()->json([
             "status" => false,
             "message" => "An error occurred while fetching all lost objects.",
@@ -211,9 +213,10 @@ public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
     }
 }
 
-    public function getLostObject(String $id){
+
+    public function getlostObject(String $id){
         try {
-            $object = LostObject::where('_id', $id)->first();
+            $object = lostObject::where('_id', $id)->first();
 
             if ($object) {
                 return view('objects.lost-objects.lost-object', ['object' => $object]);
@@ -244,7 +247,7 @@ public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
     {
         try {
             // Group lost objects by category and date found
-            $statistics = DB::table('LostObject')
+            $statistics = DB::table('lostObject')
                 ->select('categoryId', DB::raw('count(*) as count'))
                 ->groupBy('categoryId')
                 ->get();
@@ -267,8 +270,8 @@ public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
             ], 500);
         }
     }
-    public function updateLostObject(Request $request){
-        $object = LostObject::where('lostObjectId', $request->lostObjectId)->first();
+    public function updatelostObject(Request $request){
+        $object = lostObject::where('lostObjectId', $request->lostObjectId)->first();
 
         if ($object) {
             $request->validate([
@@ -300,11 +303,11 @@ public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
     }
 
 
-    public function deleteLostObject(Request $request){
+    public function deletelostObject(Request $request){
     try {
         $lostObjectId = $request->lostObjectId;
         
-        $lostObject = LostObject::where('_id', $lostObjectId)->first();
+        $lostObject = lostObject::where('_id', $lostObjectId)->first();
 
         if (!$lostObject) {
             return response()->json([
@@ -352,7 +355,7 @@ public function crossCheck(Request $request)
 
     $lostObjectId = $request->lostObjectId;
 
-    $lostObject = LostObject::where('lostObjectId', $lostObjectId)->first();
+    $lostObject = lostObject::where('lostObjectId', $lostObjectId)->first();
 
     Log::info('Lost object attributes: ' . json_encode($lostObject));
 
@@ -402,10 +405,6 @@ public function crossCheck(Request $request)
 
 
 
-
-
-
-
 private function descriptionMatch($foundDescription, $lostDescription)
 {
     $foundDescription = strtolower($foundDescription);
@@ -429,7 +428,7 @@ public function searchByDescription(Request $request)
             'description' => 'required|string',
         ]);
 
-        $objects = LostObject::where('description', 'like', '%' . $request->description . '%')->get();
+        $objects = lostObject::where('description', 'like', '%' . $request->description . '%')->get();
 
         return response()->json([
             "status" => true,
@@ -476,8 +475,8 @@ private function calculateMatchPercentage($foundObject, $lostObject)
     return $matchPercentage;
 }
 
-public function editLostObject($objectId) {
-    $lostObject = LostObject::findOrFail($objectId);
+public function editlostObject($objectId) {
+    $lostObject = lostObject::findOrFail($objectId);
     if ($lostObject){
         return view('objects.lost-objects.partials.lost-object-editform' , ['lostObject' => $lostObject]);
     } else {

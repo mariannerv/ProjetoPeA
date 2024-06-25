@@ -6,12 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <link rel="icon" href="images/favicon.ico" type="image/x-icon">
 <title>Buscar Objetos Perdidos e Achados</title>
-<link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-1BmE4fWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
-      crossorigin="anonymous"
-/>
+
 <style>
     body {
         background-color: #f8f9fa;
@@ -55,9 +50,33 @@
         background-color: #007bff;
         color: white;
     }
-</style>
+</style>   
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous">
+
+<!-- TomTom Maps SDK CSS -->
+<link href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css"
+      rel="stylesheet">
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap JS bundle (including Popper.js) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-..."
+        crossorigin="anonymous"></script>
+
+<!-- TomTom Maps SDK JS -->
+<script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps-web.min.js"></script>
+
 </head>
-<body>           
+<body>
 <header>
       @if (auth()->check())
         @include('components.navbar')
@@ -87,12 +106,6 @@
     </div>
 
     <div id="map"></div>
-
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps-web.min.js"></script>
-<link href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css" rel="stylesheet">
 
 <script>
 // Initialize with all objects shown
@@ -230,7 +243,7 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
             descriptionCell.textContent = result.description;
 
             var locationIdCell = document.createElement("td");
-            locationIdCell.textContent = result.locationId;
+            locationIdCell.textContent = result.locsign;
 
             if (searchTerm && result.description.toLowerCase().includes(searchTerm.toLowerCase())) {
                 descriptionCell.classList.add('similar-description');
@@ -241,10 +254,11 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
             mapButton.textContent = "Mostrar Localização";
             mapButton.className = "btn btn-sm btn-outline-primary";
             mapButton.onclick = function() {
-                fetchLocationCoordinates(result.locationId, function(coordenadas) {
+                fetchLocationCoordinates(locationIdCell.textContent, function(coordenadas) {
                     if (coordenadas) {
-                        var latitude = coordenadas.latitude;
-                        var longitude = coordenadas.longitude;
+                        console.log(coordenadas);
+                        var latitude = coordenadas[0];
+                        var longitude = coordenadas[1];
                         displayLocationOnMap(latitude, longitude);
                     } else {
                         console.error('Coordenadas não estão definidas para esta localização.');
@@ -265,7 +279,12 @@ function displaySearchResults(results, objectType, tableId, searchTerm) {
 
 function fetchLocationCoordinates(locationId, callback) {
     fetch('/api/locations/' + locationId)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
         .then(location => {
             if (location && location.data && location.data.coordenadas) {
                 callback(location.data.coordenadas);

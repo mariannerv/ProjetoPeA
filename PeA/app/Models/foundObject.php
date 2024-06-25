@@ -16,31 +16,22 @@ class foundObject extends Model
 
     protected $fillable = [
         'objectId',
-        'possible_owner',
+        'possible_owner' => 'array',
         'category',
         'brand',
         'color',
         'size',
         'description',
-        'location',
-        'address',
-        'location',
-        'postalcode',
-        'name',
-        'number',
-        'email',
-        'location_coords',
+        'locsign',
         'value',
         'date_found',
         'date_registered',
         'deadlineForAuction',
         'estacao_policia',
-
     ];
 
     protected $casts = [
-        'objectId' => 'string',
-        'possible_owner' => 'array',
+        'objectId' => 'string', 
     ];
 
 }

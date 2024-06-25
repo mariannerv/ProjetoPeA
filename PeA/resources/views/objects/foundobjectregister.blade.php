@@ -12,11 +12,12 @@ if (!Auth::guard('police')->check()) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-    <title>Registar Objeto Perdido</title>
+    <title>Registar Objeto Encontrado</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css" rel="stylesheet">
 </head>
 <body>
-<header>
+    <header>
         @include('components.navbar-police')
     </header>
     <main class="my-5">
@@ -36,72 +37,83 @@ if (!Auth::guard('police')->check()) {
                                         @endforeach
                                     </ul>
                                 </div>
-                              @endif
-                              
-                              @if (session('success'))
+                                @endif
+
+                                @if (session('success'))
                                 <div class="alert alert-success">
                                     {{ session('success') }}
                                 </div>
-                              @endif
-                                <form class="row g-3 needs-validation" novalidate action="{{ route('found-objects.register') }}" method="post">
+                                @endif
+
+                                <form id="foundObjectForm" class="row g-3 needs-validation" novalidate action="{{ route('found-objects.register') }}" enctype="multipart/form-data" method="post">
                                     @csrf
                                     @method('POST')
-                                    <div class="col-md-6">
-                                        <label for="category" class="form-label">Categoria</label>
-                                        <input type="text" class="form-control" id="category" name="category" required>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Método de Entrada de Endereço</label>
+                                        <div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" id="manual" name="address-input-method" value="manual" checked>
+                                                <label class="form-check-label" for="manual">Manual</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" id="map" name="address-input-method" value="map">
+                                                <label class="form-check-label" for="map">Mapa</label>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label for="description" class="form-label">Descrição</label>
-                                        <input type="text" class="form-control" id="description" name="description" required>
+
+                                    <!-- Manual address input fields -->
+                                    <div id="manual-address-input">
+                                        <div class="col-md-6">
+                                            <label for="category" class="form-label">Categoria</label>
+                                            <input type="text" class="form-control" id="category" name="category" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="description" class="form-label">Descrição</label>
+                                            <input type="text" class="form-control" id="description" name="description" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="date_found" class="form-label">Data de Aparecimento</label>
+                                            <input type="date" class="form-control" id="date_found" name="date_found" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="brand" class="form-label">Marca</label>
+                                            <input type="text" class="form-control" id="brand" name="brand">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="color" class="form-label">Cor</label>
+                                            <input type="text" class="form-control" id="color" name="color">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="size" class="form-label">Tamanho</label>
+                                            <input type="text" class="form-control" id="size" name="size">
+                                        </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label for="date_found" class="form-label">Data de aparecimento</label>
-                                        <input type="date" class="form-control" id="date_found" name="date_found" required>
+
+                                    <!-- Map address input fields -->
+                                    <div id="map-address-input" style="display: none;">
+                                        <div class="mb-3">
+                                            <label class="form-label">Selecione a localização no mapa:</label>
+                                            <div id="map" style="height: 400px;"></div>
+                                            <input type="hidden" id="map-address" name="map-address">
+                                            <input type="hidden" id="map-postalcode" name="map-postalcode">
+                                            <input type="hidden" id="map-city" name="map-city">
+                                        </div>
+                                        <p id="map-coordinates"></p>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label for="brand" class="form-label">Marca</label>
-                                        <input type="text" class="form-control" id="brand" name="brand">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="color" class="form-label">Cor</label>
-                                        <input type="text" class="form-control" id="color" name="color">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="size" class="form-label">Tamanho</label>
-                                        <input type="text" class="form-control" id="size" name="size">
-                                    </div>
+
                                     <input type="hidden" name="policeStationId" value="{{ Auth::guard('police')->user()->policeStationId }}">
-                                    <div class="col-*">
-                                        <label for="size" class="form-label">Morada</label>
-                                        <input type="text" class="form-control" id="address" name="address">
-                                    </div>
-                                    <div class="col-6">
-                                        <label for="size" class="form-label">Código Postal</label>
-                                        <input type="text" class="form-control" id="postalcode" name="postalcode">
-                                    </div>
-                                    <div class="col-6">
-                                        <label for="size" class="form-label">Localidade</label>
-                                        <input type="text" class="form-control" id="location" name="location">
-                                    </div>
-                                    <p>Informação sobre a pessoa que encontrou o objeto:</p>
-                                    <div class="col-md-6">
-                                        <label for="size" class="form-label">Nome</label>
-                                        <input type="text" class="form-control" id="name" name="name">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="size" class="form-label">Número</label>
-                                        <input type="text" class="form-control" id="number" name="number">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="size" class="form-label">Email</label>
-                                        <input type="text" class="form-control" id="email" name="email">
-                                    </div>
+                                    <input type="hidden" name="uuid" id="uuid" value="{{ Str::uuid() }}">
+                                    <input type="hidden" name="latitude" id="latitude">
+                                    <input type="hidden" name="longitude" id="longitude">
+
                                     <div class="col-12">
                                         <button class="btn btn-primary" type="submit">Registar</button>
-                                        <button class="btn btn-secondary" onclick="goBack()">Cancelar</button>
+                                        <button class="btn btn-secondary" type="button" onclick="goBack()">Cancelar</button>
                                     </div>
                                 </form>
-                               
+
                             </div>
                         </div>
                     </div>
@@ -109,15 +121,79 @@ if (!Auth::guard('police')->check()) {
             </div>
         </div>
     </main>
+
     @include('components.footer')
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps-web.min.js"></script>
+
     <script>
+        $(document).ready(function () {
+            $('input[name="address-input-method"]').on('change', function () {
+                if (this.value === 'manual') {
+                    $('#manual-address-input').show();
+                    $('#map-address-input').hide();
+                } else {
+                    $('#manual-address-input').hide();
+                    $('#map-address-input').show();
+
+                    if ($('#map').children().length === 0) {
+                        initMap();
+                    }
+                }
+            });
+
+            var map;
+            var marker;
+
+            function initMap() {
+                map = tt.map({
+                    key: 'YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn',
+                    container: 'map-address-input',
+                    center: [0, 0],
+                    zoom: 2
+                });
+
+                map.on('click', function (event) {
+                    var coordinates = event.lngLat;
+
+                    if (marker) {
+                        marker.remove();
+                    }
+
+                    marker = new tt.Marker().setLngLat(coordinates).addTo(map);
+                    map.flyTo({
+                        center: [coordinates.lng, coordinates.lat],
+                        zoom: 14
+                    });
+
+                    var latLngString = coordinates.lat + ',' + coordinates.lng;
+                    document.getElementById('map-coordinates').textContent = 'Coordenadas: ' + latLngString;
+                    document.getElementById('latitude').value = coordinates.lat;
+                    document.getElementById('longitude').value = coordinates.lng;
+
+                    reverseGeocode(coordinates);
+                });
+            }
+
+            function reverseGeocode(coordinates) {
+                var url = `https://api.tomtom.com/search/2/reverseGeocode/${coordinates.lat},${coordinates.lng}.json?key=YaHwXWGyliPES0fF3ymLjwaqwdo2IbZn`;
+
+                $.get(url, function (data) {
+                    var address = data.addresses[0].address;
+                    document.getElementById('map-address').value = address.freeformAddress;
+                    document.getElementById('map-postalcode').value = address.postalCode;
+                    document.getElementById('map-city').value = address.municipality;
+                });
+            }
+        });
+
         function goBack() {
             window.history.back();
         }
-    </script>
-    <script>
+
         (() => {
             'use strict';
 

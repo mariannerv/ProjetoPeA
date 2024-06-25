@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Location;
 use MongoDB\BSON\ObjectId;
 use App\Http\Controllers\Controller;
-
+use GuzzleHttp\Client;
 class LocationController extends Controller
 {
     protected $connection = 'mongodb';
@@ -17,7 +17,7 @@ class LocationController extends Controller
     public function viewLocation(Request $request, $locationId)
 {
     try {
-        $location = Location::find($locationId);
+        $location = Location::where('locsign', $locationId)->first();
 
         if ($location) {
             return response()->json([
@@ -51,10 +51,6 @@ public function fetchLocationAddress($id)
             if (!empty(trim($location->rua))) {
                 $addressComponents[] = str_replace(' ', '%20', $location->rua);
             }// freguesia n funciona, o tomtom n reconhece
-            /* 
-            if (!empty(trim($location->freguesia))) {
-                $addressComponents[] = str_replace(' ', '%20', $location->freguesia);
-            }*/
             if (!empty(trim($location->municipio))) {
                 $addressComponents[] = str_replace(' ', '%20', $location->municipio);
             }
@@ -117,34 +113,38 @@ public function fetchLocationAddress($id)
 }
 
 
-    public function registerLocation(Request $request)
-    {
-        try {
-            $request->validate([
-                'rua' => 'required|string',
-                'freguesia' => 'required|string',
-                'municipio' => 'required|string',
-                'distrito' => 'required|string',
-                'codigo_postal' => 'required|string',
-                'pais' => 'required|string',
-            ]);
+public function registerLocation(Request $request)
+{
+    try {
+        $request->validate([
+            'locsign' => 'nullable|string',
+            'morada' => 'nullable|string',
+            'localidade' => 'nullable|string',
+            'codigo_postal' => 'nullable|string',
+            'coordenadas' => 'nullable|array',
+        ]);
 
-            $location = Location::create($request->all());
+        $locationData = $request->all();
+        $location = Location::create($locationData);
 
-            return response()->json([
-                "status" => true,
-                "data" => $location,
-                "message" => "Location registered successfully.",
-                "code" => 200,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                "status" => false,
-                "message" => "An error occurred while registering the location.",
-                "code" => 500,
-            ], 500);
-        }
+        return response()->json([
+            "status" => true,
+            "data" => $location,
+            "message" => "Location registered successfully.",
+            "code" => 200,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            "status" => false,
+            "message" => "An error occurred while registering the location.",
+            "code" => 500,
+        ], 500);
     }
+}
+
+
+
+
 
     public function updateLocation(Request $request, $_id)
     {
