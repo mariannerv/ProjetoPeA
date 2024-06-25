@@ -141,8 +141,53 @@ class FoundObjectController extends Controller
                 'deadlineForAuction' => 'date',
                 'police_station' => 'string|exists:police_station,sigla',
             ]);
-
-            $object->update($request->all());
+            if(isset($request->img)) {
+                $imageName = null;
+                if ($request->hasFile('img')) {
+                    $imageName = time().'_'.uniqid().'.'.$request->img->extension();
+                    $request->img->move(public_path('images/found-objects-img'), $imageName);
+                }
+    
+                $object->update([
+                "category" => $request->category,
+                "brand" => $request->brand,
+                "color" => $request->color,
+                "size" => $request->size,
+                "description" => $request->description,
+                "location_coords" => $request->location_coords,
+                'address' => $request->address,
+                'location' => $request->location,
+                'postalcode' => $request->postalcode,
+                "name" => $request->name,
+                "email" => $request->email,
+                "number" => $request->number,
+                "date_found" => $request->date_found,
+                "estacao_policia" => $request->policeStationId,
+                "image" => $imageName     
+    
+                ]);
+            }
+            else  {
+                $object->update([
+                    "category" => $request->category,
+                    "brand" => $request->brand,
+                    "color" => $request->color,
+                    "size" => $request->size,
+                    "description" => $request->description,
+                    "location_coords" => $request->location_coords,
+                    'address' => $request->address,
+                    'location' => $request->location,
+                    'postalcode' => $request->postalcode,
+                    "name" => $request->name,
+                    "email" => $request->email,
+                    "number" => $request->number,
+                    "date_found" => $request->date_found,
+                    "estacao_policia" => $request->policeStationId,
+                  
+        
+                    ]);
+            }
+            
 
             return response()->json([
                 "status" => true,
@@ -259,6 +304,7 @@ class FoundObjectController extends Controller
     }
 
     public function edit(FoundObject $object) {
+        
         return view('objects.foundobjectedit' , ['object' => $object]);
     }
 

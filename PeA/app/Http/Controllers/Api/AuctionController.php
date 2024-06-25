@@ -15,9 +15,19 @@ use Illuminate\Validation\Rule;
 use App\Models\User;
 use App\Models\Auction;
 use Illuminate\Validation\ValidationException;
-
+use App\Http\Controllers\Emails\SendMailController;
+use Omnipay\Omnipay;
 class AuctionController extends Controller
 {
+    private $gateway;
+
+    public function __construct()
+    {
+        $this->gateway = Omnipay::create('PayPal_Rest');
+        $this->gateway->setClientID(env('PAYPAL_CLIENT_ID'));
+        $this->gateway->setSecret(env("PAYPAL_CLIENT_SECRET"));
+        $this->gateway->setTestMode(true);
+    }
     public function createAuction(Request $request){
         try {
             $objectId = $request->objectId;
@@ -63,7 +73,8 @@ class AuctionController extends Controller
                 'status' => 'active',
                 'policeStationId' => $request->policeStationId,
                 'bids_list' => [],
-                'bidder_list' => []
+                'bidder_list' => [],
+                'pay' => false
             ]);
 
             return response()->json([
@@ -208,7 +219,8 @@ public function editAuction(Request $request, $id){
 
     public function viewAllActiveAuctions(){
         try {
-            $activeAuctions = Auction::where('status', 'active')->get();
+            $activeAuctions = Auction::where('status', 'active')
+            ->orWhere('highestBidderId', auth()->user()->email)->get();
 
             return response()->json([
                 "status" => true,
@@ -298,5 +310,78 @@ public function editAuction(Request $request, $id){
         $auction->save();
         return view('objects.found-objects.watch-auctions' , ['email'=>$email]);
     }
- }
+
+    public function pay($id) {
+        $auction = Auction::where('_id', $id)->first();
+        if ($auction->pay == false) {
+        try {
+        $responce = $this->gateway->purchase(array(
+            'amount' => $auction->highestBid,
+            'currency' => env('PAYPAL_CURRENCY'),
+            'returnUrl' => url('success').'?id='.$id,
+            'cancelUrl' => url('error')
+ 
+        ))->send();
+        if($responce->isRedirect()) {
+            $responce->redirect();
+        }
+    }
+    catch(\Throwable $th) {
+        return $th->getMessage();
+    } 
+}
+else {
+    return "<h1>Pagamento já foi efetuado</h1>";
+}
+}
+
+public function success(Request $request) {
+    $id = $request->input('id');
+    
+   
+    if ($request->input('paymentId') && $request->input('PayerID')) {
+        $transaction = $this->gateway->completePurchase(array(
+            'payer_id' => $request->input('PayerID'),
+            'transactionReference' => $request->input('paymentId')
+        ));
+        $responce = $transaction->send();
+
+        if ($responce->isSuccessful()) {
+          $auction = Auction::where('_id', $id)->first();
+          $object = foundObject::where('objectId', $auction->objectId)->first();
+          $auction->pay = true;
+
+          $avisouser = "Informamos que o seu pagamento foi feito com sucesso". 
+            "O seu leilão:<a href='leilão pagina'>ver leilão</a>. " . 
+            "<br> Contacte o policia responsavel: " . $object->name . 
+            " por email: " . $object->email . 
+            " ou número de telefone: "  . $object->number . 
+            ". Se tiver algum problema, contacte o administrador projetopea1@gmail.com"; 
+          ;
+
+          app(SendMailController::class)->sendWelcomeEmail(
+            $auction->highestBidderId, 
+            $avisouser,
+            "Pagamento efetuado"  // subject
+        );
+
+        $avisopolice = "Imformamos que o pagamento sobre o leilão foi efetuada" .
+        "<br> contacte o utilizador " . $auction->highestBidderId;
+        }
+        app(SendMailController::class)->sendWelcomeEmail(
+            $object->email,
+            $avisopolice,
+            "Pagamendo de leilão efetuado"  // subject
+        );
+        $auction->save();
+        return "<h1>Pagamento efetuado</h1>";
+
+    }
+
+    }
+  
+
+}
+
+ 
 
