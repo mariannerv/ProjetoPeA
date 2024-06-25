@@ -84,7 +84,7 @@ public function placeBid(Request $request)
             ], 404);
         }
 
-    if ($bid) {
+    if ($bid && $currentHightestBidder != null) {
         
         
         $bidDate = date("Y-m-d H:i:s");
