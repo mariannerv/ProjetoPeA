@@ -34,7 +34,7 @@ public function placeBid(Request $request)
         ]);
     }
 
-    if ($auction->status === 'finished') {
+    if ($auction->status === 'deactive') {
         return response()->json([
             "status" => false,
             "message" => "Este leilão já terminou.",
@@ -84,7 +84,7 @@ public function placeBid(Request $request)
             ], 404);
         }
 
-    if ($bid) {
+    if ($bid && $currentHightestBidder != null) {
         
         
         $bidDate = date("Y-m-d H:i:s");
