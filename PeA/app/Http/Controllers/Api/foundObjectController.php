@@ -18,56 +18,79 @@ use App\Models\User;
 class FoundObjectController extends Controller
 {
     public function registerFoundObject(Request $request)
-    {
-        try {
-            $val = Validator::make($request->all(),[
-                'category' => 'required|string',
-                'brand' => 'required|string',
-                'color' => 'required|string',
-                'size' => 'required|string',
-                'description' => 'required|string',
-                'locsign' => 'nullable|string',
-                'location_coords' => [
-                    'nullable',
-                    'regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),\s*[-]?((([1]?[0-7]?[0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?$/'
-                ],
-                'date_found' => 'required|date',
-                'policeStationId' => 'required|string|exists:police_station,sigla',
-            ]);
+{
+    try {
+        // Validate the incoming request
+        $val = Validator::make($request->all(), [
+            'category' => 'required|string',
+            'brand' => 'required|string',
+            'color' => 'required|string',
+            'size' => 'required|string',
+            'description' => 'required|string',
+            'locsign' => 'nullable|string',
+            'date_found' => 'required|date',
+            'policeStationId' => 'required|string|exists:police_station,sigla',
+        ]);
 
-            if ($val->fails()){
-                return redirect()
+        if ($val->fails()) {
+            return redirect()
                 ->back()
                 ->withErrors($val)
                 ->withInput();
-            }
-
-            $dateRegistered = now();
-            $deadlineForAuction = now()->addMonth();
-            $uuid = (string) Str::uuid();
-
-            FoundObject::create([
-                "category" => $request->category,
-                "brand" => $request->brand,
-                "color" => $request->color,
-                "size" => $request->size,
-                "description" => $request->description,
-                "locsign" => $request->locsign,,
-                "date_found" => $request->date_found,
-                "date_registered" => $dateRegistered,
-                "deadlineForAuction" => $deadlineForAuction,
-                "estacao_policia" => $request->policeStationId,
-            ]);
-            return redirect()->back()->with('success', 'Objeto encontrado registado com sucesso');
-          
-        } catch (\Exception $e) {
-            return response()->json([
-                "status" => false,
-                "message" => "Algo correu mal ao registar o objeto.",
-                "code" => "404",
-            ]);
         }
+
+        // Create the found object
+        $dateRegistered = now();
+        $deadlineForAuction = now()->addMonth();
+
+        $foundObject = FoundObject::create([
+            "category" => $request->category,
+            "brand" => $request->brand,
+            "color" => $request->color,
+            "size" => $request->size,
+            "description" => $request->description,
+            "locsign" => $request->locsign,
+            "date_found" => $request->date_found,
+            "date_registered" => $dateRegistered,
+            "deadline_for_auction" => $deadlineForAuction,
+            "estacao_policia" => $request->policeStationId,
+        ]);
+
+        // Prepare location data
+        $locationData = [
+            "locsign" => $request->input('locsign'),
+            "coordenadas" => [],
+            "morada" => $request->input('address') ?? $request->input('map-address'),
+            "localidade" => $request->input('city') ?? $request->input('map-city'),
+            "codigo_postal" => $request->input('postalcode') ?? $request->input('map-postalcode')
+        ];
+
+        if ($request->has('latitude') && $request->has('longitude')) {
+            $locationData['coordenadas'] = [$request->input('latitude'), $request->input('longitude')];
+        }
+
+        // Instantiate LocationController and call registerLocation method
+        $locationController = new LocationController();
+        $request->merge($locationData);
+        $location = $locationController->registerLocation($request);
+
+        return response()->json([
+            'message' => 'Found object registered successfully',
+            'found_object' => $foundObject,
+            'location' => $location
+        ]);
+
+    } catch (\Exception $e) {
+        // Handle exceptions
+        return response()->json([
+            "status" => false,
+            "message" => "Algo correu mal ao registar o objeto encontrado.",
+            "exception" => $e->getMessage(),
+            "code" => 500,
+        ], 500);
     }
+}
+
 
     public function getFoundObject(Request $request)
     {
