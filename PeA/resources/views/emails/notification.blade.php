@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Notification</title>
+    <meta charset="UTF-8">
+    <title>{{ $subject }}</title>
 </head>
 <body>
-    <p>{{ $notification->data['message'] }}</p>
+    <h1>{{ $subject }}</h1>
+    <p>{{ $mensagem }}</p>
+    <a href="{{ $buttonUrl }}">Click here</a> to proceed.
 </body>
 </html>

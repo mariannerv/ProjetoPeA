@@ -9,15 +9,11 @@ class Notification extends Eloquent
 {
     use HasFactory;
 
-    protected $connection = 'mongodb'; // Especifica a conexão com MongoDB
-    protected $collection = 'notifications'; // Especifica o nome da coleção
+    protected $connection = 'mongodb';
+    protected $collection = 'notifications'; 
 
     protected $fillable = [
         'user_id', 'type', 'data', 'read_at'
-    ];
-
-    protected $casts = [
-        'data' => 'array',
     ];
 
     // Define a relação com o modelo User

@@ -17,7 +17,7 @@ use App\Http\Controllers\Api\LostObjectController;
 use App\Http\Controllers\Api\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Api\NotificationsController;
+use App\Http\Controllers\Api\notificationsController;
 
 
 /*
@@ -197,15 +197,12 @@ Route::post('login', [AuthController::class, 'login']);
 
 
 //notification routes
-Route::group([
-    "middleware" => ["auth:sanctum"]
-], function(){
-    
-    Route::get('/user/details', [NotificationsController::class, 'getUserDetails']);
-    Route::get('/notifications/fetch-all', [NotificationsController::class, 'fetchAllNotifications']);
-    Route::post('/notifications/send-overtaken', [NotificationsController::class, 'sendBidOvertakenNotification']);
-    Route::post('/notifications/send-updated', [NotificationsController::class, 'sendBidUpdatedNotification']);
-    Route::post('/notifications/send-test', [NotificationsController::class, 'sendTestNotification']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/notifications', [NotificationsController::class, 'fetchAllNotifications']);
+    Route::post('/send-bid-updated-notification', [NotificationsController::class, 'sendBidUpdatedNotification']);
+    Route::post('/send-bid-overtaken-notification', [NotificationsController::class, 'sendBidOvertakenNotification']);
+    Route::post('/send-test-notification', [NotificationsController::class, 'sendTestNotification']);
 });
 
 //sub e unsub notifs de um auction

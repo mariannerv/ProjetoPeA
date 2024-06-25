@@ -1,8 +1,7 @@
-
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.12/push.min.js"></script>
+
 <nav class="navbar navbar-dark bg-dark">
 <div class="container-fluid">
     <a class="navbar-brand" href="http://localhost:8000">PeA</a>
@@ -55,14 +54,16 @@
                 </a>
         </li>
         
-        <li class="nav-item dropdown" v-if="isAuthenticated">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Notificações
-            </a>
-            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown" id="notificationsDropdown">
-                <!-- Notification items will be populated here -->
-            </ul>
-            <button onclick="sendTestNotification()">Enviar Notificação de Teste</button>
+        <li class="nav-item dropdown" id="app">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Notificações
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown" id="notificationsDropdown">
+                    <li v-for="notification in notifications" :key="notification.id">
+                        <a class="dropdown-item" href="#">@{{notification.data.message}}</a>
+                    </li>
+                </ul>
+                <button @click="sendTestNotification" class="btn btn-secondary">Enviar Notificação de Teste</button>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{{route('user.auctions', auth()->user()->id) }}">
@@ -161,92 +162,41 @@
         
     </div>
     </div>
-    <p id="usid">{{ auth()->user()->_id }}</p>
 </div>
 </nav>
 
+
 <script>
-var usidElement = document.getElementById('usid');
-var $uid = usidElement.textContent.trim();
-
-document.addEventListener('DOMContentLoaded', function() {
-    fetchUserDetails($uid);
-});
-
-function fetchUserDetails(uid) {
-    fetch('/api/user/details') // Corrected the syntax for fetch
-        .then(response => response.json())
-        .then(data => {
-            // Handle data here as needed
-            console.log(data); // Example of handling data
-        })
-        .catch(error => {
-            console.error('Error fetching user details:', error);
-        });
-}
-
-
-function fetchNotifications(userId) {
-    fetch('/api/notifications/fetch-all', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+new Vue({
+    el: '#app',
+    data: {
+        notifications: []
+    },
+    methods: {
+        fetchNotifications() {
+            axios.get('/api/notifications')
+                .then(response => {
+                    this.notifications = response.data.data;
+                })
+                .catch(error => {
+                    console.error('Error fetching notifications:', error);
+                });
         },
-        body: JSON.stringify({ user_id: userId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status) {
-            logDebugMessages(data.debug_messages);
-            const dropdown = document.getElementById('notificationsDropdown');
-            dropdown.innerHTML = '';
-            data.data.forEach(notification => {
-                const li = document.createElement('li');
-                li.classList.add('dropdown-item'); // Add Bootstrap dropdown-item class
-                li.innerText = notification.data.message;
-                dropdown.appendChild(li);
-            });
+        sendTestNotification() {
+            axios.post('/api/send-test-notification')
+                .then(response => {
+                    console.log('Test notification sent:', response.data);
+                    this.fetchNotifications();
+                })
+                .catch(error => {
+                    console.error('Error sending test notification:', error);
+                });
         }
-    });
-}
-
-function sendTestNotification() {
-    fetch('/api/user/details', {
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status) {
-            const userId = data.user.id;
-            logDebugMessages(data.debug_messages);
-            fetch('/api/notifications/send-test', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify({ user_id: userId })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status) {
-                    logDebugMessages(data.debug_messages);
-                    alert('Notificação de teste enviada com sucesso');
-                    fetchNotifications(userId); 
-                }
-            });
-        }
-    });
-}
-
-function logDebugMessages(debugMessages) {
-    if (debugMessages) {
-        debugMessages.forEach(msg => console.log(msg));
+    },
+    mounted() {
+        this.fetchNotifications();
     }
-}
-
-
+});
 </script>
+
+
