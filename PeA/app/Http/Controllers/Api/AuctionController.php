@@ -112,17 +112,29 @@ class AuctionController extends Controller
     }
 
 
-public function editAuction(Request $request, $id){
+public function viewAuctionHistory(Request $request) {
+    
+    $auction = Auction::where('auctionId', $request->auctionId)->first();
+
+    if (!$auction) {
+        return response()->json(['error' => 'Auction not found'], 404);
+    }
+
+    return response()->json(['bids_list' => $auction->bids_list], 200);
+}
+    
+
+
+public function editAuction(Request $request, $id) {
     try {
         $auction = Auction::where('_id', $id)->first();
-        
+
         if (!$auction) {
             throw ValidationException::withMessages([
                 'auctionId' => ['Leilão não encontrado.'],
             ]);
         }
 
-        
         if ($auction->status !== 'deactive') {
             throw ValidationException::withMessages([
                 'status' => ['Não é possível editar um leilão inicializado.'],
@@ -134,7 +146,6 @@ public function editAuction(Request $request, $id){
             'object_id' => 'string',
         ]);
 
-      
         $auction->update($request->all());
 
         return response()->json([
@@ -147,10 +158,13 @@ public function editAuction(Request $request, $id){
             "status" => false,
             "code" => 404,
             "message" => "Algo correu mal ao atualizar o leilão.",
-            "errors" => $e->errors(), 
+            "errors" => $e->errors(),
         ], 404);
     }
 }
+
+
+
 
      public function deleteAuction($id){
         try {
