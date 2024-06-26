@@ -215,6 +215,7 @@ Route::get('/ownerobject/{foundObject}/' , [LostObjectController::class,'ownerbj
 Route::get('/notifyowner/{foundObject}/{lostObject}/{owner}/' , [LostObjectController::class,'notifyowner'])->name('notify.owner');
 Route::get('/removeowner/{foundObject}/{lostObject}/' , [LostObjectController::class,'removeOwner'])->name('remove.owner');
 
+Route::get('/finish/{id}' , [AuctionController::class,'finishauction'])->name('auction.finish');
 Route::get('/pay/{id}' , [AuctionController::class,'pay'])->name('auction.pay');
 Route::get('success' , [AuctionController::class,'success']);
 
