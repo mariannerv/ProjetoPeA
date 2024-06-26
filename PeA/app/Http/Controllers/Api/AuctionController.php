@@ -333,7 +333,7 @@ public function success(Request $request) {
           $auction->pay = true;
 
           $avisouser = "Informamos que o seu pagamento foi feito com sucesso". 
-            "O seu leilão:<a href='http://localhost:8000/auctions/'". $auction->_id .">ver leilão</a>. " . 
+            "O seu leilão:<a href='https://projetopea.eu/auctions/'". $auction->_id .">ver leilão</a>. " . 
             "<br> Contacte o policia responsavel: " . $object->name . 
             " por email: " . $object->email . 
             " ou número de telefone: "  . $object->number . 
@@ -348,7 +348,7 @@ public function success(Request $request) {
 
         $avisopolice = "Imformamos que o pagamento sobre o leilão foi efetuada" .
         "<br> contacte o utilizador " . $auction->highestBidderId .
-        "O seu leilão:<a href='http://localhost:8000/auctions/'". $auction->_id .">ver leilão</a>. ";
+        "O seu leilão:<a href='https://projetopea.eu/auctions/'". $auction->_id .">ver leilão</a>. ";
 
         }
         app(SendMailController::class)->sendWelcomeEmail(
@@ -366,7 +366,7 @@ public function success(Request $request) {
     public function finishauction($id) {
         $auction = Auction::where('_id', $id)->first();
         $aviso = "Parabens voce ganhou o leilão <br>" .
-        "Pode já pagar o seu objeto: <a href='http://localhost:8000/pay/".$id."'>aqui</a>.";
+        "Pode já pagar o seu objeto: <a href='https://projetopea.eu/pay/".$id."'>aqui</a>.";
         
         app(SendMailController::class)->sendWelcomeEmail(
             $auction->highestBidderId,

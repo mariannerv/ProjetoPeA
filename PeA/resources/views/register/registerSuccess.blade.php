@@ -26,7 +26,7 @@
                         <h1>Obrigado por se juntar a nós!</h1>
                         <p>Foi enviado uma notificação via e-mail a confirmar o sucesso na criação de conta.</p>
                         <div class="d-grid gap-2">
-                            <a href="http://localhost:8000/" role="button" class="btn btn-primary btn-lg" aria-disabled="true">Continuar</a>
+                            <a href="https://projetopea.eu/" role="button" class="btn btn-primary btn-lg" aria-disabled="true">Continuar</a>
                           </div>
                         
                     </div>

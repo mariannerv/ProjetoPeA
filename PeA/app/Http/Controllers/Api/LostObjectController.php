@@ -202,7 +202,7 @@ public function notifyOwner(FoundObject $foundObject, $lostObjectid, $email) {
         
         $aviso = "Informamos que o seu objeto com a seguinte descrição: " . $lostObject->description . 
                  " da marca " . $lostObject->brand . ". " . 
-                 "Veja o seu objeto <a href='http://localhost:8000/lost-objects/".$lostObject->id."'>aqui</a>. " .
+                 "Veja o seu objeto <a href='https://projetopea.eu/lost-objects/".$lostObject->id."'>aqui</a>. " .
                  "Possa ter sido achado. Para mais informações, contacte o policial " . $foundObject->name . 
                  " por email: " . $foundObject->email . 
                  " ou número de telefone: "  . $foundObject->number . 
