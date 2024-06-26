@@ -140,20 +140,44 @@
                       </div>
                     </div>
                   </div>
-                  <div class="row">
-                    <p>Aqui serão inseridos os leilões em que o utilizador está envolvido e pode-se filtrar + pesquisar</p>  
-                    <input class="form-control" id="auction" type="text" placeholder="Procurar..">
-                  </div>
-                  <hr>
-                  <div class="row">
-                    <div class="col-*" id="auctions">
+                  
 
-                    </div>
-                  </div>
-                  </div>
-                </div>
-              </div>
+                  <div class="row">
+    <p>Aqui serão inseridos os leilões em que o utilizador está envolvido e pode-se filtrar + pesquisar</p>  
+    <input class="form-control" id="auction" type="text" placeholder="Procurar..">
+</div>
+<hr>
+<div class="row">
+    <div class="col-*" id="auctions">
+        <!-- Auctions will be loaded here -->
+    </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Modal for Bid History -->
+<div class="modal fade" id="bidHistoryModal" tabindex="-1" aria-labelledby="bidHistoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bidHistoryModalLabel">Histórico de Licitações</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="bidHistoryContent">
+                <!-- Bid history content will be loaded here -->
+            </div>
         </div>
+    </div>
+</div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
     </div>
     @include('components.modal-lost-object-delete')
     @else
@@ -362,7 +386,152 @@
         }
       </script>
 
-    {{-- Filtro --}}
+    
+    {{-- Leilões --}}
+    <script>
+      $.ajax({
+        url: '{{ route("auctions.get") }}',
+        method: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            let html = '';
+            for (let i = 0; i < response.data.length; i++) {
+              const item = response.data[i];
+              // if ( item.ownerEmail === {{auth()->user()->email}}){
+              if (i+1 % 3 === 0 || i === 0){
+              html += "<div class = 'row'>";
+              }
+              html += "<div class = 'col-4 border'>";
+              html += "<p>Objeto: " + item.objectId + "</p>";
+              html += "<p>Licitação mais alta: " + item.highestBid + "</p>";
+              html += "<p>Acaba em: " + item.end_date + "</p>";
+              html += "<p>Status: " + item.status + "</p>";
+              html += "<a class='btn btn-secondary' href={{ route('auction.get', '') }}/" + item._id + ">Ver Leilao </a> "
+              if (i+1 % 3 === 0){
+              html += "</div>";
+              }
+              html += "</div>"; // Add a horizontal line between each object
+          }
+            $('#auctions').html(html); // Insert the generated HTML into the DOM
+        },
+        error: function(xhr, status, error) {
+            console.error(xhr.responseText);
+        }
+     });
+
+
+
+     function showBidHistory(auctionId) {
+        $.ajax({
+            url: '{{ route("auction.history.get", "") }}/' + auctionId,
+            method: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                let html = '<ul class="list-group">';
+                response.bids_list.sort((a, b) => new Date(b.date) - new Date(a.date));
+                response.bids_list.forEach(bid => {
+                    html += `<li class="list-group-item">Licitação: ${bid.amount} - Data: ${new Date(bid.date).toLocaleString()}</li>`;
+                });
+                html += '</ul>';
+                $('#bidHistoryContent').html(html);
+                $('#bidHistoryModal').modal('show');
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+}
+
+    </script>
+    {{-- Inserir ID --}}
+    <script>
+      function setID(id){
+        $("#lostObjectIdInput").val(id);
+        var formAction = "{{ route('lost-object.delete', '') }}/" + $('#lostObjectIdInput').val();
+        $('#deleteObject').attr('action', formAction);
+      } 
+    </script>
+    {{-- Apagar objeto --}}
+    <script>  
+      $(document).ready(function() {
+        $('form').submit(function(event) {
+            // Prevent the default form submission
+            event.preventDefault();
+
+            // Serialize form data
+            var formData = $(this).serialize();
+
+            // Submit form data via AJAX
+            $.ajax({
+                url: $(this).attr('action'),
+                method: $(this).attr('method'),
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    $('#lostObject').modal('hide')
+                    toastr.success(response.message, 'Success', { closeButton: true });
+                    $.ajax({
+                      url: '{{ route("lost-objects.get") }}',
+                      method: 'GET',
+                      dataType: 'json',
+                      success: function(response) {
+                          let html = '';
+                          let counter = 0;
+                          for (let i = 0; i < response.data.length; i++) {
+                            const item = response.data[i];
+                            
+                            if ( item.ownerEmail == '{{auth()->user()->email}}' && item.status === "Lost"){
+                              if (counter % 3 === 0 || counter === 0){
+                                html += "<div class = 'row'>";
+                              }
+                              html += "<div class = 'col-4 border'>";
+                              html += "<div class = 'row'>"; 
+                              html += "<div class= 'col'><br>";
+                              html += "<p>Categoria: " + item.category + "</p>";
+                              html += "</div>";
+                              html += "<div class= 'col-auto'>";
+                              html += "<button class='btn btn-danger' data-bs-toggle='modal' data-bs-target='#lostObject' onclick='setID(\"" + item._id + "\")'> \
+                                        <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-trash2' viewBox='0 0 16 16'>\
+                                          <path d='M14 3a.7.7 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225A.7.7 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2M3.215 4.207l1.493 8.957a1 1 0 0 0 .986.836h4.612a1 1 0 0 0 .986-.836l1.493-8.957C11.69 4.689 9.954 5 8 5s-3.69-.311-4.785-.793'/>\
+                                        </svg>\
+                                      </button>";
+                              html += "</div>";  
+                              html += "</div>";  
+                              html += "<p>Marca: " + item.brand + "</p>";
+                              html += "<p>Cor: " + item.color + "</p>";
+                              html += "<p>Data do desaparecimento: " + item.date_lost + "</p>";
+                              html += "<a class='btn btn-secondary' href={{ route('lost-object.get', '') }}/" + item._id + ">Ver Objeto </a><br><br>"
+                              // Add a horizontal line between each object
+                              counter+=1
+                              html += "</div>";
+                              if (counter % 3 === 0 && counter !== 0){
+                                html += "</div><br>";
+                              }
+                              
+                            }
+                          }
+                          $('#lost_objects').html(html); 
+                      },
+                      error: function(xhr, status, error) {
+                          console.error(xhr.responseText);
+                      }
+     });
+                    // $('#myModal').modal('show');
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+      });
+    </script>
+</body>
+</html>
+
+
+
+
+{{-- Filtro --}}
     {{-- <script>
         document.getElementById('lostObj').addEventListener('input', function() {
             const searchString = this.value.toLowerCase();
@@ -508,119 +677,3 @@
       } 
       renderObjects();
     </script> --}}
-    {{-- Leilões --}}
-    <script>
-      $.ajax({
-        url: '{{ route("auctions.get") }}',
-        method: 'GET',
-        dataType: 'json',
-        success: function(response) {
-            let html = '';
-            for (let i = 0; i < response.data.length; i++) {
-              const item = response.data[i];
-              // if ( item.ownerEmail === {{auth()->user()->email}}){
-              if (i+1 % 3 === 0 || i === 0){
-              html += "<div class = 'row'>";
-              }
-              html += "<div class = 'col-4 border'>";
-              html += "<p>Objeto: " + item.objectId + "</p>";
-              html += "<p>Licitação mais alta: " + item.highestBid + "</p>";
-              html += "<p>Acaba em: " + item.end_date + "</p>";
-              html += "<p>Status: " + item.status + "</p>";
-              html += "<a class='btn btn-secondary' href={{ route('auction.get', '') }}/" + item._id + ">Ver Leilao </a> "
-              if (i+1 % 3 === 0){
-              html += "</div>";
-              }
-              html += "</div>"; // Add a horizontal line between each object
-          }
-            $('#auctions').html(html); // Insert the generated HTML into the DOM
-        },
-        error: function(xhr, status, error) {
-            console.error(xhr.responseText);
-        }
-     });
-    </script>
-    {{-- Inserir ID --}}
-    <script>
-      function setID(id){
-        $("#lostObjectIdInput").val(id);
-        var formAction = "{{ route('lost-object.delete', '') }}/" + $('#lostObjectIdInput').val();
-        $('#deleteObject').attr('action', formAction);
-      } 
-    </script>
-    {{-- Apagar objeto --}}
-    <script>  
-      $(document).ready(function() {
-        $('form').submit(function(event) {
-            // Prevent the default form submission
-            event.preventDefault();
-
-            // Serialize form data
-            var formData = $(this).serialize();
-
-            // Submit form data via AJAX
-            $.ajax({
-                url: $(this).attr('action'),
-                method: $(this).attr('method'),
-                data: formData,
-                dataType: 'json',
-                success: function(response) {
-                    $('#lostObject').modal('hide')
-                    toastr.success(response.message, 'Success', { closeButton: true });
-                    $.ajax({
-                      url: '{{ route("lost-objects.get") }}',
-                      method: 'GET',
-                      dataType: 'json',
-                      success: function(response) {
-                          let html = '';
-                          let counter = 0;
-                          for (let i = 0; i < response.data.length; i++) {
-                            const item = response.data[i];
-                            
-                            if ( item.ownerEmail == '{{auth()->user()->email}}' && item.status === "Lost"){
-                              if (counter % 3 === 0 || counter === 0){
-                                html += "<div class = 'row'>";
-                              }
-                              html += "<div class = 'col-4 border'>";
-                              html += "<div class = 'row'>"; 
-                              html += "<div class= 'col'><br>";
-                              html += "<p>Categoria: " + item.category + "</p>";
-                              html += "</div>";
-                              html += "<div class= 'col-auto'>";
-                              html += "<button class='btn btn-danger' data-bs-toggle='modal' data-bs-target='#lostObject' onclick='setID(\"" + item._id + "\")'> \
-                                        <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-trash2' viewBox='0 0 16 16'>\
-                                          <path d='M14 3a.7.7 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225A.7.7 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2M3.215 4.207l1.493 8.957a1 1 0 0 0 .986.836h4.612a1 1 0 0 0 .986-.836l1.493-8.957C11.69 4.689 9.954 5 8 5s-3.69-.311-4.785-.793'/>\
-                                        </svg>\
-                                      </button>";
-                              html += "</div>";  
-                              html += "</div>";  
-                              html += "<p>Marca: " + item.brand + "</p>";
-                              html += "<p>Cor: " + item.color + "</p>";
-                              html += "<p>Data do desaparecimento: " + item.date_lost + "</p>";
-                              html += "<a class='btn btn-secondary' href={{ route('lost-object.get', '') }}/" + item._id + ">Ver Objeto </a><br><br>"
-                              // Add a horizontal line between each object
-                              counter+=1
-                              html += "</div>";
-                              if (counter % 3 === 0 && counter !== 0){
-                                html += "</div><br>";
-                              }
-                              
-                            }
-                          }
-                          $('#lost_objects').html(html); 
-                      },
-                      error: function(xhr, status, error) {
-                          console.error(xhr.responseText);
-                      }
-     });
-                    // $('#myModal').modal('show');
-                },
-                error: function(xhr, status, error) {
-                    console.error(xhr.responseText);
-                }
-            });
-        });
-      });
-    </script>
-</body>
-</html>

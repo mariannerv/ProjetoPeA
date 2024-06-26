@@ -44,13 +44,33 @@
   </div>
   <hr>
   <div class="row">
-    <div class="col-*" id="auctions">
-
+    <div class="col-*" id="auctions"></div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <button id="show_bid_history" class="btn btn-primary">Mostrar Histórico de Licitações</button>
     </div>
   </div>
+</div>
+
+
+
+<div class="modal fade" id="bidHistoryModal" tabindex="-1" aria-labelledby="bidHistoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="bidHistoryModalLabel">Histórico de Licitações</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="bidHistoryContent">
+        <!-- Bid history content will be loaded here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+      </div>
+    </div>
   </div>
 </div>
-</div>    
 
     {{-- JQuery --}}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -177,43 +197,64 @@
     {{-- // Leilões --}}
     <script>
         $.ajax({
-          url: '{{ route("auctions.get") }}',
-          method: 'GET',
-          dataType: 'json',
-          success: function(response) {
-              let html = '';
-              for (let i = 0; i < 6; i++) {
-                const item = response.data[i];
-                if (item && item.status === "active"){
-                if (i+1 % 3 === 0 || i === 0){
-                html += "<div class = 'row'>";
+    url: '{{ route("auctions.get") }}',
+    method: 'GET',
+    dataType: 'json',
+    success: function(response) {
+        let html = '';
+        for (let i = 0; i < 6; i++) {
+            const item = response.data[i];
+            if (item && item.status === "active") {
+                if (i % 3 === 0 || i === 0) {
+                    html += "<div class='row'>";
                 }
-                html += "<div class = 'col-4 border'>";
-                html += "<p>Objeto: " + (item.objectId|| "N/A") + "</p>";
+                html += "<div class='col-4 border'>";
+                html += "<p>Objeto: " + (item.objectId || "N/A") + "</p>";
                 html += "<p>Licitação mais alta: " + item.highestBid + "</p>";
                 html += "<p>Acaba em: " + item.end_date + "</p>";
                 html += "<p>Status: " + (item.status || "N/A") + "</p>";
-                html += "<a class='btn btn-secondary' href={{ route('auction.get', '') }}/" + item._id + ">Ver Leilao </a> "
+                html += "<a class='btn btn-secondary' href={{ route('auction.get', '') }}/" + item._id + ">Ver Leilao </a> ";
+                html += "<button class='btn btn-info' onclick='showBidHistory(\"" + item._id + "\")'>Histórico de Licitações</button>";
                 html += "</div>";
                 if (i === 5 || i === response.data.length - 1) {
-                                html += "<div class='col-4 align-self-center d-flex justify-content-center'>";
-                                html += "<a class='btn btn-lg btn-outline-secondary' href='{{ route('auctions.get') }}'>Ver mais ></a>";
-                                html += "</div>";
-                            }
-                if (i+1 % 3 === 0){
+                    html += "<div class='col-4 align-self-center d-flex justify-content-center'>";
+                    html += "<a class='btn btn-lg btn-outline-secondary' href='{{ route('auctions.get') }}'>Ver mais ></a>";
                     html += "</div>";
                 }
-                 // Add a horizontal line between each object
-                if (response.data[i] === response.data[-1]){
-                    break;
-                }}
+                if (i % 3 === 0) {
+                    html += "</div>";
+                }
             }
-              $('#auctions').html(html); // Insert the generated HTML into the DOM
-          },
-          error: function(xhr, status, error) {
-              console.error(xhr.responseText);
-          }
-       });
+        }
+        $('#auctions').html(html);
+    },
+    error: function(xhr, status, error) {
+        console.error(xhr.responseText);
+    }
+});
+
+       
+  function showBidHistory(auctionId) {
+    $.ajax({
+        url: '{{ route("auction.history.get", "") }}/' + auctionId,
+        method: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            let html = '<h4>Histórico de Licitações</h4>';
+            html += '<ul class="list-group">';
+            response.data.bids_list.sort((a, b) => new Date(b.date) - new Date(a.date));
+            response.data.bids_list.forEach(bid => {
+                html += `<li class="list-group-item">Licitação: ${bid.amount} - Data: ${new Date(bid.date).toLocaleString()}</li>`;
+            });
+            html += '</ul>';
+            $('#auctions').append(html);
+        },
+        error: function(xhr, status, error) {
+            console.error(xhr.responseText);
+        }
+    });
+}
+
       </script>
     
     

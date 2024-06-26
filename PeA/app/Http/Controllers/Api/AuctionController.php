@@ -110,6 +110,19 @@ class AuctionController extends Controller
     }
 
 
+    public function viewAuctionHistory(Request $request) {
+        
+        $auction = Auction::where('auctionId', $request->auctionId)->first();
+    
+        if (!$auction) {
+            return response()->json(['error' => 'Auction not found'], 404);
+        }
+    
+        return response()->json(['bids_list' => $auction->bids_list], 200);
+    }
+    
+
+
 public function editAuction(Request $request){
     try {
         $auction = Auction::where('auctionId', $request->auctionId)->first();

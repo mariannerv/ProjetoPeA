@@ -219,7 +219,7 @@ Route::post('/addowner/{foundObject}/{lostObject}', [LostObjectController::class
 
 Route::get('/ownerobject/{foundObject}/' , [LostObjectController::class,'ownerbject'])->name('getowner.objects');
 Route::get('/notifyowner/{foundObject}/{lostObject}/{owner}/' , [LostObjectController::class,'notifyowner'])->name('notify.owner');
-
-
+//auction history
+Route::get('/auctions/{auction}/history',[AuctionController::class , 'viewAuctionHistory'])->name("auction.history.get");
 ?>
 
