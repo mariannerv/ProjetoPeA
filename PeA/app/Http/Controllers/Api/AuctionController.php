@@ -333,7 +333,7 @@ public function success(Request $request) {
           $auction->pay = true;
 
           $avisouser = "Informamos que o seu pagamento foi feito com sucesso". 
-            "O seu leilão:<a href='leilão pagina'>ver leilão</a>. " . 
+            "O seu leilão:<a href='http://localhost:8000/auctions/'". $auction->_id .">ver leilão</a>. " . 
             "<br> Contacte o policia responsavel: " . $object->name . 
             " por email: " . $object->email . 
             " ou número de telefone: "  . $object->number . 
@@ -347,10 +347,12 @@ public function success(Request $request) {
         );
 
         $avisopolice = "Imformamos que o pagamento sobre o leilão foi efetuada" .
-        "<br> contacte o utilizador " . $auction->highestBidderId;
+        "<br> contacte o utilizador " . $auction->highestBidderId .
+        "O seu leilão:<a href='http://localhost:8000/auctions/'". $auction->_id .">ver leilão</a>. ";
+
         }
         app(SendMailController::class)->sendWelcomeEmail(
-            $object->email,
+            $auction->highestBidderId,
             $avisopolice,
             "Pagamendo de leilão efetuado"  // subject
         );

@@ -24,7 +24,6 @@ public function placeBid(Request $request)
 {
     $auctionId = $request->auctionId;
     $auction = Auction::where('auctionId', $auctionId)->first();
-    $currentHightestBidder = null;
 
     if (!$auction) {
         return redirect()->back()->withErrors(['Leilão' => 'Leilão não existe.']);
@@ -69,18 +68,14 @@ public function placeBid(Request $request)
             return redirect()->back()->withErrors(['Utilizador' => 'Utilizador não existe']);
 
         }
-
-    if ($bid && $auction->highestBidderId != null) {
-        
-        
         $bidDate = date("Y-m-d H:i:s");
         $auction->highestBid = $request->amount;
         $auction->highestBidderId = $request->bidderId;
         $auction->push('bids_list', $bid->bidId);
         $auction->recentBidDate = $bidDate;
         $auction->save();
-
-
+    if ($bid && $auction->highestBidderId != null) {
+        
         $emailContent = "A sua licitação foi ultrapassada:\n";
         $emailContent .= "Licitação mais alta: " . $request->amount . "\n";
         $emailContent .= "ID do leilão: " . $auction->auctionId . "\n";
@@ -94,7 +89,7 @@ public function placeBid(Request $request)
             "ID do leilão: " . $auction->auctionId,
             "Data de fim: " . $auction->end_date,
         );
-        return view('auctions.auction', ['auction'=>$auction]);
+        return redirect()->route('auction.get', ['auction'=>$auction->_id]);
     }
 
 

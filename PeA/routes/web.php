@@ -187,7 +187,7 @@ Route::delete('/auctions/{auction}',[AuctionController::class,'deleteAuction'])-
 
 Route::view('/bidderAuction/{auctionId}', 'objects.found-objects.bidding-auction')->name('auction.userBidding');
 
-Route::post('/Bidding/{id}',[BidController::class,'placeBid'])->name('auctions.bidding');
+Route::post('/bidderAuction/{auctionId}',[BidController::class,'placeBid'])->name('auctions.bidding');
 
 Route::get('/signUpAuctions/{id}/{email}',[AuctionController::class,'signUpAuctions'])->name('auctions.signUp');
 

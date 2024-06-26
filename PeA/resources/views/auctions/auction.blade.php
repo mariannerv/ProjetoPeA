@@ -57,6 +57,7 @@
                 <div class="row">
                     <div class="col">
                       @if(auth()->check() || Auth::guard('police')->check())
+                      @if(Auth::guard('police')->check())
                         @if (Auth::guard('police')->user()->policeStationId === $auction->policeStationId )
                         @if ($auction->status === "deactive")
                         <a class="btn btn-primary" href="{{ route('user.updateAuction', ['id' => $auction->_id]) }} ">Editar leilão</a>
@@ -64,18 +65,24 @@
                         <a class='btn btn-secondary' href="{{ route('auctions.finalizeOrStart', ['id' => $auction->_id]) }} ">Ativar Leilao </a>
                         @else
                         <a class='btn btn-secondary' href="{{ route('auctions.finalizeOrStart', ['id' => $auction->_id]) }}">Desativar Leilao </a>
-                        <button class="btn btn-outline-danger">Terminar leilão</button>
+                        @if($auction->highestBid > 0)
+                        <a class="btn btn-outline-danger" href="{{ route('auction.finish', ['id' => $auction->_id]) }}">Terminar leilão</a>
+                        @endif
                         @endif
                         @elseif(Auth::guard('police')->check())
                         @if ($auction->status === "deactive")
                         <a class='btn btn-secondary' href="{{ route('auctions.finalizeOrStart', ['id' => $auction->_id]) }} ">Ativar Leilao </a>
                         @else
                         <a class='btn btn-secondary' href="{{ route('auctions.finalizeOrStart', ['id' => $auction->_id]) }}">Desativar Leilao </a>
-                        <button class="btn btn-outline-danger">Terminar leilão</button>
+                        @if($auction->highestBid > 0)
+                        <a class="btn btn-outline-danger" href="{{ route('auction.finish', ['id' => $auction->_id]) }}">Terminar leilão</a>
+                        @endif
+                        @endif
                         @endif
                         @else
                         <a class="btn btn-primary" href="{{ route("auction.userBidding", ['auctionId' => $auction->auctionId]) }}">Licitar</a> 
                         @endif
+                        
                       @endif
                         {{-- Este botão vai servir como notificação de possivel dono --}}
                     </div>
