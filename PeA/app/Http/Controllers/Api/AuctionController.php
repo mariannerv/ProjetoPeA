@@ -379,6 +379,21 @@ public function success(Request $request) {
     }
 
     }
+
+    public function finishauction($id) {
+        $auction = Auction::where('_id', $id)->first();
+        $aviso = "Parabens voce ganhou o leilão <br>" .
+        "Pode já pagar o seu objeto: <a href='http://localhost:8000/pay/".$id."'>aqui</a>.";
+        
+        app(SendMailController::class)->sendWelcomeEmail(
+            $auction->highestBidderId,
+            $aviso,
+            "Ganhou o leilão"  // subject
+        );
+        $auction->status = "deactive";
+        $auction->save();
+
+    }
   
 
 }

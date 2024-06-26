@@ -435,6 +435,11 @@ class FoundObjectController extends Controller
         return view('objects.found-objects.auctions-register' , ['foundObjects' => $foundObjects]);
     }
 
+    public function search($id) {
+        $foundObjects = FoundObject::all();
+
+        return view('objects.search' , ['foundObjects' => $foundObjects , 'id' => $id]);
+    }
 }
 
 

@@ -246,9 +246,10 @@
                     html += "</div>";
                     html += "<div class='col-auto'>";
                     html += "<a class='btn btn-secondary' href={{ route('lost-object.edit', '') }}/" + item._id + ">Editar Objeto </a><br><br>";
+                    html += "<a class='btn btn-secondary' href={{ route('found-search', '') }}/" + item._id + ">procurar objeto </a><br><br>";
                     html += "</div>";
                     html += "</div>";
-
+                    
                     let now = new Date();
                     let createdDate = new Date(item.created_at);
                     let oneHourAgo = new Date(now.getTime() - (60 * 60 * 1000));
