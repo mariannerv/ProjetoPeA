@@ -106,11 +106,14 @@
     {{-- Leilões --}}
     <script>
       $.ajax({
-        url: '{{ route("auctions.get") }}',
+        //teste
+        url: '{{ route("activeAuctions.get") }}',
         method: 'GET',
         dataType: 'json',
         success: function(response) {
             let html = '';
+            var userEmail = "{{ auth()->user()->email }}";
+            var userName = "{{ auth()->user()->name }}"
             for (let i = 0; i < response.data.length; i++) {
               const item = response.data[i];
               if (i+1 % 3 === 0 || i === 0){
@@ -121,7 +124,24 @@
               html += "<p>Licitação mais alta: " + item.highestBid + "</p>";
               html += "<p>Acaba em: " + item.end_date + "</p>";
               html += "<p>Status: " + item.status + "</p>";
+              if (item.bidder_list.includes(userEmail)) {
+                html += "<p>Nome: " +  userName + " Inscrito no Leilao </p> "
+              }
+              if (item.bidder_list.includes(userEmail)) {
+                html += "<a class='btn btn-secondary' href={{ url('signUpAuctions') }}/" + item._id + "/" + userEmail + ">Licitar </a> "
+              }
               html += "<a class='btn btn-secondary' href={{ route('auction.get', '') }}/" + item._id + ">Ver Leilao </a> "
+              if (!item.bidder_list.includes(userEmail)) {
+                html += "<a class='btn btn-secondary' href={{ url('signUpAuctions') }}/" + item._id + "/" + userEmail + ">Inscrever no Leilao </a> "
+              }
+              if (item.highestBidderId ==  userEmail && item.pay == true) {
+                html += "<br></br>";
+                html += "Seu leilão já esta pago</p>";
+              } 
+              if (item.highestBidderId ==  userEmail && item.pay == false && item.status == "deactive") {
+                 html += "<a class='btn btn-secondary' href={{ route('auction.pay', '') }}/" + item._id + ">Efetuar pagamento</a> "
+              }
+              
               if (i+1 % 3 === 0){
               html += "</div>";
               }

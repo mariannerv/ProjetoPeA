@@ -394,6 +394,8 @@ public function showdeactivated() {
     'numberactive' => $numberactive , 'deactivated' => $deactivated]);
 }
 public function deactivateacount($id) {
+    if (auth()->check()){
+        if(auth()->user()->admin == "true") {
     //$userd = User::where('_id', $id)->get();
     $user = User::find($id);
     $user->account_status = 'deactivated';
@@ -406,8 +408,20 @@ public function deactivateacount($id) {
     );
     return redirect()->route("usersdeactivated.store");
 }
+    
+}
+return response()->json([
+    "status" => false,
+    "message" => "Não tem permição",
+    "code" => 500,
+], 500);
+}
 
 public function activeacount($id) {
+    if (auth()->check()){
+    if(auth()->user()->admin == "true") {
+
+    
     //$userd = User::where('_id', $id)->get();
     $user = User::find($id);
     $user->account_status = 'active';
@@ -419,6 +433,14 @@ public function activeacount($id) {
         "Sua conta foi Ativada."
     );
     return redirect()->route("usersactive.store");
+}
+}
+
+return response()->json([
+    "status" => false,
+    "message" => "Não tem permição",
+    "code" => 500,
+], 500);
 }
 
 
@@ -457,7 +479,9 @@ return redirect()->back()->with('success', 'E-mail enviado com sucesso!');
 
 public function addadmin($id) {
 
-        //$userd = User::where('_id', $id)->get();
+        if (auth()->check()){
+        if (auth()->user()->email == "projetopea1@gmail.com") {
+        
         $user = User::find($id);
         $user->admin = true;
         $user->save();
@@ -468,11 +492,18 @@ public function addadmin($id) {
             "Promovido a moderador"
         );
         return redirect()->route("usersactive.store");
-
+    }
+}
+return response()->json([
+    "status" => false,
+    "message" => "Não tem permição",
+    "code" => 500,
+], 500);
 }
 
 public function deladmin($id) {
-
+    if (auth()->check()){
+        if (auth()->user()->email == "projetopea1@gmail.com") {
     //$userd = User::where('_id', $id)->get();
     $user = User::find($id);
     $user->admin = false;
@@ -485,6 +516,13 @@ public function deladmin($id) {
     );
     return redirect()->route("usersactive.store");
 
+}
+    }
+    return response()->json([
+        "status" => false,
+        "message" => "Não tem permição",
+        "code" => 500,
+    ], 500);
 }
 
 // Verify email method

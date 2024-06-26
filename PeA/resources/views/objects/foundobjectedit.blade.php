@@ -43,9 +43,9 @@ if (!Auth::guard('police')->check()) {
                                     {{ session('success') }}
                                 </div>
                               @endif
-                                <form class="row g-3 needs-validation" novalidate action="{{ route('found-object.update' , $object->_id) }}" method="post">
+                                <form class="row g-3 needs-validation" novalidate action="{{ route('found-object.update' , $object->_id) }}" enctype="multipart/form-data" method="post">
                                     @csrf
-                                    @method('POST')
+                                  
                                     <div class="col-md-6">
                                         <label for="category" class="form-label">Categoria</label>
                                         <input type="text" class="form-control" id="category" name="category" value="{{$object->category}}" required>
@@ -82,6 +82,15 @@ if (!Auth::guard('police')->check()) {
                                         <label for="size" class="form-label">Localidade</label>
                                         <input type="text" class="form-control" id="location" name="location" value="{{$object->location}}" required>
                                     </div>
+                                    <div class="col-6">
+                                        <label for="img" class="form-label">Imagem</label>
+                                        <input type="file" class="form-control" id="img" name="img" accept="image/*" onchange="previewImage(event)">
+                                        @if($object->image)
+                                            <img id="currentImage" src="{{ asset('images/found-objects-img/' . $object->image) }}" style="max-width: 100%; margin-top: 10px;">
+                                        @else
+                                            <img id="currentImage" src="#" style="display:none; max-width: 100%; margin-top: 10px;">
+                                        @endif
+                                    </div>
                                     <input type="hidden" name="policeStationId" value="{{ Auth::guard('police')->user()->policeStationId }}">
                                     <p>Informação sobre a pessoa que encontrou o objeto:</p>
                                     <div class="col-md-6">
@@ -116,6 +125,17 @@ if (!Auth::guard('police')->check()) {
         function goBack() {
             window.history.back();
         }
+
+        function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = function() {
+       
+        const currentImageOutput = document.getElementById('currentImage');
+        currentImageOutput.src = reader.result;
+        currentImageOutput.style.display = 'block';
+    };
+    reader.readAsDataURL(event.target.files[0]);
+}
     </script>
     <script>
         (() => {

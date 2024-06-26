@@ -60,6 +60,7 @@ if (!Auth::guard('police')->check()) {
                                             Please provide a valid ObjectId
                                         </div>
                                     </div>
+                                    <input type="hidden" name="policeStationId" value="{{ Auth::guard('police')->user()->policeStationId }}">
                                     <div class="col-12">
                                         <button class="btn btn-primary" type="submit">Registar</button>
                                         <button class="btn btn-secondary" onclick="goBack()">Cancelar</button>

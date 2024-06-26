@@ -1,3 +1,5 @@
+@import 'node_modules/toastr/toastr.scss';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+

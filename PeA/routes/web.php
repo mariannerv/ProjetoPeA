@@ -1,4 +1,4 @@
-<?php 
+<?php
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OwnerController;
@@ -13,7 +13,7 @@ use App\Http\Controllers\emailVerificationCodeController;
 use App\Models\PoliceStation;
 use App\Http\Controllers\Emails\SendMailController;
 use App\Http\Controllers\verificationCodeController;
-
+use App\Http\Controllers\Api\BidController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -25,8 +25,8 @@ use App\Http\Controllers\verificationCodeController;
 */
 
 Route::get('/', function () {
-    return view('home');
-})->name('home');
+        return view('home');
+    })->name('home');
 
 // User Routes
 Route::get('/users', [ApiController::class, 'index'])->name('users.store');
@@ -137,91 +137,85 @@ Route::post('/lost-objects/register', [LostObjectController::class, 'registerLos
 Route::get('/lost-objects', [LostObjectController::class, 'getAllLostObjects'])->name('lost-objects.get');
 Route::get('/lost-objects/{object}', [LostObjectController::class,'getLostObject'])->name('lost-object.get');
 Route::delete('lost-objects/{object}', [LostObjectController::class,'deleteLostObject'])->name('lost-object.delete');
-Route::get('/lost-objects/{object}/edit', [LostObjectController::class,'editLostObject'])->name('lost-object.edit');
-Route::put('/lost-objects/{object}', [LostObjectController::class,'upadteLostObject'])->name('lost-object.update');
+Route::get('/lost-objects/edit/{object}', [LostObjectController::class,'editLostObject'])->name('lost-object.edit');
+Route::put('/lost-objects/{object}', [LostObjectController::class,'updateLostObject'])->name('lost-object.update');
 
 Route::get('/found-objects', [foundObjectController::class, 'getAllFoundObjects'])->name('found-objects.get');
 Route::view('/found-objects/register-form', 'objects.foundobjectregister')->name('found-objects.register-form');
 Route::post('/found-objects/register', [foundObjectController::class, 'registerFoundObject'])->name('found-objects.register');
-Route::get('/found-objects/{object}', [foundObjectController::class,'getFoundObject'])->name('found-object.get');
+Route::get('/found-objects/{object}', [foundObjectController::class,'getFoundObject'])->name('found-object1.get');
 Route::post('found-objects/delete/{object}', [foundObjectController::class,'deleteFoundObject'])->name('found-object.delete');
 Route::post('found-objects/delete2/{object}', [foundObjectController::class,'deleteFoundObject2'])->name('found-object2.delete');
 Route::get('/found-objects/edit/{object}', [foundObjectController::class,'edit'])->name('found-object.edit');
 
 Route::get('/found-allObjects', [foundObjectController::class,'getall'])->name('found-allObject.get');
 
+Route::get('/found-search/{id}', [foundObjectController::class,'search'])->name('found-search');
+
+
 Route::get('/found-object/{object}', [foundObjectController::class,'getobject'])->name('found-object.get');
 Route::post('/found-objects/update/{object}', [foundObjectController::class,'update'])->name('found-object.update');
 Route::get('/search',function(){
     return view('objects.objectsearch');
 });
-Route::get('/search2',function(){
-    return view('objects.object-search');
-});
 
-// Login and Logout Routes
-Route::prefix('auth')->group(function () {
-    Route::get('/login', function () {
-        return view('login');
-    })->name('user.login-view');
-    Route::post('/login', [ApiController::class, 'login'])->name('user.login');
-    Route::get('/logout', [ApiController::class, 'logout'])->name('user.logout');
-    Route::get('/testeauth', function () {
-        return view('auth.testeauth');
-    });
-});
-
-// Registration Views
-Route::prefix('register')->group(function () {
-    Route::get('/chooseaccounttype', function () {
-        return view('register.chooseaccounttype');
-    });
-    Route::get('/success', function () {
-        return view('register.registerSuccess');
-    })->name('register.success');
-    Route::get('/stationsform', function () {
-        return view('register.stationsform');
-    });
-    Route::get('/usersform', function () {
-        return view('register.usersform');
-    });
-});
-
-// Object Routes
-Route::prefix('objects')->group(function () {
-    Route::view('/register-form', 'objects.objectregister')->name('objects.register-form');
-    Route::post('/register', [LostObjectController::class, 'registerLostObject'])->name('objects.register');
-    Route::get('/lost', [LostObjectController::class, 'getAllLostObjects'])->name('lost-objects.get');
-    Route::get('/lost/{object}', [LostObjectController::class, 'getLostObject'])->name('lost-object.get');
-    Route::delete('/lost/delete/{object}', [LostObjectController::class, 'deleteLostObject'])->name('lost-object.delete');
-    Route::get('/lost/{object}/edit', [LostObjectController::class, 'editLostObject'])->name('lost-object.edit');
-    Route::put('/lost/{object}', [LostObjectController::class, 'upadteLostObject'])->name('lost-object.update');
-    Route::get('/found', [foundObjectController::class, 'getAllFoundObjects'])->name('found-objects.get');
-    Route::get('/found/{object}', [foundObjectController::class, 'getFoundObject'])->name('found-object.get');
-    Route::delete('/found/delete/{object}', [foundObjectController::class, 'deleteFoundObject'])->name('found-object.delete');
-    Route::get('/search', function () {
-        return view('objects.objectsearch');
-    });
-    
-});
-Route::get('/statmap', function () {
+Route::get('/statmap',function(){
     return view('objectstatmap');
 });
+
+// Email routes
+Route::get('/send-mail', [SendMailController::class, 'sendWelcomeEmail']);
+Route::get('send-mail',[EmailController::class, 'sendWelcomeEmail']);
+Route::get('/verification-form', function () {
+    return view('mail-template.verificaemail');
+});
+Route::view('/novoemail', 'mail-template.novoemail')->name('novoemail');
+Route::view('/verificaemail', 'mail-template.verificaemail')->name('verificaemail');
+Route::get('/verify-email/{uuid}', [verificationCodeController::class, 'verifyEmail'])->name('verify-email');
+
+// Tokens views/routes
+Route::post('/generate-new-token/{uuid}', [verificationCodeController::class, 'geraNovoToken'])->name('generate-new-token');
+Route::view('/tokenexpirou/{uuid}', 'tokenexpirou')->name('tokenexpirou');
+
 // Auction views/routes
 Route::get('/auctions',[AuctionController::class,'viewAllAuctions'])->name('auctions.get');
+Route::get('/activeAuctions',[AuctionController::class,'viewAllActiveAuctions'])->name('activeAuctions.get');
 Route::get('/auctions/{auction}', [AuctionController::class,'viewAuction'])->name('auction.get');
+Route::view('auctions/{auction}/edit','objects.found-objects.edit-auction')->name('auction.edit');
+Route::put('/auctions/{auction}',[AuctionController::class,'editAuction'])->name('auction.update');
+Route::delete('/auctions/{auction}',[AuctionController::class,'deleteAuction'])->name('auction.delete');
+
+Route::view('/bidderAuction/{auctionId}', 'objects.found-objects.bidding-auction')->name('auction.userBidding');
+
+Route::post('/bidderAuction/{auctionId}',[BidController::class,'placeBid'])->name('auctions.bidding');
+
+Route::get('/signUpAuctions/{id}/{email}',[AuctionController::class,'signUpAuctions'])->name('auctions.signUp');
 
 Route::view('/usersauctions/{user}','objects.found-objects.watch-auctions')->name('user.auctions');
+
+Route::get('/userEditsAuctions/{id}', [AuctionController::class,'updateAuction'])->name('user.updateAuction');
 
 Route::view('/usersRegisterAuctions/{user}','objects.found-objects.auctions-register')->name('user.registerAuctions');
 Route::post('/RegisterAuctions', [AuctionController::class,'createAuction'])->name('auction.register');
 
 Route::get('/allobjects', [LostObjectController::class,'getAllObjects'])->name('allobjects.get');
 
+Route::get('/finalizeOrStartAuctions/{id}', [AuctionController::class,'finalizeorStartAuction'])->name('auctions.finalizeOrStart');
+
+Route::view('/viewAllAuctions','objects.found-objects.viewAll-auctions')->name('auctions.viewAll');
+
 Route::get('/compare/{foundObject}/{lostObject}', [LostObjectController::class,'getObjects'])->name('compare.objects');
 
 Route::post('/addowner/{foundObject}/{lostObject}', [LostObjectController::class,'add'])->name('addowner.objects');
+Route::post('/addowneruser/{foundObject}/{lostObject}', [LostObjectController::class,'adduser'])->name('adduser.objects');
+
 
 Route::get('/ownerobject/{foundObject}/' , [LostObjectController::class,'ownerbject'])->name('getowner.objects');
 Route::get('/notifyowner/{foundObject}/{lostObject}/{owner}/' , [LostObjectController::class,'notifyowner'])->name('notify.owner');
+Route::get('/removeowner/{foundObject}/{lostObject}/' , [LostObjectController::class,'removeOwner'])->name('remove.owner');
+
+Route::get('/finish/{id}' , [AuctionController::class,'finishauction'])->name('auction.finish');
+Route::get('/pay/{id}' , [AuctionController::class,'pay'])->name('auction.pay');
+Route::get('success' , [AuctionController::class,'success']);
+
 ?>

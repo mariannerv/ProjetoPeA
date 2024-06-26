@@ -5,10 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-    <title>Registar Objeto Perdido</title>
+    <title>Editar Objeto Perdido</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  
 </head>
 <body>
     <header>
@@ -25,7 +26,7 @@
                 <div class="row justify-content-center">
                     <div class="col-md-8">
                         <div class="card">
-                            <div class="card-header">Registar Objeto Perdido</div>
+                            <div class="card-header">Editar Objeto Perdido</div>
                             <div class="card-body">
                                 @if ($errors->any())
                         <div class="alert alert-danger">
@@ -37,9 +38,9 @@
                             </ul>
                         </div>
                     @endif
-                                <form class="row g-3 needs-validation" novalidate action="{{ route('lost-object.update', ['object' => $lostObject->_id]) }}" method="post">
+                                <form class="row g-3 needs-validation" novalidate action="{{ route('lost-object.update', ['object' => $lostObject->_id]) }}" enctype="multipart/form-data" method="post" >
                                     @csrf
-                                    @method('POST')
+                                    @method('PUT')
                                     <div class="col-6">
                                         <label for="description" class="form-label">Descrição</label>
                                         <input type="text" class="form-control" id="description" value="{{$lostObject->description}}" name="description"  required>
@@ -74,11 +75,22 @@
                                     </div>
                                     <div class="col-6">
                                         <label for="size" class="form-label">Localidade</label>
-                                        <input type="text" class="form-control" id="city" value="{{$lostObject->city}}" name="city" required>
+                                        <input type="text" class="form-control" id="location" value="{{$lostObject->location}}" name="location" required>
                                     </div>
+                                    <div class="col-6">
+                                        <label for="img" class="form-label">Imagem</label>
+                                        <input type="file" class="form-control" id="img" name="img" accept="image/*" onchange="previewImage(event)">
+                                        @if($lostObject->image)
+                                            <img id="currentImage" src="{{ asset('images/lost-objects-img/' . $lostObject->image) }}" style="max-width: 100%; margin-top: 10px;">
+                                        @else
+                                            <img id="currentImage" src="#" style="display:none; max-width: 100%; margin-top: 10px;">
+                                        @endif
+                                    </div>
+                                    
+                                    
                                     <input type="hidden" name="ownerEmail" value="{{ auth()->user()->email }}">
                                     <div class="col-12">
-                                        <button class="btn btn-primary" type="submit">Registar</button>
+                                        <button class="btn btn-primary" type="submit">Editar</button>
                                         <button class="btn btn-secondary" onclick="goBack()">Cancelar</button>
                                     </div>
                                 </form>
@@ -116,6 +128,17 @@
         function goBack() {
             window.history.back();
         }
+        function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = function() {
+       
+        const currentImageOutput = document.getElementById('currentImage');
+        currentImageOutput.src = reader.result;
+        currentImageOutput.style.display = 'block';
+    };
+    reader.readAsDataURL(event.target.files[0]);
+}
+
     </script>
     {{-- Validação formulário --}}
     <script>
@@ -136,30 +159,32 @@
     </script>
     {{-- Edição Objeto --}}
     <script>
-        $(document).ready(function() {
-            $('form').submit(function(event) {
-                // Prevent the default form submission
-                event.preventDefault();
-    
-                // Serialize form data
-                var formData = $(this).serialize();
-    
-                // Submit form data via AJAX
-                $.ajax({
-                    url: $(this).attr('action'),
-                    method: $(this).attr('method'),
-                    data: formData,
-                    dataType: 'json',
-                    success: function(response) {
-                        toastr.success(response.message, 'Success', { closeButton: true });
-                    },
-                    error: function(xhr, status, error) {
-                        console.error(xhr.responseText);
-                    }
-                });
+    $(document).ready(function() {
+        $('form').submit(function(event) {
+
+            event.preventDefault();
+
+
+            var formData = new FormData(this);
+
+
+            $.ajax({
+                url: $(this).attr('action'),
+                method: $(this).attr('method'),
+                data: formData,
+                processData: false, 
+                contentType: false, 
+                dataType: 'json',
+                success: function(response) {
+                    toastr.success(response.message, 'Success', { closeButton: true });
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
             });
         });
+    });
     </script>
     
 </body>
-</html>
+</html> 

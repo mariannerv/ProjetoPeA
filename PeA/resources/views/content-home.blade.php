@@ -75,7 +75,7 @@
           success: function(response) {
               let html = '';
               let counter = 0;
-              for (let i = 0; i < 6; i++) {
+              for (let i = 0; i < 5; i++) {
               const item = response.data[i];
               
               if (item.status === "Lost"){
@@ -100,7 +100,7 @@
                   // Add a horizontal line between each object
                   counter+=1
                   html += "</div>";
-                  if (response.data[i] == response.data[5] || response.data[i] == response.data[-1]){
+                  if (response.data[i] == response.data[4] || response.data[i] == response.data[-1]){
                     html += "<div class = 'col-4 align-self-center d-flex justify-content-center'>";
                     html += "<a class='btn btn-lg btn-outline-secondary' href={{ route('lost-objects.get') }}>Ver mais ></a>";
                     html += "</div>";
@@ -132,7 +132,7 @@
                     let html = '';
                     let counter = 0;
     
-                    for (let i = 0; i < 6; i++) {
+                    for (let i = 0; i < 5; i++) {
                         const item = response.data[i];
                         if (item) {
                             if (counter % 3 === 0 || counter === 0) {
@@ -155,7 +155,7 @@
                             counter += 1;
                             html += "</div>";
     
-                            if (i === 5 || i === response.data.length - 1) {
+                            if (i === 4 || i === response.data.length - 1) {
                                 html += "<div class='col-4 align-self-center d-flex justify-content-center'>";
                                 html += "<a class='btn btn-lg btn-outline-secondary' href='{{ route('lost-objects.get') }}'>Ver mais ></a>";
                                 html += "</div>";
@@ -182,7 +182,7 @@
           dataType: 'json',
           success: function(response) {
               let html = '';
-              for (let i = 0; i < 6; i++) {
+              for (let i = 0; i < 5; i++) {
                 const item = response.data[i];
                 if (item && item.status === "active"){
                 if (i+1 % 3 === 0 || i === 0){
@@ -195,7 +195,7 @@
                 html += "<p>Status: " + (item.status || "N/A") + "</p>";
                 html += "<a class='btn btn-secondary' href={{ route('auction.get', '') }}/" + item._id + ">Ver Leilao </a> "
                 html += "</div>";
-                if (i === 5 || i === response.data.length - 1) {
+                if (i === 4 || i === response.data.length - 1) {
                                 html += "<div class='col-4 align-self-center d-flex justify-content-center'>";
                                 html += "<a class='btn btn-lg btn-outline-secondary' href='{{ route('auctions.get') }}'>Ver mais ></a>";
                                 html += "</div>";
