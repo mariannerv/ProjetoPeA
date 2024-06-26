@@ -102,37 +102,38 @@
                             html += "<div class='row'>";
                         }
 
-                        html += "<div class='col-4 border'>";
-                        html += "<div class='row'>";
-                        html += "<div class='col'><br>";
-                        html += "<p>Categoria: " + item.category + "</p>";
-                        html += "</div>";
-                        html += "<div class='col-auto'>";
-                        html += "<button class='btn btn-danger' data-bs-toggle='modal' data-bs-target='#lostObject' onclick='setID(\"" + item._id + "\")'> \
-                                    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-trash2' viewBox='0 0 16 16'>\
-                                        <path d='M14 3a.7.7 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225A.7.7 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2M3.215 4.207l1.493 8.957a1 1 0 0 0 .986.836h4.612a1 1 0 0 0 .986-.836l1.493-8.957C11.69 4.689 9.954 5 8 5s-3.69-.311-4.785-.793'/>\
-                                    </svg>\
-                                </button>";
-                        html += "</div>";  
-                        html += "</div>";  
-                        html += "<p>Marca: " + item.brand + "</p>";
-                        html += "<p>Cor: " + item.color + "</p>";
-                        html += "<p>Data do desaparecimento: " + item.date_lost + "</p>";
-                        html += "<div class='row justify-content-end'>";
-                        html += "<div class='col-auto'>";
-                        html += "<a class='btn btn-secondary' href={{ route('lost-object.get', '') }}/" + item._id + ">Ver Objeto </a><br><br>";
-                        html += "</div>";
-                        html += "<div class='col-auto'>";
-                        html += "<a class='btn btn-secondary' href={{ route('lost-object.edit', '') }}/" + item._id + ">Editar Objeto </a><br><br>";
-                        html += "</div>";
-                        html += "</div>";
-
-                        let now = new Date();
-                        let createdDate = new Date(item.created_at);
-                        let oneHourAgo = new Date(now.getTime() - (60 * 60 * 1000));
-                        if (createdDate >= oneHourAgo) {
-                            html += "<div class='row'><div class='col text-center'><p>Criado recentemente!</p></div></div>";
-                        }
+                    html += "<div class='col-4 border'>";
+                    html += "<div class='row'>";
+                    html += "<div class='col'><br>";
+                    html += "<p>Categoria: " + item.category + "</p>";
+                    html += "</div>";
+                    html += "<div class='col-auto'>";
+                    html += "<button class='btn btn-danger' data-bs-toggle='modal' data-bs-target='#lostObject' onclick='setID(\"" + item._id + "\")'> \
+                                <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-trash2' viewBox='0 0 16 16'>\
+                                    <path d='M14 3a.7.7 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225A.7.7 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2M3.215 4.207l1.493 8.957a1 1 0 0 0 .986.836h4.612a1 1 0 0 0 .986-.836l1.493-8.957C11.69 4.689 9.954 5 8 5s-3.69-.311-4.785-.793'/>\
+                                </svg>\
+                            </button>";
+                    html += "</div>";  
+                    html += "</div>";  
+                    html += "<p>Marca: " + item.brand + "</p>";
+                    html += "<p>Cor: " + item.color + "</p>";
+                    html += "<p>Data do desaparecimento: " + item.date_lost + "</p>";
+                    html += "<div class='row justify-content-end'>";
+                    html += "<div class='col-auto'>";
+                    html += "<a class='btn btn-secondary' href={{ route('lost-object.get', '') }}/" + item._id + ">Ver Objeto </a><br><br>";
+                    html += "</div>";
+                    html += "<div class='col-auto'>";
+                    html += "<a class='btn btn-secondary' href={{ route('lost-object.edit', '') }}/" + item._id + ">Editar Objeto </a><br><br>";
+                    html += "<a class='btn btn-secondary' href={{ route('found-search', '') }}/" + item._id + ">procurar objeto </a><br><br>";
+                    html += "</div>";
+                    html += "</div>";
+                    
+                    let now = new Date();
+                    let createdDate = new Date(item.created_at);
+                    let oneHourAgo = new Date(now.getTime() - (60 * 60 * 1000));
+                    if (createdDate >= oneHourAgo) {
+                        html += "<div class='row'><div class='col text-center'><p>Criado recentemente!</p></div></div>";
+                    }
 
                         counter++;
                         html += "</div>";

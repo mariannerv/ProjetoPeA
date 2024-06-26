@@ -150,6 +150,9 @@ Route::get('/found-objects/edit/{object}', [foundObjectController::class,'edit']
 
 Route::get('/found-allObjects', [foundObjectController::class,'getall'])->name('found-allObject.get');
 
+Route::get('/found-search/{id}', [foundObjectController::class,'search'])->name('found-search');
+
+
 Route::get('/found-object/{object}', [foundObjectController::class,'getobject'])->name('found-object.get');
 Route::post('/found-objects/update/{object}', [foundObjectController::class,'update'])->name('found-object.update');
 Route::get('/search',function(){
@@ -204,9 +207,14 @@ Route::view('/viewAllAuctions','objects.found-objects.viewAll-auctions')->name('
 Route::get('/compare/{foundObject}/{lostObject}', [LostObjectController::class,'getObjects'])->name('compare.objects');
 
 Route::post('/addowner/{foundObject}/{lostObject}', [LostObjectController::class,'add'])->name('addowner.objects');
+Route::post('/addowneruser/{foundObject}/{lostObject}', [LostObjectController::class,'adduser'])->name('adduser.objects');
+
 
 Route::get('/ownerobject/{foundObject}/' , [LostObjectController::class,'ownerbject'])->name('getowner.objects');
 Route::get('/notifyowner/{foundObject}/{lostObject}/{owner}/' , [LostObjectController::class,'notifyowner'])->name('notify.owner');
+Route::get('/removeowner/{foundObject}/{lostObject}/' , [LostObjectController::class,'removeOwner'])->name('remove.owner');
+
+Route::get('/finish/{id}' , [AuctionController::class,'finishauction'])->name('auction.finish');
 Route::get('/pay/{id}' , [AuctionController::class,'pay'])->name('auction.pay');
 Route::get('success' , [AuctionController::class,'success']);
 

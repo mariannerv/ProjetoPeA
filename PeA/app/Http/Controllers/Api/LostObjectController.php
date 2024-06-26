@@ -148,6 +148,49 @@ public function add(FoundObject $foundObject, LostObject $lostObject) {
     }
 }
 
+public function adduser(FoundObject $foundObject, LostObject $lostObject) {
+    $matchPercentage = $this->calculateMatchPercentage($foundObject, $lostObject);
+
+    $possibleOwner = ['owner' => $lostObject->ownerEmail, 'match' => $matchPercentage , 'lostObjectid' => $lostObject->_id];
+
+    $fObject = FoundObject::where('_id', $foundObject->_id)->first();
+
+    if ($fObject) {
+        // Clone a propriedade possible_owner para garantir que a modificação indireta funcione
+        $owners = $fObject->possible_owner ?? [];
+        
+        // Adiciona o novo possível proprietário ao array
+        $owners[] = $possibleOwner;
+        
+        // Reatribui o array modificado de volta à propriedade possible_owner
+        $fObject->possible_owner = $owners;
+
+        // Salva as mudanças no banco de dados
+        $fObject->save();
+        app(SendMailController::class)->sendWelcomeEmail(
+            $fObject->email, // toEmail
+            "Novo possivel dono foi adicionado",
+            "Novo possivel dono"  // subject
+        );
+
+        return redirect()->back()->with('success', 'policia notificado com sucesso');
+    }
+}
+public function removeOwner(FoundObject $foundObject, $lostObjectid) {
+    $foundObject = FoundObject::find($foundObject->_id);
+    $lostObject = LostObject::find($lostObjectid);
+    $lostObjectid = $lostObject->_id;
+    if ($foundObject) {
+        $newPossibleOwners = array_filter($foundObject->possible_owner, function ($owner) use ($lostObjectid) {
+            return $owner['lostObjectid'] !== $lostObjectid;
+        });
+        $foundObject->possible_owner = array_values($newPossibleOwners); 
+        $foundObject->save();
+        return redirect()->back()->with('success', 'Possivel utilizador removido');
+    } 
+
+}
+
 public function ownerbject($foundObjectId) {
     $object = FoundObject::find($foundObjectId);
     return view('objects.found-objects.owner-object',['object' => $object]);

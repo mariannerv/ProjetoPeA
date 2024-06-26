@@ -1,5 +1,5 @@
 <?php
-if (!Auth::guard('police')->check()) {
+if (!Auth::guard('police')->check() && !auth()->check()) {
     header('Location: ' . route('home'));
     exit;
 }
@@ -27,11 +27,29 @@ if (!Auth::guard('police')->check()) {
   </head>
   <body>
     <header>
-      @include('components.navbar-police')
+        @if (auth()->check())
+        @include('components.navbar-guest')
+      @else
+        @include('components.navbar-police')
+      @endif 
   </header>
     <br><br>
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+  @endif
 
-    <h1>Estes objetos têm {{$compare}}% de match</h1>
+  @if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+    @endif
+    <h1>Estes objetos têm {{$compare}}% de semelhança</h1>
   <br>
     
     <div class="container border">
@@ -122,11 +140,29 @@ if (!Auth::guard('police')->check()) {
   <?php
   if ($id == False) {
   ?>
+ <?php
+      if (Auth::guard('police')->check()) {
+
+      
+ ?>
       <form method="POST" action="{{ route('addowner.objects', [$foundObjects, $lostObjects]) }}">
           @csrf
           <button class="btn btn-primary">adicionar possivel owner</button>
       </form>
-  <?php
+
+     <?php
+   
+    }
+    else {
+
+    
+?>
+       <form method="POST" action="{{ route('adduser.objects', [$foundObjects, $lostObjects]) }}">
+        @csrf
+        <button class="btn btn-primary">Notificar policia</button>
+    </form>
+<?php
+}
   }
   else {
     echo "<h3>Possivel dono $lostObjects->ownerEmail  já registrado</h3>";

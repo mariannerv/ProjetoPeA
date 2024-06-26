@@ -37,8 +37,7 @@ if (!(Auth::guard('police')->check() || auth()->check())) {
 
 
   <!-- Place the first <script> tag in your HTML's <head> -->
-    <script src="https://cdn.tiny.cloud/1/diocrckzg45y4evwpsvwrn8k0d6f8vtr7xgdx2qb612qb8w0/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
-
+    <script src="https://cdn.tiny.cloud/1/cswdpqfg5tf3v8hco6993ooeyvms55ox6lf39niax32kj52j/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
     <!-- Place the following <script> and <textarea> tags your HTML's <body> -->
       <script>
         tinymce.init({

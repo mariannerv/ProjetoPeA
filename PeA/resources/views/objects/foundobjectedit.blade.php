@@ -43,9 +43,9 @@ if (!Auth::guard('police')->check()) {
                                     {{ session('success') }}
                                 </div>
                               @endif
-                                <form class="row g-3 needs-validation" novalidate action="{{ route('found-object.update' , $object->_id) }}" method="post">
+                                <form class="row g-3 needs-validation" novalidate action="{{ route('found-object.update' , $object->_id) }}" enctype="multipart/form-data" method="post">
                                     @csrf
-                                    @method('POST')
+                                  
                                     <div class="col-md-6">
                                         <label for="category" class="form-label">Categoria</label>
                                         <input type="text" class="form-control" id="category" name="category" value="{{$object->category}}" required>
