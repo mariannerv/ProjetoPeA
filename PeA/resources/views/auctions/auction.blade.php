@@ -20,12 +20,15 @@
     <header>
       @if (auth()->check())
         @include('components.navbar')
+      @elseif (Auth::guard('police')->user())
+        @include('components.navbar-police')
       @else
         @include('components.navbar-guest')
       @endif 
       
     </header>
     <br><br>
+
     <div class="container border">
         <div class="row">
             <div class="col align-self-center" id="obj_img">
@@ -53,12 +56,25 @@
                 </div>
                 <div class="row">
                     <div class="col">
-                      @if((auth()->check()))
-                        @if (auth()->user()->policeStationId === $auction->policeStationId )
-                        <a class="btn btn-primary" href="{{ route('auction.edit', ['auction' => $auction->_id, 'auction' => $auction]) }}">Editar leilão</a>
-                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#lostObject" onclick="setID('<?php echo $auction->_id; ?>')">Eliminar leilão</button>
+                      @if(auth()->check() || Auth::guard('police')->check())
+                        @if (Auth::guard('police')->user()->policeStationId === $auction->policeStationId )
+                        @if ($auction->status === "deactive")
+                        <a class="btn btn-primary" href="{{ route('user.updateAuction', ['id' => $auction->_id]) }} ">Editar leilão</a>
+                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#auction" onclick="setID('<?php echo $auction->_id; ?>')">Eliminar leilão</button>
+                        <a class='btn btn-secondary' href="{{ route('auctions.finalizeOrStart', ['id' => $auction->_id]) }} ">Ativar Leilao </a>
                         @else
-                        <a class="btn btn-primary" href="{{ route("auction.userBidding", ['id' => $auction->_id,'email' => auth()->user()->email]) }}">Licitar</a> 
+                        <a class='btn btn-secondary' href="{{ route('auctions.finalizeOrStart', ['id' => $auction->_id]) }}">Desativar Leilao </a>
+                        <button class="btn btn-outline-danger">Terminar leilão</button>
+                        @endif
+                        @elseif(Auth::guard('police')->check())
+                        @if ($auction->status === "deactive")
+                        <a class='btn btn-secondary' href="{{ route('auctions.finalizeOrStart', ['id' => $auction->_id]) }} ">Ativar Leilao </a>
+                        @else
+                        <a class='btn btn-secondary' href="{{ route('auctions.finalizeOrStart', ['id' => $auction->_id]) }}">Desativar Leilao </a>
+                        <button class="btn btn-outline-danger">Terminar leilão</button>
+                        @endif
+                        @else
+                        <a class="btn btn-primary" href="{{ route("auction.userBidding", ['auctionId' => $auction->auctionId]) }}">Licitar</a> 
                         @endif
                       @endif
                         {{-- Este botão vai servir como notificação de possivel dono --}}
@@ -68,7 +84,7 @@
         </div>
         <br>
     </div>
-    @include('components.modal-lost-object-delete')
+    @include('components.modal-delete-auction')
     @include('components.footer')
     <script 
       src="https://code.jquery.com/jquery-3.6.0.min.js" 
@@ -88,9 +104,9 @@
     {{-- Inserir ID --}}
     <script>
       function setID(id){
-        $("#lostObjectIdInput").val(id);
-        var formAction = "{{ route('lost-object.delete', '') }}/" + $('#lostObjectIdInput').val();
-        $('#deleteObject').attr('action', formAction);
+        $("#auctionIdInput").val(id);
+        var formAction = "{{ route('auction.delete', '') }}/" + $('#auctionIdInput').val();
+        $('#deleteAuction').attr('action', formAction);
       } 
     </script>
     {{-- Apagar objeto --}}
@@ -102,7 +118,7 @@
       
               // Serialize form data
               var formData = $(this).serialize();
-      
+              
               // Submit form data via AJAX
               $.ajax({
                   url: $(this).attr('action'),
@@ -110,18 +126,19 @@
                   data: formData,
                   dataType: 'json',
                   success: function(response) {
-                      $('#lostObject').modal('hide');
+                      $('#auction').modal('hide');
                       toastr.success(response.message, 'Success', { closeButton: true });
-      
                       // Navigate back to the previous page
                       // window.history.back();
                       // setTimeout(function() {
                       //   window.location.reload();
                       // }, 1000);
-                      window.location.href = document.referrer;
+
+                      window.location.href = "{{ route('auctions.viewAll') }}";
                   },
                   error: function(xhr, status, error) {
-                      console.error(xhr.responseText);
+                    toastr.error('Erro ao eliminar leilão.', 'Erro', { closeButton: true });
+                    console.error(xhr.responseText);
                   }
               });
           });

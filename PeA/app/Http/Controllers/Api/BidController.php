@@ -27,19 +27,12 @@ public function placeBid(Request $request)
     $currentHightestBidder = null;
 
     if (!$auction) {
-        return response()->json([
-            "status" => false,
-            "message" => "Leilão não encontrado.",
-            "code" => 404,
-        ]);
+        return redirect()->back()->withErrors(['Leilão' => 'Leilão não existe.']);
     }
 
     if ($auction->status === 'deactive') {
-        return response()->json([
-            "status" => false,
-            "message" => "Este leilão já terminou.",
-            "code" => 403,
-        ]);
+        return redirect()->back()->withErrors(['Leilão' => 'Leilão já acabou.']);
+
     }
 
     $currentHighestBidderEmail = $auction->highestBidderId;
@@ -55,11 +48,7 @@ public function placeBid(Request $request)
 
     $newBidAmount = $request->amount;
     if ($auction->highestBid >= $newBidAmount) {
-        return response()->json([
-            "status" => false,
-            "message" => "O valor da licitação deve ser superior ao valor mais alto atual.",
-            "code" => 422, 
-        ]);
+        return redirect()->back()->withErrors(['Leilão' => 'O valor da licitação deve ser superior ao valor mais alto atual.']);
     }
 
 
@@ -77,14 +66,11 @@ public function placeBid(Request $request)
             $user->push('bid_history', $bid->bidId);
             $user->save();
         } else {
-            return response()->json([
-                "status" => false,
-                "code" => 404,
-                "message" => "Utilizador não encontrado.",
-            ], 404);
+            return redirect()->back()->withErrors(['Utilizador' => 'Utilizador não existe']);
+
         }
 
-    if ($bid && $currentHightestBidder != null) {
+    if ($bid && $auction->highestBidderId != null) {
         
         
         $bidDate = date("Y-m-d H:i:s");
@@ -108,13 +94,10 @@ public function placeBid(Request $request)
             "ID do leilão: " . $auction->auctionId,
             "Data de fim: " . $auction->end_date,
         );
+        return view('auctions.auction', ['auction'=>$auction]);
     }
 
-    return response()->json([
-        "status" => true,
-        "message" => "Licitação lançada com sucesso.",
-        "code" => 200, 
-    ]);
+
 }
 
 }

@@ -178,12 +178,11 @@ Route::view('/tokenexpirou/{uuid}', 'tokenexpirou')->name('tokenexpirou');
 Route::get('/auctions',[AuctionController::class,'viewAllAuctions'])->name('auctions.get');
 Route::get('/activeAuctions',[AuctionController::class,'viewAllActiveAuctions'])->name('activeAuctions.get');
 Route::get('/auctions/{auction}', [AuctionController::class,'viewAuction'])->name('auction.get');
+Route::view('auctions/{auction}/edit','objects.found-objects.edit-auction')->name('auction.edit');
+Route::put('/auctions/{auction}',[AuctionController::class,'editAuction'])->name('auction.update');
+Route::delete('/auctions/{auction}',[AuctionController::class,'deleteAuction'])->name('auction.delete');
 
-Route::post('/editAuctions/{id}',[AuctionController::class,'editAuction'])->name('auctions.edit');
-
-Route::get('/deleteAuctions/{id}',[AuctionController::class,'deleteAuction'])->name('auctions.delete');
-
-Route::view('/bidderAuction/{id}', 'objects.found-objects.bidding-auction')->name('auction.userBidding');
+Route::view('/bidderAuction/{auctionId}', 'objects.found-objects.bidding-auction')->name('auction.userBidding');
 
 Route::post('/Bidding/{id}',[BidController::class,'placeBid'])->name('auctions.bidding');
 

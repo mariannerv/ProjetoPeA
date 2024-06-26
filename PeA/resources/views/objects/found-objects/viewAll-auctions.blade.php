@@ -122,17 +122,17 @@
               html += "<p>Acaba em: " + item.end_date + "</p>";
               html += "<p>Status: " + item.status + "</p>";
               html += "<p>Estacao: " + item.policeStationId + "</p>";
-              html += "<a class='btn btn-secondary' href={{ route('auction.get', '') }}/" + item._id + ">Ver Leilao </a> "
+              html += "<a class='btn btn-secondary' href={{ route('auction.get', '') }}/" + item._id + ">Ver Leilao </a> ";
               if (item.status == "active") {
-                html += "<a class='btn btn-secondary' href={{ route('auctions.finalizeOrStart', '') }}/" + item._id + ">Desativar Leilao </a> "
+                html += "<a class='btn btn-secondary' href={{ route('auctions.finalizeOrStart', '') }}/" + item._id + ">Desativar Leilao </a> ";
               }
               if(item.status == "deactive" && item.policeStationId != '{{Auth::guard('police')->user()->policeStationId}}') {
-                html += "<a class='btn btn-secondary' href={{ route('auctions.finalizeOrStart', '') }}/" + item._id + ">Ativar Leilao </a> "
+                html += "<a class='btn btn-secondary' href={{ route('auctions.finalizeOrStart', '') }}/" + item._id + ">Ativar Leilao </a> ";
               }
               if (item.status == "deactive" && item.policeStationId == '{{Auth::guard('police')->user()->policeStationId}}') {
-                html += "<a class='btn btn-secondary' href={{ route('auctions.finalizeOrStart', '') }}/" + item._id + ">Ativar Leilao </a> "
-                html += "<a class='btn btn-secondary' href={{ route('user.updateAuction', '') }}/" + item._id + ">Editar Leilao </a> "
-                html += "<a class='btn btn-secondary' href={{ route('auctions.delete', '') }}/" + item._id + ">Remover Leilao </a> "
+                html += "<a class='btn btn-secondary' href={{ route('auctions.finalizeOrStart', '') }}/" + item._id + ">Ativar Leilao </a> ";
+                html += "<a class='btn btn-secondary' href={{ route('user.updateAuction', '') }}/" + item._id + ">Editar Leilao </a> ";
+                html += "<a class='btn btn-secondary' href={{ route('auction.delete', '') }}/" + item._id + ">Remover Leilao </a> ";
               }
               
               if (i+1 % 3 === 0){

@@ -77,11 +77,7 @@ class AuctionController extends Controller
                 'pay' => false
             ]);
 
-            return response()->json([
-                "status" => true,
-                "message" => "Leilão criado com sucesso",
-                "code" => "200",
-            ]);
+            return redirect()->back();
         } catch (ValidationException $e) {
             return response()->json([
                 "status" => false,
@@ -161,27 +157,27 @@ public function editAuction(Request $request, $id){
             $auctionId = $id;
             $auction = Auction::where('_id', $auctionId)->first();
 
-        if ($auction) {
-            $auction->delete();
-            return response()->json([
-                "status" => true,
-                "message" => "Leilão apagado com sucesso.",
-                "code" => "200",
-            ]);
-        } else {
+            if (!$auction) {
+                return response()->json([
+                    "status" => false,
+                    "message" => "Leilão não encontrado.",
+                    "code" => "404",
+                ], 404);
+            }
+                $auction->delete();
+                return response()->json([
+                    "status" => true,
+                    "message" => "Leilão eliminado.",
+                    "code" => "200",
+                ], 200);
+            
+        } catch (\Exception $e) {
             return response()->json([
                 "status" => false,
-                "message" => "Leilão não encontrado.",
-                "code" => "404",
-            ], 404);
+                "message" => "Oops! Algo correu mal ao tentar apagar o leilão.",
+                "code" => "500",
+            ], 500);
         }
-    } catch (\Exception $e) {
-        return response()->json([
-            "status" => false,
-            "message" => "Oops! Algo correu mal ao tentar apagar o leilão.",
-            "code" => "500",
-        ], 500);
-    }
     }
 
   public function bidHistory(Request $request){
@@ -261,20 +257,11 @@ public function editAuction(Request $request, $id){
             if ($auction->status == 'active') {
                 $auction->status = 'deactive';
                 $auction->save();
-                return response()->json([
-                    "status" => true,
-                    "code" => 200,
-                    "message" => "Leilão atualizado com sucesso1.",
-                ]);
-            }
+                return redirect()->route('auction.get',['auction'=>$auction]);            }
             if ($auction->status == 'deactive') {
                 $auction->status = 'active';
                 $auction->save();
-                return response()->json([
-                    "status" => true,
-                    "code" => 200,
-                    "message" => "Leilão atualizado com sucesso2.",
-                ]);
+                return redirect()->route('auction.get',['auction'=>$auction]);
             }
             
         } catch (ValidationException $e) {
@@ -373,6 +360,8 @@ public function success(Request $request) {
     }
 
     }
+
+    
   
 
 }
