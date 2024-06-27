@@ -71,3 +71,16 @@ Os atores que interagem com o sistema são:
 • RFN-21	Testes de aceitação com a API			
 • RFN-22	Testes de carga			
 • RFN-23	Testes de vulnerabilidades			
+
+# Informações extra
+
+Este projeto foi desenvolvido com:
+
+### PHP 8.2
+### Laravel 10
+### Bootstrap
+### MongoDB
+### Apache2
+### TomTom API
+### Paypal API
+
