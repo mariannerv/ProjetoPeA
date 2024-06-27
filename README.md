@@ -83,4 +83,4 @@ Este projeto foi desenvolvido com:
 ### [Apache2](https://httpd.apache.org)
 ### [TomTom API](https://developer.tomtom.com)
 ### [Paypal API](https://developer.paypal.com/api/rest/)
-
+### [GoogleCloud](https://cloud.google.com/gcp?utm_source=google&utm_medium=cpc&utm_campaign=emea-pt-all-pt-bkws-all-all-trial-e-gcp-1707574&utm_content=text-ad-none-any-DEV_c-CRE_495030366446-ADGP_Hybrid+%7C+BKWS+-+EXA+%7C+Txt+-+GCP+-+General+-+v2-KWID_43700060393215938-kwd-6458750523-userloc_20874&utm_term=KW_google+cloud-NET_g-PLAC_&&gad_source=1&gclid=CjwKCAjwm_SzBhAsEiwAXE2Cv9vhlpOTOspbiT1vDHUS_EL0FHyo_r5VjUZRgX8ostTeakcHXm3eqhoC1LsQAvD_BwE&gclsrc=aw.ds&hl=en)
