@@ -207,9 +207,11 @@ Route::get('/statmap', function () {
 });
 // Auction views/routes
 Route::get('/auctions',[AuctionController::class,'viewAllAuctions'])->name('auctions.get');
-Route::get('/auctions/{auction}', [AuctionController::class,'viewAuction'])->name('auction.get');
+Route::get('/auctions/active', [AuctionController::class,'viewAllActiveAuctions'])->name('activeAuctions.get');
 
+Route::get('/auctions/{auction}', [AuctionController::class,'viewAuction'])->name('auction.get');
 Route::view('/usersauctions/{user}','objects.found-objects.watch-auctions')->name('user.auctions');
+Route::view('/auctions/pay/{id}',[AuctionController::class,'pay'])->name('auction.pay');
 
 Route::get('/allobjects', [LostObjectController::class,'getAllObjects'])->name('allobjects.get');
 
@@ -221,5 +223,6 @@ Route::get('/ownerobject/{foundObject}/' , [LostObjectController::class,'ownerbj
 Route::get('/notifyowner/{foundObject}/{lostObject}/{owner}/' , [LostObjectController::class,'notifyowner'])->name('notify.owner');
 //auction history
 Route::get('/auctions/{auction}/history',[AuctionController::class , 'viewAuctionHistory'])->name("auction.history.get");
+
 ?>
 

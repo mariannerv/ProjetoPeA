@@ -71,17 +71,17 @@
           </div> 
         <div class="col-md-auto">
           <div class="text-center">
-            <a role="button" href="https://projetopea.eu/chooseaccounttype" class="btn btn-primary btn-lg btn-block mb-3">Criar nova conta de utilizador</a>
+            <a role="button" href="http://localhost:8000chooseaccounttype" class="btn btn-primary btn-lg btn-block mb-3">Criar nova conta de utilizador</a>
           </div>
         </div>
         <div class="col-md-auto">
           <div class="text-center">
-            <a role="button" href="https://projetopea.eu/login" class="btn btn-secondary btn-lg btn-block mb-3">Iniciar sessão como utilizador</a>
+            <a role="button" href="http://localhost:8000/login" class="btn btn-secondary btn-lg btn-block mb-3">Iniciar sessão como utilizador</a>
           </div>
         </div>
         <div class="col-md-auto">
           <div class="text-center">
-            <a role="button" href="https://projetopea.eu/loginpolice" class="btn btn-secondary btn-lg btn-block mb-3">Iniciar sessão como policia</a>
+            <a role="button" href="http://localhost:8000/loginpolice" class="btn btn-secondary btn-lg btn-block mb-3">Iniciar sessão como policia</a>
           </div>
         </div>
       </div>

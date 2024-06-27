@@ -34,20 +34,20 @@
             <div class="container mt-5">
               <div class="row justify-content-center d-flex align-content-stretch flex-wrap">
                 <div class="col-md-4 col-sm-4 col-4 ">
-                  <a href="https://projetopea.eu/usersform" class="btn btn-secondary" role="button">
+                  <a href="http://localhost:8000/usersform" class="btn btn-secondary" role="button">
                     <img src="images/Sample_User_Icon.png" height="100%" class="img-fluid"  alt="User icon">
                     Utilizador / Licitador
                   </a>
                 </div>
                 <div class="col-md-4 col-sm-4 col-4 ">
-                  <a href="https://projetopea.eu/policesform" class="btn btn-secondary" role="button">
+                  <a href="http://localhost:8000/policesform" class="btn btn-secondary" role="button">
                     <img src="images/pngtree-police-silhouette-character-icon-design-png-image_6224403.png" height="100%" class="img-fluid"  alt="Police officer icon">
                     Polícia 
 
                   </a>
                 </div>
                 <div class="col-md-4 col-sm-4 col-4 ">
-                  <a href="https://projetopea.eu/stationsform" class="btn btn-secondary" role="button">
+                  <a href="http://localhost:8000/stationsform" class="btn btn-secondary" role="button">
                     <img src="/images/89046.png" height="100%" class="img-fluid"  alt="Police station icon">
                     Estação de Polícia 
                   </a>
