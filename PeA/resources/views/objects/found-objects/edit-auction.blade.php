@@ -61,7 +61,7 @@ if (!Auth::guard('police')->check()) {
                                         </div>
                                     </div>
                                     <div class="col-12">
-                                        <button class="btn btn-primary" type="submit">Registar</button>
+                                        <button class="btn btn-primary" type="submit">Editar</button>
                                         <button class="btn btn-secondary" onclick="goBack()">Cancelar</button>
                                     </div>
                                 </form>

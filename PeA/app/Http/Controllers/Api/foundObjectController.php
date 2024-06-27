@@ -91,14 +91,11 @@ class FoundObjectController extends Controller
     }
 }
 
-    public function getFoundObject(Request $request)
+    public function getFoundObject($objectId)
     {
         try {
-            $request->validate([
-                'objectId' => 'required|string',
-            ]);
 
-            $object = FoundObject::where('objectId', $request->objectId)->first();
+            $object = FoundObject::where('objectId', $objectId)->first();
 
             if ($object) {
                 return response()->json([
@@ -232,7 +229,7 @@ class FoundObjectController extends Controller
     public function getAllFoundObjects()
     {
         try {
-            $foundObjects = FoundObject::all();
+            $foundObjects = FoundObject::orderBy('created_at', 'desc')->get();
 
             return response()->json([
                 "status" => true,

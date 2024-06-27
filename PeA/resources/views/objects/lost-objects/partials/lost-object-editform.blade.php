@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-    <title>Registar Objeto Perdido</title>
+    <title>Editar Objeto Perdido</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
@@ -26,7 +26,7 @@
                 <div class="row justify-content-center">
                     <div class="col-md-8">
                         <div class="card">
-                            <div class="card-header">Registar Objeto Perdido</div>
+                            <div class="card-header">Editar Objeto Perdido</div>
                             <div class="card-body">
                                 @if ($errors->any())
                         <div class="alert alert-danger">
@@ -38,7 +38,7 @@
                             </ul>
                         </div>
                     @endif
-                                <form class="row g-3 needs-validation" novalidate action="{{ route('lost-object.update', ['object' => $lostObject->_id]) }}" method="post" enctype="multipart/form-data">
+                                <form class="row g-3 needs-validation" novalidate action="{{ route('lost-object.update', ['object' => $lostObject->_id]) }}" enctype="multipart/form-data" method="post" >
                                     @csrf
                                     @method('PUT')
                                     <div class="col-6">
@@ -90,7 +90,7 @@
                                     
                                     <input type="hidden" name="ownerEmail" value="{{ auth()->user()->email }}">
                                     <div class="col-12">
-                                        <button class="btn btn-primary" type="submit">Registar</button>
+                                        <button class="btn btn-primary" type="submit">Editar</button>
                                         <button class="btn btn-secondary" onclick="goBack()">Cancelar</button>
                                     </div>
                                 </form>
@@ -159,15 +159,15 @@
     </script>
     {{-- Edição Objeto --}}
     <script>
-      $(document).ready(function() {
+    $(document).ready(function() {
         $('form').submit(function(event) {
-          
+
             event.preventDefault();
 
-           
+
             var formData = new FormData(this);
 
-            
+
             $.ajax({
                 url: $(this).attr('action'),
                 method: $(this).attr('method'),
