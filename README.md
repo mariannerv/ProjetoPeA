@@ -76,11 +76,11 @@ Os atores que interagem com o sistema são:
 
 Este projeto foi desenvolvido com:
 
-### PHP 8.2   
-### Laravel 10  
-### Bootstrap  
-### MongoDB  
-### Apache2  
-### TomTom API  
-### Paypal API  
+### PHP 8.2   [a link](https://www.php.net/releases/8.2/en.php)
+### Laravel 10  [a link](https://laravel.com/docs/10.x/releases)
+### Bootstrap  [a link](https://getbootstrap.com)
+### MongoDB  [a link](https://www.mongodb.com)
+### Apache2  [a link](https://httpd.apache.org)
+### TomTom API  [a link](https://developer.tomtom.com)
+### Paypal API  [a link](https://developer.paypal.com/api/rest/)
 
