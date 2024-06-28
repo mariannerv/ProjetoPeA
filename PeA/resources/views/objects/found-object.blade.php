@@ -51,7 +51,9 @@ if (!Auth::guard('police')->check()) {
     <div class="container border">
         <div class="row">
             <div class="col align-self-center">
-                <img src="../images/Missing-image.png" alt="image representing there is no image" class="img-fluid">
+                <img src="{{ asset('images/found-objects-img/' . $object->image) }}" alt="image representing there is no image" class="img-fluid">
+
+
             </div>
             <div class="col">
                 <div class="row">
@@ -103,6 +105,7 @@ if (!Auth::guard('police')->check()) {
                       <th>Match</th>
                       <th>Ver detalhes</th>
                       <th>Notificar</th>
+                      <th>Remover</th>
                       
                   </tr>
               </thead>
@@ -112,9 +115,12 @@ if (!Auth::guard('police')->check()) {
                       <!-- Acesse os atributos do objeto diretamente -->
                       <td>{{ $owner['owner'] ?? '' }}</td>
                       <td>{{ $owner['match'] ?? '' }}%</td>
-                      <td><a href="{{route('compare.objects' , [$object->_id , $owner['lostObjectid']])}}"><button class="btn btn-primary" >Ver detalhes</button></a></td>
-                      <td><a href="{{route('notify.owner' , [$object ,$owner['lostObjectid'], $owner['owner']])}}"><button class="btn btn-primary" >Notificar</button></a></td>
-                     
+                      <td><a href="{{route('compare.objects' , [$object->_id , $owner['lostObjectid']  ?? '' ])}}"><button class="btn btn-primary" >Ver detalhes</button></a></td>
+                      <td><a href="{{route('notify.owner' , [$object ,$owner['lostObjectid'] ?? '' , $owner['owner']])}}"><button class="btn btn-primary" >Notificar</button></a></td>
+                    <td>  <form method="get" action="{{ route('remove.owner' , [$object ,$owner['lostObjectid'] ?? ''])}}" id="form-desactive-{{ $owner['lostObjectid']  }}" style="display: inline;">
+                        @csrf
+                        <button class="btn btn-danger"  type="button" onclick="confirmDeactivationuser('{{$owner['lostObjectid'] }}')">remover</button>               
+                    </form></td>
                   </tr>
                   @endforeach
               </tbody>
@@ -156,22 +162,22 @@ if (!Auth::guard('police')->check()) {
 
             swalWithBootstrapButtons.fire({
                 title: "Tem a certeza?",
-                text: "Voce tem a certeza que quer destivar esta conta?",
+                text: "Voce quer remover este objeto?",
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonText: "Sim, destivar",
+                confirmButtonText: "Sim, remover",
                 cancelButtonText: "Não, cancelar!",
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
                     swalWithBootstrapButtons.fire({
                         title: "Destivado!",
-                        text: "Utilizador destivado.",
+                        text: "objeto removido.",
                         icon: "success"
                     });
                     setTimeout(() => {
                         document.getElementById('form-desactive-' + userId).submit();
-                    }, 3000); // Delay of 5 seconds
+                    }, 1000); // Delay of 5 seconds
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
                     swalWithBootstrapButtons.fire({
                         title: "Cancelado!",
@@ -182,6 +188,42 @@ if (!Auth::guard('police')->check()) {
             });
         }
 
+        function confirmDeactivationuser(userId) {
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: "btn btn-success",
+                    cancelButton: "btn btn-danger"
+                },
+                buttonsStyling: false
+            });
+
+            swalWithBootstrapButtons.fire({
+                title: "Tem a certeza?",
+                text: "Voce quer remver este utilizador?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sim, remover",
+                cancelButtonText: "Não, cancelar!",
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    swalWithBootstrapButtons.fire({
+                        title: "Destivado!",
+                        text: "Utilizador removido.",
+                        icon: "success"
+                    });
+                    setTimeout(() => {
+                        document.getElementById('form-desactive-' + userId).submit();
+                    }, 1000); // Delay of 5 seconds
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    swalWithBootstrapButtons.fire({
+                        title: "Cancelado!",
+                        text: "Operação destivada.",
+                        icon: "error"
+                    });
+                }
+            });
+        }
 
 
     </script>

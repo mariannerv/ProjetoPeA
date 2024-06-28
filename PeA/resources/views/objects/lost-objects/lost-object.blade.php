@@ -5,11 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-    @if (auth()->check())
-    <title>{{auth()->user()->name}}</title>
-    @else
-    <title>Sem acesso</title>
-    @endif
+   
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -33,7 +29,7 @@
     <div class="container border">
         <div class="row">
             <div class="col align-self-center">
-                <img src="../images/Missing-image.png" alt="image representing there is no image" class="img-fluid">
+                <img src="{{ asset('images/lost-objects-img/' . $object->image) }}" alt="image representing there is no image" class="img-fluid">
             </div>
             <div class="col">
                 <div class="row">
@@ -65,11 +61,13 @@
                 </div>
                 <div class="row">
                     <div class="col">
+                      @if((auth()->check()))
                         @if (auth()->user()->email === $object->ownerEmail )
                         <a class="btn btn-primary" href="{{ route('lost-object.edit', ['object' => $object->_id, 'lostObject' => $object]) }}">Editar objeto</a>
                         <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#lostObject" onclick="setID('<?php echo $object->_id; ?>')">Eliminar objeto</button>
                         @else
                         <button class="btn btn-primary">Encontrei</button> 
+                        @endif
                         @endif
                         {{-- Este botão vai servir como notificação de possivel dono --}}
                     </div>

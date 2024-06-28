@@ -152,6 +152,7 @@
         <!-- Auctions will be loaded here -->
     </div>
 </div>
+<div id="purchasedItemsContainer" class="mt-3"></div>
 </div>
 </div>
 </div>
@@ -293,11 +294,7 @@
         }
         $('#lost_objects').html(html); // Insert the generated HTML into the DOM
     }
-  </script>
-
-      {{-- Objetos perdidos com filtro --}}
-      <script>
-        let allObjects = [];
+  
     
         // Fetch data once when the page loads
         $.ajax({
@@ -389,37 +386,101 @@
     
     {{-- Leilões --}}
     <script>
-      $.ajax({
+      $(document).ready(function() {
+    // Fetch auctions and display them
+    $.ajax({
         url: '{{ route("auctions.get") }}',
         method: 'GET',
         dataType: 'json',
         success: function(response) {
             let html = '';
             for (let i = 0; i < response.data.length; i++) {
-              const item = response.data[i];
-              // if ( item.ownerEmail === {{auth()->user()->email}}){
-              if (i+1 % 3 === 0 || i === 0){
-              html += "<div class = 'row'>";
-              }
-              html += "<div class = 'col-4 border'>";
-              html += "<p>Objeto: " + item.objectId + "</p>";
-              html += "<p>Licitação mais alta: " + item.highestBid + "</p>";
-              html += "<p>Acaba em: " + item.end_date + "</p>";
-              html += "<p>Status: " + item.status + "</p>";
-              html += "<a class='btn btn-secondary' href={{ route('auction.get', '') }}/" + item._id + ">Ver Leilao </a> "
-              if (i+1 % 3 === 0){
-              html += "</div>";
-              }
-              html += "</div>"; // Add a horizontal line between each object
-          }
-            $('#auctions').html(html); // Insert the generated HTML into the DOM
+                const item = response.data[i];
+                if (i % 3 === 0) {
+                    html += "<div class='row'>";
+                }
+                html += "<div class='col-4 border'>";
+                html += "<p>Objeto: " + item.objectId + "</p>";
+                html += "<p>Licitação mais alta: " + item.highestBid + "</p>";
+                html += "<p>Acaba em: " + item.end_date + "</p>";
+                html += "<p>Status: " + item.status + "</p>";
+                html += "<a class='btn btn-secondary' href='{{ route('auction.get', '') }}/" + item._id + "'>Ver Leilao</a>";
+                html += "</div>";
+                if (i % 3 === 2 || i === response.data.length - 1) {
+                    html += "</div>";
+                }
+            }
+            $('#auctions').html(html);
         },
         error: function(xhr, status, error) {
             console.error(xhr.responseText);
         }
-     });
+    });
 
+    // Fetch purchased items and display them in a dropdown
+    $.ajax({
+        url: '{{ route("activeAuctions.get") }}',
+        method: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            let purchasedItems = [];
+            var userEmail = "{{ auth()->user()->email }}";
+            for (let i = 0; i < response.data.length; i++) {
+                const item = response.data[i];
+                if (item.highestBidderId === userEmail && item.pay === true) {
+                    purchasedItems.push(item);
+                }
+            }
+            displayPurchasedItems(purchasedItems);
+        },
+        error: function(xhr, status, error) {
+            console.error(xhr.responseText);
+        }
+    });
 
+    function displayPurchasedItems(items) {
+        let html = '<div class="dropdown">';
+        html += '<button class="btn btn-secondary dropdown-toggle" type="button" id="purchasedItemsDropdown" data-bs-toggle="dropdown" aria-expanded="false">';
+        html += 'Items comprados: ' + items.length;
+        html += '</button>';
+        html += '<ul class="dropdown-menu" aria-labelledby="purchasedItemsDropdown">';
+        if (items.length > 0) {
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                html += '<li><a class="dropdown-item" href="{{ route('auction.get', '') }}/' + item._id + '">';
+                html += 'Objeto: ' + item.objectId + ' - Licitação mais alta: ' + item.highestBid;
+                html += '</a></li>';
+            }
+        } else {
+            html += '<li><span class="dropdown-item">Nenhuns items comprados</span></li>';
+        }
+        html += '</ul>';
+        html += '</div>';
+        $('#purchasedItemsContainer').html(html);
+    }
+
+    // Function to show bid history
+    function showBidHistory(auctionId) {
+        $.ajax({
+            url: '{{ route("auction.history.get", "") }}/' + auctionId,
+            method: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                let html = '<ul class="list-group">';
+                response.bids_list.sort((a, b) => new Date(b.date) - new Date(a.date));
+                response.bids_list.forEach(bid => {
+                    html += `<li class="list-group-item">Licitação: ${bid.amount} - Data: ${new Date(bid.date).toLocaleString()}</li>`;
+                });
+                html += '</ul>';
+                $('#bidHistoryContent').html(html);
+                $('#bidHistoryModal').modal('show');
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+});
 
      function showBidHistory(auctionId) {
         $.ajax({

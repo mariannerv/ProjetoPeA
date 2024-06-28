@@ -24,22 +24,14 @@ public function placeBid(Request $request)
 {
     $auctionId = $request->auctionId;
     $auction = Auction::where('auctionId', $auctionId)->first();
-    $currentHightestBidder = null;
 
     if (!$auction) {
-        return response()->json([
-            "status" => false,
-            "message" => "Leilão não encontrado.",
-            "code" => 404,
-        ]);
+        return redirect()->back()->withErrors(['Leilão' => 'Leilão não existe.']);
     }
 
-    if ($auction->status === 'finished') {
-        return response()->json([
-            "status" => false,
-            "message" => "Este leilão já terminou.",
-            "code" => 403,
-        ]);
+    if ($auction->status === 'deactive') {
+        return redirect()->back()->withErrors(['Leilão' => 'Leilão já acabou.']);
+
     }
 
     $currentHighestBidderEmail = $auction->highestBidderId;
@@ -55,11 +47,7 @@ public function placeBid(Request $request)
 
     $newBidAmount = $request->amount;
     if ($auction->highestBid >= $newBidAmount) {
-        return response()->json([
-            "status" => false,
-            "message" => "O valor da licitação deve ser superior ao valor mais alto atual.",
-            "code" => 422, 
-        ]);
+        return redirect()->back()->withErrors(['Leilão' => 'O valor da licitação deve ser superior ao valor mais alto atual.']);
     }
 
 
@@ -77,24 +65,17 @@ public function placeBid(Request $request)
             $user->push('bid_history', $bid->bidId);
             $user->save();
         } else {
-            return response()->json([
-                "status" => false,
-                "code" => 404,
-                "message" => "Utilizador não encontrado.",
-            ], 404);
-        }
+            return redirect()->back()->withErrors(['Utilizador' => 'Utilizador não existe']);
 
-    if ($bid) {
-        
-        
+        }
         $bidDate = date("Y-m-d H:i:s");
         $auction->highestBid = $request->amount;
         $auction->highestBidderId = $request->bidderId;
         $auction->push('bids_list', $bid->bidId);
         $auction->recentBidDate = $bidDate;
         $auction->save();
-
-
+    if ($bid && $auction->highestBidderId != null) {
+        
         $emailContent = "A sua licitação foi ultrapassada:\n";
         $emailContent .= "Licitação mais alta: " . $request->amount . "\n";
         $emailContent .= "ID do leilão: " . $auction->auctionId . "\n";
@@ -108,13 +89,10 @@ public function placeBid(Request $request)
             "ID do leilão: " . $auction->auctionId,
             "Data de fim: " . $auction->end_date,
         );
+        return redirect()->route('auction.get', ['auction'=>$auction->_id]);
     }
 
-    return response()->json([
-        "status" => true,
-        "message" => "Licitação lançada com sucesso.",
-        "code" => 200, 
-    ]);
+
 }
 
 }
