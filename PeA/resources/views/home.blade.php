@@ -71,7 +71,7 @@
           </div> 
         <div class="col-md-auto">
           <div class="text-center">
-            <a role="button" href="http://localhost:8000chooseaccounttype" class="btn btn-primary btn-lg btn-block mb-3">Criar nova conta de utilizador</a>
+            <a role="button" href="http://localhost:8000/chooseaccounttype" class="btn btn-primary btn-lg btn-block mb-3">Criar nova conta de utilizador</a>
           </div>
         </div>
         <div class="col-md-auto">

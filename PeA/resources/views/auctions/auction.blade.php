@@ -141,7 +141,7 @@
                       //   window.location.reload();
                       // }, 1000);
 
-                      window.location.href = "{{ route('auctions.viewAll') }}";
+                      window.location.href = "{{ route('auctions.get') }}";
                   },
                   error: function(xhr, status, error) {
                     toastr.error('Erro ao eliminar leilão.', 'Erro', { closeButton: true });
