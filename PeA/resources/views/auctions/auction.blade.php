@@ -54,6 +54,11 @@
                         <p>Licitação mais alta: {{$auction->highestBid}} </p>
                     </div>
                 </div>
+                <div id="bidHistory">
+                <p>Historico de Licitacões:</p>
+            <!-- Placeholder for bid history -->
+            <!-- This will be dynamically populated -->
+        </div>
                 <div class="row">
                     <div class="col">
                       @if(auth()->check() || Auth::guard('police')->check())
@@ -174,4 +179,32 @@
             }
         });
     </script>
-      
+      <script>
+        // Fetch auction bid history using AJAX
+        $(document).ready(function() {
+            var auctionId = '{{ $auction->auctionId }}'; // Assuming $auction is passed to the view
+            var url = '{{ route("auction.history.get", ":auctionId") }}';
+            url = url.replace(':auctionId', auctionId);
+
+            $.ajax({
+                url: url,
+                method: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    // Process bid history data and display it
+                    var bidsList = response.bids_list;
+                    var bidHistoryHtml = '<h3>Bid History</h3><ul>';
+                    bidsList.forEach(function(bid) {
+                        bidHistoryHtml += '<li>Bidder: ' + bid.bidder + ', Amount: ' + bid.amount + '</li>';
+                    });
+                    bidHistoryHtml += '</ul>';
+
+                    $('#bidHistory').html(bidHistoryHtml);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching bid history:', error);
+                    $('#bidHistory').html('<p>Error fetching bid history.</p>');
+                }
+            });
+        });
+    </script>

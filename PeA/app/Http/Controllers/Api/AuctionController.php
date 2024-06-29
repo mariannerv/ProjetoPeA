@@ -113,7 +113,6 @@ class AuctionController extends Controller
 
 
 public function viewAuctionHistory(Request $request) {
-    
     $auction = Auction::where('auctionId', $request->auctionId)->first();
 
     if (!$auction) {
@@ -122,6 +121,8 @@ public function viewAuctionHistory(Request $request) {
 
     return response()->json(['bids_list' => $auction->bids_list], 200);
 }
+
+    
     
 
 

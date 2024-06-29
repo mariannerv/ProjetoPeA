@@ -447,7 +447,7 @@
         if (items.length > 0) {
             for (let i = 0; i < items.length; i++) {
                 const item = items[i];
-                html += '<li><a class="dropdown-item" href="{{ route('auction.get', '') }}/' + item._id + '">';
+                html += '<li><a class="dropdown-item" href="{{ route('auction.get', '') }}/' + item + '">';
                 html += 'Objeto: ' + item.objectId + ' - Licitação mais alta: ' + item.highestBid;
                 html += '</a></li>';
             }

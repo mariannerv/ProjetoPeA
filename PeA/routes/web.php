@@ -13,7 +13,7 @@ use App\Http\Controllers\emailVerificationCodeController;
 use App\Models\PoliceStation;
 use App\Http\Controllers\Emails\SendMailController;
 use App\Http\Controllers\verificationCodeController;
-
+use App\Http\Controllers\Api\BidController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -137,24 +137,30 @@ Route::post('/lost-objects/register', [LostObjectController::class, 'registerLos
 Route::get('/lost-objects', [LostObjectController::class, 'getAllLostObjects'])->name('lost-objects.get');
 Route::get('/lost-objects/{object}', [LostObjectController::class,'getLostObject'])->name('lost-object.get');
 Route::delete('lost-objects/{object}', [LostObjectController::class,'deleteLostObject'])->name('lost-object.delete');
-Route::get('/lost-objects/{object}/edit', [LostObjectController::class,'editLostObject'])->name('lost-object.edit');
-Route::put('/lost-objects/{object}', [LostObjectController::class,'upadteLostObject'])->name('lost-object.update');
+Route::get('/lost-objects/edit/{object}', [LostObjectController::class,'editLostObject'])->name('lost-object.edit');
+Route::put('/lost-objects/{object}', [LostObjectController::class,'updateLostObject'])->name('lost-object.update');
 
 Route::get('/found-objects', [foundObjectController::class, 'getAllFoundObjects'])->name('found-objects.get');
 Route::view('/found-objects/register-form', 'objects.foundobjectregister')->name('found-objects.register-form');
 Route::post('/found-objects/register', [foundObjectController::class, 'registerFoundObject'])->name('found-objects.register');
-Route::get('/found-objects/{object}', [foundObjectController::class,'getFoundObject'])->name('found-object.get');
+Route::get('/found-objects/{object}', [foundObjectController::class,'getFoundObject'])->name('found-object1.get');
 Route::post('found-objects/delete/{object}', [foundObjectController::class,'deleteFoundObject'])->name('found-object.delete');
 Route::post('found-objects/delete2/{object}', [foundObjectController::class,'deleteFoundObject2'])->name('found-object2.delete');
 Route::get('/found-objects/edit/{object}', [foundObjectController::class,'edit'])->name('found-object.edit');
+
+Route::get('/found-allObjects', [foundObjectController::class,'getall'])->name('found-allObject.get');
+
+Route::get('/found-search/{id}', [foundObjectController::class,'search'])->name('found-search');
+
 
 Route::get('/found-object/{object}', [foundObjectController::class,'getobject'])->name('found-object.get');
 Route::post('/found-objects/update/{object}', [foundObjectController::class,'update'])->name('found-object.update');
 Route::get('/search',function(){
     return view('objects.objectsearch');
 });
-Route::get('/search2',function(){
-    return view('objects.object-search');
+
+Route::get('/statmap',function(){
+    return view('objectstatmap');
 });
 
 // Login and Logout Routes
