@@ -207,20 +207,44 @@ Route::get('/statmap', function () {
 });
 // Auction views/routes
 Route::get('/auctions',[AuctionController::class,'viewAllAuctions'])->name('auctions.get');
-Route::get('/auctions/active', [AuctionController::class,'viewAllActiveAuctions'])->name('activeAuctions.get');
-
+Route::get('/activeAuctions',[AuctionController::class,'viewAllActiveAuctions'])->name('activeAuctions.get');
 Route::get('/auctions/{auction}', [AuctionController::class,'viewAuction'])->name('auction.get');
+Route::view('auctions/{auction}/edit','objects.found-objects.edit-auction')->name('auction.edit');
+Route::put('/auctions/{auction}',[AuctionController::class,'editAuction'])->name('auction.update');
+Route::delete('/auctions/{auction}',[AuctionController::class,'deleteAuction'])->name('auction.delete');
+
+Route::view('/bidderAuction/{auctionId}', 'objects.found-objects.bidding-auction')->name('auction.userBidding');
+
+Route::post('/bidderAuction/{auctionId}',[BidController::class,'placeBid'])->name('auctions.bidding');
+
+Route::get('/signUpAuctions/{id}/{email}',[AuctionController::class,'signUpAuctions'])->name('auctions.signUp');
+
 Route::view('/usersauctions/{user}','objects.found-objects.watch-auctions')->name('user.auctions');
-Route::view('/auctions/pay/{id}',[AuctionController::class,'pay'])->name('auction.pay');
+
+Route::get('/userEditsAuctions/{id}', [AuctionController::class,'updateAuction'])->name('user.updateAuction');
+
+Route::view('/usersRegisterAuctions/{user}','objects.found-objects.auctions-register')->name('user.registerAuctions');
+Route::post('/RegisterAuctions', [AuctionController::class,'createAuction'])->name('auction.register');
 
 Route::get('/allobjects', [LostObjectController::class,'getAllObjects'])->name('allobjects.get');
+
+Route::get('/finalizeOrStartAuctions/{id}', [AuctionController::class,'finalizeorStartAuction'])->name('auctions.finalizeOrStart');
+
+Route::view('/viewAllAuctions','objects.found-objects.viewAll-auctions')->name('auctions.viewAll');
 
 Route::get('/compare/{foundObject}/{lostObject}', [LostObjectController::class,'getObjects'])->name('compare.objects');
 
 Route::post('/addowner/{foundObject}/{lostObject}', [LostObjectController::class,'add'])->name('addowner.objects');
+Route::post('/addowneruser/{foundObject}/{lostObject}', [LostObjectController::class,'adduser'])->name('adduser.objects');
+
 
 Route::get('/ownerobject/{foundObject}/' , [LostObjectController::class,'ownerbject'])->name('getowner.objects');
 Route::get('/notifyowner/{foundObject}/{lostObject}/{owner}/' , [LostObjectController::class,'notifyowner'])->name('notify.owner');
+Route::get('/removeowner/{foundObject}/{lostObject}/' , [LostObjectController::class,'removeOwner'])->name('remove.owner');
+
+Route::get('/finish/{id}' , [AuctionController::class,'finishauction'])->name('auction.finish');
+Route::get('/pay/{id}' , [AuctionController::class,'pay'])->name('auction.pay');
+Route::get('success' , [AuctionController::class,'success']);
 //auction history
 Route::get('/auctions/{auction}/history',[AuctionController::class , 'viewAuctionHistory'])->name("auction.history.get");
 
