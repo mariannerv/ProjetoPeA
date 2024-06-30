@@ -439,25 +439,62 @@
     });
 
     function displayPurchasedItems(items) {
-        let html = '<div class="dropdown">';
-        html += '<button class="btn btn-secondary dropdown-toggle" type="button" id="purchasedItemsDropdown" data-bs-toggle="dropdown" aria-expanded="false">';
-        html += 'Items comprados: ' + items.length;
-        html += '</button>';
-        html += '<ul class="dropdown-menu" aria-labelledby="purchasedItemsDropdown">';
-        if (items.length > 0) {
-            for (let i = 0; i < items.length; i++) {
-                const item = items[i];
-                html += '<li><a class="dropdown-item" href="{{ route('auction.get', '') }}/' + item + '">';
-                html += 'Objeto: ' + item.objectId + ' - Licitação mais alta: ' + item.highestBid;
-                html += '</a></li>';
-            }
-        } else {
-            html += '<li><span class="dropdown-item">Nenhuns items comprados</span></li>';
+    let html = '<div class="dropdown">';
+    html += '<button class="btn btn-secondary dropdown-toggle" type="button" id="purchasedItemsDropdown" data-bs-toggle="dropdown" aria-expanded="false">';
+    html += 'Items comprados: ' + items.length;
+    html += '</button>';
+    html += '<ul class="dropdown-menu" aria-labelledby="purchasedItemsDropdown">';
+    
+    if (items.length > 0) {
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            html += '<li><a class="dropdown-item" href="{{ route('auction.get', '') }}/' + item + '">';
+            html += 'Objeto: ' + item.objectId + ' - Licitação mais alta: ' + item.highestBid;
+            html += '</a></li>';
         }
-        html += '</ul>';
-        html += '</div>';
-        $('#purchasedItemsContainer').html(html);
+    } else {
+        html += '<li><span class="dropdown-item">Nenhuns items comprados</span></li>';
     }
+    
+    html += '</ul>';
+    html += '</div>';
+    
+    $('#purchasedItemsContainer').html(html);
+
+    // Adicionar evento para carregar os detalhes do objeto ao clicar em um item da lista
+    $('#purchasedItemsContainer').on('click', '.dropdown-item', function(event) {
+        event.preventDefault();
+        let itemIndex = $(this).parent().index(); // Obtém o índice do item clicado
+        let item = items[itemIndex]; // Obtém os dados do item correspondente
+        
+        // Fazer requisição AJAX para obter os detalhes do objeto
+        $.ajax({
+            url: '{{ route('found-object1.get', '') }}/' + item._id,
+            method: 'GET',
+            success: function(response) {
+                if (response.status && response.data) {
+                    // Construir o HTML com os detalhes do objeto encontrado
+                    let detailsHtml = '<div><strong>Objeto:</strong> ' + response.data.objectId + '</div>';
+                    detailsHtml += '<div><strong>Licitação mais alta:</strong> ' + item.highestBid + '</div>';
+                    detailsHtml += '<div><strong>Marca:</strong> ' + response.data.brand + '</div>';
+                    detailsHtml += '<div><strong>Cor:</strong> ' + response.data.color + '</div>';
+                    // Adicionar mais informações conforme necessário
+                    
+                    // Substituir o conteúdo do item clicado com os detalhes
+                    $(event.target).closest('.dropdown-item').html(detailsHtml);
+                } else {
+                    // Tratar caso não seja possível obter os detalhes do objeto
+                    alert('Erro ao carregar detalhes do objeto.');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Erro na requisição AJAX:', error);
+                alert('Erro ao carregar detalhes do objeto.');
+            }
+        });
+    });
+}
+
 
     // Function to show bid history
     function showBidHistory(auctionId) {

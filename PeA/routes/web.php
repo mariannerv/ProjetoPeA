@@ -253,6 +253,6 @@ Route::get('/pay/{id}' , [AuctionController::class,'pay'])->name('auction.pay');
 Route::get('success' , [AuctionController::class,'success']);
 //auction history
 Route::get('/auctions/{auction}/history',[AuctionController::class , 'viewAuctionHistory'])->name("auction.history.get");
-
+Route::get('/bid/get/{bidId}', [BidController::class, 'getBid'])->name('bid.get');
 ?>
 

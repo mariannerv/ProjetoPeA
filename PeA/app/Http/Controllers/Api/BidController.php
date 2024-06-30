@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\foundObject;
@@ -20,6 +22,29 @@ use App\Http\Controllers\Emails\bidMailUpdateController;
 
 class BidController extends Controller
 {
+    public function getBid(Request $request) {
+        try {
+            // Busca a licitação pelo bidId
+            $bid = Bid::where('bidId', $request->bidId)->first();
+    
+            if (!$bid) {
+                Log::error('Bid not found', ['bidId' => $request->bidId]);
+                return response()->json(['error' => 'Bid not found'], 404);
+            }
+    
+            return response()->json($bid);
+        } catch (\Exception $e) {
+            // Registra o erro detalhado
+            Log::error('Error fetching bid', [
+                'bidId' => $request->bidId,
+                'exception' => $e->getMessage(),
+                'stack_trace' => $e->getTraceAsString()
+            ]);
+    
+            return response()->json(['error' => 'An error occurred while fetching the bid'], 500);
+        }
+    }
+
 public function placeBid(Request $request)
 {
     $auctionId = $request->auctionId;

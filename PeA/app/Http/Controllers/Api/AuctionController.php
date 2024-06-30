@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\foundObject;
@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Models\User;
 use App\Models\Auction;
+use App\Models\Bid;
 use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\Emails\SendMailController;
 use Omnipay\Omnipay;
@@ -111,16 +112,35 @@ class AuctionController extends Controller
         }
     }
 
-
-public function viewAuctionHistory(Request $request) {
-    $auction = Auction::where('auctionId', $request->auctionId)->first();
-
-    if (!$auction) {
-        return response()->json(['error' => 'Auction not found'], 404);
+    public function viewAuctionHistory($auctionId) {
+        try {
+            // Recupera o leilão específico
+            $auction = Auction::where('auctionId', $auctionId)->first();
+    
+            // Verifica se o leilão existe
+            if (!$auction) {
+                Log::error('Auction not found', ['auctionId' => $auctionId]);
+                return response()->json(['error' => 'Auction not found'], 404);
+            }
+    
+            // Recupera os IDs das licitações
+            $bidIds = $auction->bids_list;
+    
+            // Busca as licitações usando os IDs
+            $bids = Bid::whereIn('bidId', $bidIds)->get();
+    
+            return response()->json(['bids_list' => $bids]);
+        } catch (\Exception $e) {
+            // Registra o erro detalhado
+            Log::error('Error fetching auction history', [
+                'auctionId' => $auctionId,
+                'exception' => $e->getMessage(),
+                'stack_trace' => $e->getTraceAsString()
+            ]);
+    
+            return response()->json(['error' => 'An error occurred while fetching auction history'], 500);
+        }
     }
-
-    return response()->json(['bids_list' => $auction->bids_list], 200);
-}
 
     
     

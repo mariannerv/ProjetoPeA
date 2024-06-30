@@ -179,32 +179,51 @@
             }
         });
     </script>
-      <script>
-        // Fetch auction bid history using AJAX
-        $(document).ready(function() {
-            var auctionId = '{{ $auction->auctionId }}'; // Assuming $auction is passed to the view
-            var url = '{{ route("auction.history.get", ":auctionId") }}';
-            url = url.replace(':auctionId', auctionId);
+    <script>
+    // Fetch auction bid history using AJAX
+    $(document).ready(function() {
+        var auctionId = '{{ $auction->auctionId }}'; // Assuming $auction is passed to the view
+        var bidsList = @json($auction->bids_list); // Array of bidIds from the auction
+
+        var bidHistoryHtml = '<h3>Histórico de Licitações</h3><ul>';
+
+        // Função para buscar detalhes da licitação por bidId
+        function fetchBidDetails(bidId, callback) {
+            var url = '{{ route("bid.get", ":bidId") }}';
+            url = url.replace(':bidId', bidId);
 
             $.ajax({
                 url: url,
                 method: 'GET',
                 dataType: 'json',
                 success: function(response) {
-                    // Process bid history data and display it
-                    var bidsList = response.bids_list;
-                    var bidHistoryHtml = '<h3>Bid History</h3><ul>';
-                    bidsList.forEach(function(bid) {
-                        bidHistoryHtml += '<li>Bidder: ' + bid.bidder + ', Amount: ' + bid.amount + '</li>';
-                    });
-                    bidHistoryHtml += '</ul>';
-
-                    $('#bidHistory').html(bidHistoryHtml);
+                    callback(null, response);
                 },
                 error: function(xhr, status, error) {
-                    console.error('Error fetching bid history:', error);
-                    $('#bidHistory').html('<p>Error fetching bid history.</p>');
+                    callback({ status: status, error: error, response: xhr.responseText });
                 }
             });
-        });
-    </script>
+        }
+
+        // Função para processar cada bidId
+        function processBidIds(bidIds, index) {
+            if (index < bidIds.length) {
+                fetchBidDetails(bidIds[index], function(err, bid) {
+                    if (err) {
+                        console.error('Error fetching bid details:', err);
+                        bidHistoryHtml += '<li>Error fetching bid details for ' + bidIds[index] + '</li>';
+                    } else {
+                        bidHistoryHtml += '<li>Licitante: ' + bid.bidderId + ', Quantia: ' + bid.amount + ', Data: ' + new Date(bid.bidDate).toLocaleString() + '</li>';
+                    }
+                    processBidIds(bidIds, index + 1);
+                });
+            } else {
+                bidHistoryHtml += '</ul>';
+                $('#bidHistory').html(bidHistoryHtml);
+            }
+        }
+
+        // Começa o processamento das bidIds
+        processBidIds(bidsList, 0);
+    });
+</script>
