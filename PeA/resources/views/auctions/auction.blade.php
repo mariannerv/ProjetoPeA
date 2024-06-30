@@ -179,15 +179,14 @@
             }
         });
     </script>
-    <script>
-    // Fetch auction bid history using AJAX
+<script>
     $(document).ready(function() {
         var auctionId = '{{ $auction->auctionId }}'; // Assuming $auction is passed to the view
         var bidsList = @json($auction->bids_list); // Array of bidIds from the auction
 
         var bidHistoryHtml = '<h3>Histórico de Licitações</h3><ul>';
 
-        // Função para buscar detalhes da licitação por bidId
+        // Function to fetch bid details by bidId
         function fetchBidDetails(bidId, callback) {
             var url = '{{ route("bid.get", ":bidId") }}';
             url = url.replace(':bidId', bidId);
@@ -205,7 +204,7 @@
             });
         }
 
-        // Função para processar cada bidId
+        // Function to process each bidId
         function processBidIds(bidIds, index) {
             if (index < bidIds.length) {
                 fetchBidDetails(bidIds[index], function(err, bid) {
@@ -213,7 +212,23 @@
                         console.error('Error fetching bid details:', err);
                         bidHistoryHtml += '<li>Error fetching bid details for ' + bidIds[index] + '</li>';
                     } else {
-                        bidHistoryHtml += '<li>Licitante: ' + bid.bidderId + ', Quantia: ' + bid.amount + ', Data: ' + new Date(bid.bidDate).toLocaleString() + '</li>';
+                        // Log bid details for debugging
+                        console.log('Bid Details:', bid);
+
+                        // Check if bidDate is in $date format or as a timestamp
+                        var bidDate = null;
+                        if (bid.bidDate && bid.bidDate.$date) {
+                            bidDate = new Date(bid.bidDate.$date);
+                        } else if (bid.bidDate && bid.bidDate.$numberLong) {
+                            bidDate = new Date(parseInt(bid.bidDate.$numberLong));
+                        }
+
+                        if (bidDate && !isNaN(bidDate.getTime())) {
+                            var formattedDate = formatDate(bidDate);
+                            bidHistoryHtml += '<li>Licitante: ' + bid.bidderId + ', Quantia: ' + bid.amount + ', Data: ' + formattedDate + '</li>';
+                        } else {
+                            bidHistoryHtml += '<li>Licitante: ' + bid.bidderId + ', Quantia: ' + bid.amount + ', Data: Invalid Date</li>';
+                        }
                     }
                     processBidIds(bidIds, index + 1);
                 });
@@ -223,7 +238,37 @@
             }
         }
 
-        // Começa o processamento das bidIds
+        // Start processing bidIds
         processBidIds(bidsList, 0);
     });
+
+    function formatDate(date) {
+        try {
+            // Log the date for debugging
+            console.log('Formatting Date:', date);
+
+            // Check if date is a number (timestamp) and convert to Date object
+            if (typeof date === 'number') {
+                date = new Date(date);
+            } else if (date.$date) {
+                date = new Date(date.$date);
+            } else if (date.$numberLong) {
+                date = new Date(parseInt(date.$numberLong));
+            }
+
+            if (!isNaN(date.getTime())) {
+                const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
+                return date.toLocaleString('en-US', options);
+            } else {
+                return 'Invalid Date';
+            }
+        } catch (error) {
+            console.error('Error formatting date:', date, error);
+            return 'Invalid Date';
+        }
+    }
 </script>
+
+
+
+
