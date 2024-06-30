@@ -209,31 +209,33 @@ $(document).ready(function() {
     }
 
     function processBidIds(bidIds, index) {
-        if (index < bidIds.length) {
-            fetchBidDetails(bidIds[index], function(err, bid) {
-                if (err) {
-                    console.error('Error fetching bid details:', err);
-                    $('#bidHistory .bid-history-container').append('<div class="bid-history-item"><p>Error fetching bid details for ' + bidIds[index] + '</p></div>');
+      if (index < bidIds.length) {
+        fetchBidDetails(bidIds[index], function(err, bid) {
+            if (err) {
+                console.error('Error fetching bid details:', err);
+                $('#bidHistory .bid-history-container').append('<div class="bid-history-item"><p>Error fetching bid details for ' + bidIds[index] + '</p></div>');
+            } else {
+                console.log('Bid Details:', bid);
+
+                var bidDate = null;
+                if (bid.bidDate && bid.bidDate.$date && bid.bidDate.$date.$numberLong) {
+                    bidDate = new Date(parseInt(bid.bidDate.$date.$numberLong));
                 } else {
-                    console.log('Bid Details:', bid);
-
-                    var bidDate = null;
-                    if (bid.bidDate && bid.bidDate.$date) {
-                        bidDate = new Date(bid.bidDate.$date);
-                    } else if (bid.bidDate && bid.bidDate.$numberLong) {
-                        bidDate = new Date(parseInt(bid.bidDate.$numberLong));
-                    }
-
-                    if (bidDate && !isNaN(bidDate.getTime())) {
-                        var formattedDate = formatDate(bidDate);
-                        var html = '<div class="bid-history-item"><p><strong>Licitante:</strong> ' + bid.bidderId + ', <strong>Quantia:</strong> ' + bid.amount + ', <strong>Data:</strong> ' + formattedDate + '</p></div>';
-                        $('#bidHistory .bid-history-container').append(html);
-                    } else {
-                        $('#bidHistory .bid-history-container').append('<div class="bid-history-item"><p>Licitante: ' + bid.bidderId + ', Quantia: ' + bid.amount + ', Data: Invalid Date</p></div>');
-                    }
+                    console.warn('Invalid bidDate structure:', bid.bidDate);
                 }
-                processBidIds(bidIds, index + 1);
-            });
+
+                if (bidDate) {
+                    var formattedDate = formatDate(bidDate);
+                    var html = '<div class="bid-history-item"><p><strong>Licitante:</strong> ' + bid.bidderId + ', <strong>Quantia:</strong> ' + bid.amount + ', <strong>Data:</strong> ' + formattedDate + '</p></div>';
+                    
+                    // Adicionar o HTML no início do contêiner para organizar da mais recente para a mais antiga
+                    $('#bidHistory .bid-history-container').prepend(html);
+                } else {
+                    $('#bidHistory .bid-history-container').append('<div class="bid-history-item"><p>Licitante: ' + bid.bidderId + ', Quantia: ' + bid.amount + ', Data: Invalid Date</p></div>');
+                }
+            }
+            processBidIds(bidIds, index + 1);
+        });
         }
     }
 
@@ -242,8 +244,8 @@ $(document).ready(function() {
 
 function formatDate(date) {
     try {
-        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
-        return date.toLocaleString('en-US', options);
+        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+        return date.toLocaleString('pt-PT', options); 
     } catch (error) {
         console.error('Error formatting date:', date, error);
         return 'Invalid Date';
