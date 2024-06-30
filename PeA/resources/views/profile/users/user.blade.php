@@ -462,28 +462,28 @@
     $('#purchasedItemsContainer').html(html);
 
     // Adicionar evento para carregar os detalhes do objeto ao clicar em um item da lista
-    $('#purchasedItemsContainer').on('click', '.dropdown-item', function(event) {
+    $('#purchasedItemsContainer').on('load', '.dropdown-item', function(event) {
         event.preventDefault();
         let itemIndex = $(this).parent().index(); // Obtém o índice do item clicado
         let item = items[itemIndex]; // Obtém os dados do item correspondente
         
-        // Fazer requisição AJAX para obter os detalhes do objeto
+        
         $.ajax({
             url: '{{ route('found-object1.get', '') }}/' + item._id,
             method: 'GET',
             success: function(response) {
                 if (response.status && response.data) {
-                    // Construir o HTML com os detalhes do objeto encontrado
-                    let detailsHtml = '<div><strong>Objeto:</strong> ' + response.data.objectId + '</div>';
+                    
+                  let detailsHtml = '<div><strong>Objeto:</strong> ' + response.data.name + '</div>';
                     detailsHtml += '<div><strong>Licitação mais alta:</strong> ' + item.highestBid + '</div>';
+                    detailsHtml += '<div><strong>Descrição:</strong> ' + response.data.description + '</div>';
                     detailsHtml += '<div><strong>Marca:</strong> ' + response.data.brand + '</div>';
                     detailsHtml += '<div><strong>Cor:</strong> ' + response.data.color + '</div>';
-                    // Adicionar mais informações conforme necessário
+                    detailsHtml += '<div><strong>Categoria:</strong> ' + response.data.category + '</div>';
                     
-                    // Substituir o conteúdo do item clicado com os detalhes
                     $(event.target).closest('.dropdown-item').html(detailsHtml);
                 } else {
-                    // Tratar caso não seja possível obter os detalhes do objeto
+                    
                     alert('Erro ao carregar detalhes do objeto.');
                 }
             },
