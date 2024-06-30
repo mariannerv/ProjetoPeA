@@ -439,106 +439,58 @@
     });
 
     function displayPurchasedItems(items) {
-    let html = '<div class="dropdown">';
-    html += '<button class="btn btn-secondary dropdown-toggle" type="button" id="purchasedItemsDropdown" data-bs-toggle="dropdown" aria-expanded="false">';
-    html += 'Items comprados: ' + items.length;
-    html += '</button>';
-    html += '<ul class="dropdown-menu" aria-labelledby="purchasedItemsDropdown">';
-    
+    let html = '';
+    let pendingRequests = items.length;
     if (items.length > 0) {
-        for (let i = 0; i < items.length; i++) {
-            const item = items[i];
-            html += '<li><a class="dropdown-item" href="{{ route('auction.get', '') }}/' + item + '">';
-            html += 'Objeto: ' + item.objectId + ' - Licitação mais alta: ' + item.highestBid;
-            html += '</a></li>';
-        }
-    } else {
-        html += '<li><span class="dropdown-item">Nenhuns items comprados</span></li>';
-    }
-    
-    html += '</ul>';
-    html += '</div>';
-    
-    $('#purchasedItemsContainer').html(html);
+        items.forEach(function(item) {
+            let url = '{{ route("found-object1.get", ":objectId") }}';
+            url = url.replace(':objectId', item.objectId);
 
-    // Adicionar evento para carregar os detalhes do objeto ao clicar em um item da lista
-    $('#purchasedItemsContainer').on('load', '.dropdown-item', function(event) {
-        event.preventDefault();
-        let itemIndex = $(this).parent().index(); // Obtém o índice do item clicado
-        let item = items[itemIndex]; // Obtém os dados do item correspondente
-        
-        
-        $.ajax({
-            url: '{{ route('found-object1.get', '') }}/' + item._id,
-            method: 'GET',
-            success: function(response) {
-                if (response.status && response.data) {
-                    
-                  let detailsHtml = '<div><strong>Objeto:</strong> ' + response.data.name + '</div>';
-                    detailsHtml += '<div><strong>Licitação mais alta:</strong> ' + item.highestBid + '</div>';
-                    detailsHtml += '<div><strong>Descrição:</strong> ' + response.data.description + '</div>';
-                    detailsHtml += '<div><strong>Marca:</strong> ' + response.data.brand + '</div>';
-                    detailsHtml += '<div><strong>Cor:</strong> ' + response.data.color + '</div>';
-                    detailsHtml += '<div><strong>Categoria:</strong> ' + response.data.category + '</div>';
-                    
-                    $(event.target).closest('.dropdown-item').html(detailsHtml);
-                } else {
-                    
-                    alert('Erro ao carregar detalhes do objeto.');
+            $.ajax({
+                url: url,
+                method: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status) {
+                        html += "<h4> Objetos Comprados: </h4>"
+                        let foundObject = response.data;
+                        html += '<div class="card mb-3">';
+                        html += '<div class="card-body">';
+                        html += '<h5 class="card-title">Objeto: ' + foundObject.name + '</h5>';
+                        html += '<p class="card-text">Descrição: ' + foundObject.description + '</p>';
+                        html += '<p class="card-text">Cor: ' + foundObject.color + '</p>';
+                        html += '<p class="card-text">Categoria: ' + foundObject.category + '</p>';
+                        html += '<p class="card-text">Marca: ' + foundObject.brand + '</p>';
+                        html += '<p class="card-text">Licitação mais alta: ' + item.highestBid + '</p>';
+                        html += '<p class="card-text">Acaba em: ' + item.end_date + '</p>';
+                        html += '<p class="card-text">Status: ' + item.status + '</p>';
+                        html += '<a class="btn btn-secondary" href="{{ route('auction.get', '') }}/' + item._id + '">Ver Leilão</a>';
+                        html += '</div>';
+                        html += '</div>';
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                },
+                complete: function() {
+                    pendingRequests--;
+                    if (pendingRequests === 0) {
+                        $('#purchasedItemsContainer').html(html);
+                    }
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error('Erro na requisição AJAX:', error);
-                alert('Erro ao carregar detalhes do objeto.');
-            }
+            });
         });
-    });
+    } else {
+        html = '<p>Nenhum item comprado</p>';
+        $('#purchasedItemsContainer').html(html);
+    }
 }
 
 
-    // Function to show bid history
-    function showBidHistory(auctionId) {
-        $.ajax({
-            url: '{{ route("auction.history.get", "") }}/' + auctionId,
-            method: 'GET',
-            dataType: 'json',
-            success: function(response) {
-                let html = '<ul class="list-group">';
-                response.bids_list.sort((a, b) => new Date(b.date) - new Date(a.date));
-                response.bids_list.forEach(bid => {
-                    html += `<li class="list-group-item">Licitação: ${bid.amount} - Data: ${new Date(bid.date).toLocaleString()}</li>`;
-                });
-                html += '</ul>';
-                $('#bidHistoryContent').html(html);
-                $('#bidHistoryModal').modal('show');
-            },
-            error: function(xhr, status, error) {
-                console.error(xhr.responseText);
-            }
-        });
-    }
+    
 });
 
-     function showBidHistory(auctionId) {
-        $.ajax({
-            url: '{{ route("auction.history.get", "") }}/' + auctionId,
-            method: 'GET',
-            dataType: 'json',
-            success: function(response) {
-                let html = '<ul class="list-group">';
-                response.bids_list.sort((a, b) => new Date(b.date) - new Date(a.date));
-                response.bids_list.forEach(bid => {
-                    html += `<li class="list-group-item">Licitação: ${bid.amount} - Data: ${new Date(bid.date).toLocaleString()}</li>`;
-                });
-                html += '</ul>';
-                $('#bidHistoryContent').html(html);
-                $('#bidHistoryModal').modal('show');
-            },
-            error: function(xhr, status, error) {
-                console.error(xhr.responseText);
-            }
-        });
-}
+     
 
     </script>
     {{-- Inserir ID --}}
