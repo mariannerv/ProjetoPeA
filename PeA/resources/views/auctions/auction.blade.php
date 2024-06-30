@@ -185,7 +185,8 @@
             }
         });
     </script>
-    <script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
 $(document).ready(function() {
     var auctionId = '{{ $auction->auctionId }}'; 
     var bidsList = @json($auction->bids_list);
@@ -214,10 +215,8 @@ $(document).ready(function() {
                     console.error('Error fetching bid details:', err);
                     $('#bidHistory .bid-history-container').append('<div class="bid-history-item"><p>Error fetching bid details for ' + bidIds[index] + '</p></div>');
                 } else {
-                    
                     console.log('Bid Details:', bid);
 
-                    
                     var bidDate = null;
                     if (bid.bidDate && bid.bidDate.$date) {
                         bidDate = new Date(bid.bidDate.$date);
@@ -243,8 +242,6 @@ $(document).ready(function() {
 
 function formatDate(date) {
     try {
-        console.log('Formatting Date:', date);
-
         const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
         return date.toLocaleString('en-US', options);
     } catch (error) {
@@ -253,6 +250,7 @@ function formatDate(date) {
     }
 }
 </script>
+
 
 <style>
   #bidHistory {
