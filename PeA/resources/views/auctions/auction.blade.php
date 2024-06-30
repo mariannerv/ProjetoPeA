@@ -187,10 +187,9 @@
     </script>
     <script>
 $(document).ready(function() {
-    var auctionId = '{{ $auction->auctionId }}'; // Assuming $auction is passed to the view
-    var bidsList = @json($auction->bids_list); // Array of bidIds from the auction
+    var auctionId = '{{ $auction->auctionId }}'; 
+    var bidsList = @json($auction->bids_list);
 
-    // Function to fetch bid details by bidId
     function fetchBidDetails(bidId, callback) {
         var url = '{{ route("bid.get", ":bidId") }}';
         url = url.replace(':bidId', bidId);
@@ -213,10 +212,12 @@ $(document).ready(function() {
             fetchBidDetails(bidIds[index], function(err, bid) {
                 if (err) {
                     console.error('Error fetching bid details:', err);
-                    $('#bidHistory .bid-history-container').append('<p>Error fetching bid details for ' + bidIds[index] + '</p>');
+                    $('#bidHistory .bid-history-container').append('<div class="bid-history-item"><p>Error fetching bid details for ' + bidIds[index] + '</p></div>');
                 } else {
+                    
                     console.log('Bid Details:', bid);
 
+                    
                     var bidDate = null;
                     if (bid.bidDate && bid.bidDate.$date) {
                         bidDate = new Date(bid.bidDate.$date);
@@ -226,9 +227,10 @@ $(document).ready(function() {
 
                     if (bidDate && !isNaN(bidDate.getTime())) {
                         var formattedDate = formatDate(bidDate);
-                        $('#bidHistory .bid-history-container').append('<p>Licitante: ' + bid.bidderId + ', Quantia: ' + bid.amount + ', Data: ' + formattedDate + '</p>');
+                        var html = '<div class="bid-history-item"><p><strong>Licitante:</strong> ' + bid.bidderId + ', <strong>Quantia:</strong> ' + bid.amount + ', <strong>Data:</strong> ' + formattedDate + '</p></div>';
+                        $('#bidHistory .bid-history-container').append(html);
                     } else {
-                        $('#bidHistory .bid-history-container').append('<p>Licitante: ' + bid.bidderId + ', Quantia: ' + bid.amount + ', Data: Invalid Date</p>');
+                        $('#bidHistory .bid-history-container').append('<div class="bid-history-item"><p>Licitante: ' + bid.bidderId + ', Quantia: ' + bid.amount + ', Data: Invalid Date</p></div>');
                     }
                 }
                 processBidIds(bidIds, index + 1);
@@ -250,9 +252,38 @@ function formatDate(date) {
         return 'Invalid Date';
     }
 }
-
-
-
-
-
 </script>
+
+<style>
+  #bidHistory {
+    max-height: 300px; /* Altura máxima do histórico */
+    overflow-y: auto; /* Adicionar scroll vertical se necessário */
+    border: 1px solid #ccc; /* Borda para separar o histórico */
+    padding: 10px; /* Espaçamento interno */
+}
+
+#bidHistory h3 {
+    margin-top: 0; /* Remover margem superior do título */
+    font-size: 1.2em; /* Tamanho de fonte do título */
+    color: #333; /* Cor do texto */
+}
+
+.bid-history-item {
+    margin-bottom: 10px; /* Espaçamento entre itens */
+    padding: 8px; /* Espaçamento interno dos itens */
+    background-color: #f9f9f9; /* Cor de fundo dos itens */
+    border: 1px solid #ddd; /* Borda dos itens */
+    border-radius: 4px; /* Cantos arredondados dos itens */
+}
+
+.bid-history-item p {
+    margin: 0; /* Remover margem padrão dos parágrafos */
+    font-size: 0.9em; /* Tamanho de fonte dos detalhes */
+    color: #666; /* Cor do texto dos detalhes */
+}
+
+.bid-history-item p strong {
+    color: #333; /* Cor do texto forte (licitante e quantidade) */
+}
+
+</style>
